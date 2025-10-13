@@ -1,0 +1,281 @@
+# NexusFi Application Configuration
+# Spring Boot 3.2.0 Configuration for PostgreSQL
+
+spring:
+  application:
+    name: nexusfi
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/nexusfi
+    username: ${DB_USERNAME:nexusfi_user}
+    password: ${DB_PASSWORD:changeme}
+    driver-class-name: org.postgresql.Driver
+    
+    # HikariCP Connection Pool Configuration
+    hikari:
+      pool-name: NexusFi-Pool
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: true
+      
+  # JPA Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate  # Use 'validate' in production, 'update' for development
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+    
+    properties:
+      hibernate:
+        # SQL Formatting
+        format_sql: true
+        use_sql_comments: true
+        
+        # Performance Optimizations
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+        
+        # Query Optimizations
+        default_batch_fetch_size: 16
+        max_fetch_depth: 3
+        
+        # Second-level Cache (if needed later)
+        # cache:
+        #   use_second_level_cache: false
+        #   use_query_cache: false
+        
+        # Statistics (development only)
+        generate_statistics: false
+    
+    # Show SQL in logs (development only)
+    show-sql: false
+    
+    # Open Session in View (not recommended for REST APIs)
+    open-in-view: false
+  
+  # Flyway Migration Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+    clean-disabled: true  # Prevent accidental data loss
+  
+  # Security Configuration
+  security:
+    user:
+      name: ${SECURITY_USER:admin}
+      password: ${SECURITY_PASSWORD:admin123}
+  
+  # Session Configuration
+  session:
+    store-type: jdbc
+    timeout: 3600  # 1 hour in seconds
+    jdbc:
+      initialize-schema: always
+  
+  # Jackson JSON Configuration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: false
+    time-zone: UTC
+    date-format: yyyy-MM-dd'T'HH:mm:ss.SSSZ
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    session:
+      timeout: 60m
+      cookie:
+        http-only: true
+        secure: false  # Set to true in production with HTTPS
+        same-site: strict
+  
+  # Error Handling
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param  # Never in production
+    include-exception: false
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.nexusfi: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.orm.jdbc.bind: TRACE
+  
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  
+  file:
+    name: logs/nexusfi.log
+    max-size: 10MB
+    max-history: 30
+    total-size-cap: 1GB
+
+# Application-specific Configuration
+nexusfi:
+  # Business Rules
+  business:
+    max-category-depth: 5  # Maximum hierarchy depth
+    max-categories-per-user: 100
+    allow-negative-balance: false
+    enforce-percentage-integrity: true
+  
+  # Pagination
+  pagination:
+    default-page-size: 20
+    max-page-size: 100
+  
+  # Date Formats
+  date-format: yyyy-MM-dd
+  datetime-format: yyyy-MM-dd'T'HH:mm:ss
+
+# Actuator Configuration (for monitoring)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  
+  metrics:
+    export:
+      prometheus:
+        enabled: false  # Enable if using Prometheus
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  
+  jpa:
+    hibernate:
+      ddl-auto: update  # Auto-update schema in dev
+    show-sql: true
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/nexusfi_dev
+  
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    com.nexusfi: DEBUG
+
+nexusfi:
+  business:
+    enforce-percentage-integrity: true  # Keep strict in dev too
+
+---
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  
+  h2:
+    console:
+      enabled: true
+
+logging:
+  level:
+    root: WARN
+    com.nexusfi: DEBUG
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Never auto-update in production
+    show-sql: false
+  
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+  
+server:
+  port: ${PORT:8080}
+  servlet:
+    session:
+      cookie:
+        secure: true  # HTTPS only
+  
+  # Compression
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+
+logging:
+  level:
+    root: WARN
+    com.nexusfi: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  
+  endpoint:
+    health:
+      show-details: never
+
+nexusfi:
+  business:
+    enforce-percentage-integrity: true  # Always strict in production
