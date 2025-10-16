@@ -1,0 +1,37 @@
+# Development Profile - Local PostgreSQL Configuration
+# This file overrides application.yml when running with --spring.profiles.active=dev
+#
+# HOW TO USE:
+# Set environment variable before running:
+#   Windows PowerShell: $env:DB_PASSWORD="your_password"
+#   Windows CMD: set DB_PASSWORD=your_password
+#   Linux/Mac: export DB_PASSWORD=your_password
+
+spring:
+  # Database Configuration - Using local postgres user
+  datasource:
+    url: jdbc:postgresql://localhost:5432/nexusfi
+    username: postgres
+    password: ${DB_PASSWORD}  # READS FROM ENVIRONMENT VARIABLE (Professional approach)
+    driver-class-name: org.postgresql.Driver
+
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate # Don't auto-create tables, we already have them
+      naming:
+        # Use SpringPhysicalNamingStrategy to convert camelCase -> snake_case
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: true # Show SQL queries in console
+
+  # Disable Flyway - We already created schema manually
+  flyway:
+    enabled: false
+
+# Enable debug logging for development
+logging:
+  level:
+    com.nexusfi: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
