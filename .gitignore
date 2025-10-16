@@ -194,6 +194,10 @@ site/
 *.old
 *-backup
 
+# Local run scripts with passwords
+scripts/run-dev.bat
+scripts/run-dev.ps1
+
 # Keep important files
 !.gitignore
 !README*.md
