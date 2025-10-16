@@ -89,17 +89,6 @@ public class Transfer {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
-
     /**
      * Helper method to add a movement
      */
@@ -109,10 +98,29 @@ public class Transfer {
     }
 
     /**
-     * Validation to ensure source and destination are different
+     * Lifecycle callback - runs before insert
+     * Validates transfer and sets timestamps
      */
     @PrePersist
+    private void onPrePersist() {
+        validateTransfer();
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Lifecycle callback - runs before update
+     * Validates transfer and updates timestamp
+     */
     @PreUpdate
+    private void onPreUpdate() {
+        validateTransfer();
+        updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Validation to ensure source and destination are different
+     */
     private void validateTransfer() {
         if (sourceCategory != null && destinationCategory != null 
             && sourceCategory.getId().equals(destinationCategory.getId())) {
