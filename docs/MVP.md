@@ -62,6 +62,7 @@ The MVP is the **minimum feature set** that makes NexusFi **useful and deployabl
 **Total:** 21 REST endpoints, 1229 lines of code
 
 **Features:**
+
 - Input validation with @Valid annotations
 - Proper HTTP status codes (200, 201, 204, 404)
 - CategoryName embedding in responses for better UX
