@@ -135,6 +135,7 @@ All entity classes created with:
 ### ✨ What We Accomplished (October 15, 2025):
 
 **Created Spring Boot Application:**
+
 - ✅ `NexusFiApplication.java` - Main application class written by Francisco
 - ✅ Fixed duplicate lifecycle callbacks in `Transfer.java`
 - ✅ Created `application-dev.yml` for development configuration
@@ -142,6 +143,7 @@ All entity classes created with:
 - ✅ Set up `CamelCaseToUnderscoresNamingStrategy` for proper database mapping
 
 **Development Tools:**
+
 - ✅ Created `scripts/` folder with convenient run scripts
   - `run-dev.bat` / `run-dev.ps1` - Start app with one command
   - `build.bat` - Clean and compile project
@@ -149,6 +151,7 @@ All entity classes created with:
 - ✅ Maven added to PATH (no more full path needed)
 
 **Testing & Validation:**
+
 - ✅ Application starts successfully in 2.7 seconds
 - ✅ Connects to PostgreSQL database `nexusfi`
 - ✅ Schema validation passes
@@ -157,11 +160,13 @@ All entity classes created with:
 - ✅ Spring Security enabled (login page works)
 
 **Git Workflow:**
+
 - ✅ Feature branch created: `feature/spring-boot-setup`
 - ✅ Comprehensive commit with 7 files changed
 - ✅ Pushed to GitHub
 
 **Key Learning:**
+
 - Professional use of environment variables for credentials
 - Maven lifecycle and commands
 - Spring Boot auto-configuration
@@ -175,6 +180,7 @@ All entity classes created with:
 ### ✨ What We Accomplished:
 
 **Created 6 Spring Data JPA Repository Interfaces:**
+
 - ✅ `UserRepository` - User authentication and lookup
 - ✅ `CategoryRepository` - Category CRUD with percentage calculations
 - ✅ `IncomeRecordRepository` - Income records with date filtering
@@ -183,18 +189,21 @@ All entity classes created with:
 - ✅ `MovementRepository` - Unified transaction history (read-only view)
 
 **Key Features:**
+
 - Query methods derived from method names (Spring magic!)
 - Custom JPQL queries with @Query annotation
 - Date range filtering
 - No SQL needed - Spring generates implementation
 
 **Git Workflow:**
+
 - ✅ Feature branch: `feature/repository-layer`
 - ✅ Merged to `develop` with `--no-ff`
 - ✅ Branch cleaned up (local and remote deleted)
 - ✅ Pushed to GitHub
 
 **Key Learning:**
+
 - Spring Data JPA method naming conventions
 - `findByUserIdOrderByRecordedAtDesc` → automatic SQL generation
 - Custom @Query for complex operations (SUM aggregations)
@@ -207,6 +216,7 @@ All entity classes created with:
 ### ✨ What We Accomplished:
 
 **Created 6 Service Classes with Business Logic:**
+
 1. ✅ `UserService` - User registration, email validation
 2. ✅ `CategoryService` - **Core percentage validation** (must sum to 100%)
 3. ✅ `IncomeService` - **Auto-distribution algorithm** (splits income across categories)
@@ -215,6 +225,7 @@ All entity classes created with:
 6. ✅ `MovementService` - Read-only transaction history queries
 
 **Professional Exception Handling:**
+
 - ✅ Custom exception hierarchy (`NexusFiException` base class)
 - ✅ `ResourceNotFoundException` → HTTP 404
 - ✅ `DuplicateResourceException` → HTTP 409 Conflict
@@ -223,6 +234,7 @@ All entity classes created with:
 - ✅ `GlobalExceptionHandler` - Centralized error responses with proper HTTP status codes
 
 **Git Workflow:**
+
 - ✅ Feature branch: `feature/service-layer`
 - ✅ Multiple commits (services, then exception refactor)
 - ✅ Merged to `develop` with `--no-ff`
@@ -230,6 +242,7 @@ All entity classes created with:
 - ✅ **Total:** 846 lines of business logic added!
 
 **Key Learning:**
+
 - Service layer architecture (@Service, @Transactional)
 - Constructor injection (best practice)
 - Business rule enforcement in services
@@ -247,6 +260,7 @@ All entity classes created with:
 **Goal:** Expose business logic via HTTP REST API
 
 **Controllers to Create:**
+
 - [ ] `CategoryController` - CRUD operations for categories
 - [ ] `IncomeController` - Record and query income
 - [ ] `ExpenseController` - Record and query expenses
@@ -254,6 +268,7 @@ All entity classes created with:
 - [ ] `MovementController` - Query unified transaction history
 
 **What Each Controller Includes:**
+
 - DTOs (Data Transfer Objects) for request/response
 - Input validation with @Valid
 - Proper HTTP status codes (201 Created, 204 No Content, etc.)
@@ -261,12 +276,14 @@ All entity classes created with:
 - Exception handling (already done via GlobalExceptionHandler!)
 
 **Git Workflow:**
+
 - ✅ Feature branch created: `feature/controller-layer`
 - ✅ Pushed to GitHub (tracking established)
 - 🔄 Controllers being developed
 - ⏳ Will merge to `develop` when complete
 
 **Learning Focus:**
+
 - REST API design principles
 - @RestController, @RequestMapping annotations
 - DTOs vs Entities (separation of concerns)
@@ -471,15 +488,15 @@ by step, explaining concepts before providing code, not just
 giving complete solutions.
 
 I want to continue from where I left off. The next step is
-to create NexusFiApplication.java (main Spring Boot class).
+to create the REST Controller layer (CategoryController first).
 
-Current branch: develop
+Current branch: feature/controller-layer
 ```
 
 ### For Copilot (Acting as Mentor):
 
 **Context Summary:**
-Francisco is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created. Next task is creating the main Spring Boot application class to start the app. Please act as mentor - guide, don't just provide code. Explain each step.
+Francisco is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created, repositories are set up (6 interfaces), and service layer is complete (6 services + exception handling, 846 lines). Next task is creating REST Controllers starting with CategoryController. Please act as mentor - guide, don't just provide code. Explain each step, especially REST API design principles, DTOs, and HTTP status codes.
 
 ### Alternative Opening Messages:
 
@@ -494,8 +511,8 @@ development. Act as my mentor, guide step-by-step."
 
 ```
 "Hi! I'm continuing development of NexusFi. I need to create the
-main Spring Boot application class (NexusFiApplication.java).
-Please guide me step-by-step as my mentor. Current branch: develop"
+REST Controller layer (starting with CategoryController).
+Please guide me step-by-step as my mentor. Current branch: feature/controller-layer"
 ```
 
 ### Quick Git Status Check:

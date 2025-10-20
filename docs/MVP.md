@@ -43,6 +43,7 @@ The MVP is the **minimum feature set** that makes NexusFi **useful and deployabl
 - [x] `MovementService` - Query all movements with filters
 
 **Additional:** Professional exception handling
+
 - [x] Custom exception classes (ResourceNotFoundException, DuplicateResourceException, etc.)
 - [x] GlobalExceptionHandler for REST error responses
 
