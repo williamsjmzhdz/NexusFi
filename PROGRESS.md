@@ -1,6 +1,6 @@
 # NexusFi - Development Progress & Learning Journey
 
-**Last Updated:** October 12, 2025  
+**Last Updated:** October 20, 2025  
 **Developer:** Francisco (williamsjmzhdz)  
 **Learning Approach:** Hands-on, step-by-step, with mentor guidance
 
@@ -37,11 +37,11 @@ When continuing in a new chat session, please:
 
 ---
 
-## 📍 Current Status: Database Setup Complete
+## 📍 Current Status: REST API Complete - Ready for Security Layer
 
-We are at the **beginning of the Spring Boot application development**. All foundational work is complete.
+We have successfully completed the **REST Controller layer** with a full CRUD API. Next step is implementing JWT authentication and Spring Security.
 
-### ✅ Phase 1: Project Setup & Database (COMPLETED)
+### ✅ Phase 1: Project Setup & Database (COMPLETED - Oct 12, 2025)
 
 #### 1.1 PostgreSQL Database ✅
 
@@ -135,6 +135,7 @@ All entity classes created with:
 ### ✨ What We Accomplished (October 15, 2025):
 
 **Created Spring Boot Application:**
+
 - ✅ `NexusFiApplication.java` - Main application class written by Francisco
 - ✅ Fixed duplicate lifecycle callbacks in `Transfer.java`
 - ✅ Created `application-dev.yml` for development configuration
@@ -142,6 +143,7 @@ All entity classes created with:
 - ✅ Set up `CamelCaseToUnderscoresNamingStrategy` for proper database mapping
 
 **Development Tools:**
+
 - ✅ Created `scripts/` folder with convenient run scripts
   - `run-dev.bat` / `run-dev.ps1` - Start app with one command
   - `build.bat` - Clean and compile project
@@ -149,6 +151,7 @@ All entity classes created with:
 - ✅ Maven added to PATH (no more full path needed)
 
 **Testing & Validation:**
+
 - ✅ Application starts successfully in 2.7 seconds
 - ✅ Connects to PostgreSQL database `nexusfi`
 - ✅ Schema validation passes
@@ -157,11 +160,13 @@ All entity classes created with:
 - ✅ Spring Security enabled (login page works)
 
 **Git Workflow:**
+
 - ✅ Feature branch created: `feature/spring-boot-setup`
 - ✅ Comprehensive commit with 7 files changed
 - ✅ Pushed to GitHub
 
 **Key Learning:**
+
 - Professional use of environment variables for credentials
 - Maven lifecycle and commands
 - Spring Boot auto-configuration
@@ -170,81 +175,179 @@ All entity classes created with:
 
 ---
 
-## 🚧 Next Task: Create Spring Data JPA Repositories
+## ✅ Phase 2: Repository Layer (COMPLETED - Oct 18, 2025)
 
-### Phase 2: Repository Layer
+### ✨ What We Accomplished:
 
-**What needs to be done:**
-Create repository interfaces to access the database without writing SQL.
+**Created 6 Spring Data JPA Repository Interfaces:**
 
-**Location:** `src/main/java/com/nexusfi/repository/`
+- ✅ `UserRepository` - User authentication and lookup
+- ✅ `CategoryRepository` - Category CRUD with percentage calculations
+- ✅ `IncomeRecordRepository` - Income records with date filtering
+- ✅ `ExpenseRecordRepository` - Expense records by user and category
+- ✅ `TransferRepository` - Transfer operations
+- ✅ `MovementRepository` - Unified transaction history (read-only view)
 
-**Repositories to create:**
-1. `UserRepository` - User management
-2. `CategoryRepository` - Category CRUD and hierarchy queries
-3. `IncomeRecordRepository` - Income tracking
-4. `ExpenseRecordRepository` - Expense tracking
-5. `TransferRepository` - Transfer operations
-6. `MovementRepository` - Movement ledger queries
+**Key Features:**
 
-**This will enable:**
-- Database access without writing SQL
-- Type-safe queries
-- Spring Data JPA magic methods
-- Custom query methods for complex operations
+- Query methods derived from method names (Spring magic!)
+- Custom JPQL queries with @Query annotation
+- Date range filtering
+- No SQL needed - Spring generates implementation
+
+**Git Workflow:**
+
+- ✅ Feature branch: `feature/repository-layer`
+- ✅ Merged to `develop` with `--no-ff`
+- ✅ Branch cleaned up (local and remote deleted)
+- ✅ Pushed to GitHub
+
+**Key Learning:**
+
+- Spring Data JPA method naming conventions
+- `findByUserIdOrderByRecordedAtDesc` → automatic SQL generation
+- Custom @Query for complex operations (SUM aggregations)
+- Repository pattern benefits
+
+---
+
+## ✅ Phase 3: Service Layer (COMPLETED - Oct 19, 2025)
+
+### ✨ What We Accomplished:
+
+**Created 6 Service Classes with Business Logic:**
+
+1. ✅ `UserService` - User registration, email validation
+2. ✅ `CategoryService` - **Core percentage validation** (must sum to 100%)
+3. ✅ `IncomeService` - **Auto-distribution algorithm** (splits income across categories)
+4. ✅ `ExpenseService` - Balance validation before spending
+5. ✅ `TransferService` - Zero-sum transfers between categories
+6. ✅ `MovementService` - Read-only transaction history queries
+
+**Professional Exception Handling:**
+
+- ✅ Custom exception hierarchy (`NexusFiException` base class)
+- ✅ `ResourceNotFoundException` → HTTP 404
+- ✅ `DuplicateResourceException` → HTTP 409 Conflict
+- ✅ `InsufficientBalanceException` → HTTP 400
+- ✅ `InvalidPercentageException` → HTTP 400
+- ✅ `GlobalExceptionHandler` - Centralized error responses with proper HTTP status codes
+
+**Git Workflow:**
+
+- ✅ Feature branch: `feature/service-layer`
+- ✅ Multiple commits (services, then exception refactor)
+- ✅ Merged to `develop` with `--no-ff`
+- ✅ Branch cleaned up
+- ✅ **Total:** 846 lines of business logic added!
+
+**Key Learning:**
+
+- Service layer architecture (@Service, @Transactional)
+- Constructor injection (best practice)
+- Business rule enforcement in services
+- BigDecimal arithmetic for financial calculations
+- Income distribution algorithm with rounding error handling
+- Professional exception handling vs generic IllegalArgumentException
+- @RestControllerAdvice for global exception handling
+
+---
+
+## ✅ Phase 4: REST Controller Layer (COMPLETED - Oct 20, 2025)
+
+### ✨ What We Accomplished:
+
+**Created 5 REST Controllers with 21 Endpoints:**
+
+1. ✅ `CategoryController` (6 endpoints) - Full CRUD + remaining percentage query
+2. ✅ `IncomeController` (3 endpoints) - Record and query income
+3. ✅ `ExpenseController` (4 endpoints) - Record and query expenses with category filtering
+4. ✅ `TransferController` (4 endpoints) - Execute zero-sum transfers between categories
+5. ✅ `MovementController` (4 endpoints) - Read-only transaction history with filtering
+
+**Created 11 DTO Classes:**
+
+- Request DTOs: CategoryRequest, IncomeRequest, ExpenseRequest, TransferRequest
+- Response DTOs: CategoryResponse, IncomeResponse, ExpenseResponse, TransferResponse, MovementResponse
+- 2 additional DTOs for CategoryController
+
+**Key Features Implemented:**
+
+- ✅ Input validation with @Valid and Bean Validation annotations
+- ✅ Proper HTTP status codes (200 OK, 201 Created, 204 No Content, 404 Not Found)
+- ✅ RESTful endpoint design following best practices
+- ✅ CategoryName embedding in responses (reduces frontend API calls)
+- ✅ Consistent patterns across all controllers
+- ✅ Constructor injection for dependencies
+- ✅ Stream API for entity-to-DTO transformations
+- ✅ TODO comments for Spring Security integration
+
+**Total Code:** 1,229 lines across 16 files
+
+**Git Workflow:**
+
+- ✅ Feature branch: `feature/controller-layer`
+- ✅ Multiple commits (CategoryController first, then remaining 4 controllers)
+- ✅ All code pushed to GitHub
+- ⏳ Ready to merge to `develop`
+
+**Key Learning:**
+
+- **REST API Design Principles:**
+  - Resources (nouns) not actions (verbs)
+  - HTTP methods for CRUD (GET, POST, PUT, DELETE)
+  - Status codes communicate operation results
+  - URLs should be intuitive and predictable
+- **DTOs vs Entities:**
+  - Security: Don't expose passwords, internal fields
+  - Flexibility: Different shapes for input vs output
+  - Decoupling: Change entity without breaking API
+- **@RestController vs @Controller:**
+  - @RestController = @Controller + @ResponseBody
+  - Returns JSON automatically via Jackson
+  - Perfect for modern SPAs and mobile apps
+- **Zero-Sum Operations:**
+  - Transfers preserve total balance
+  - Source decreases, destination increases
+  - No money created or destroyed
+- **Read-Only Transaction History:**
+  - Movements created automatically by system
+  - Provides audit trail of all operations
+  - Cannot be created or modified directly
+
+---
+
+## 🚧 Next Tasks: After Controller Layer
+
+### Phase 5: Security Configuration (Pending)
+
+**Goal:** Implement JWT-based authentication
+
+- [ ] Password encryption with BCrypt
+- [ ] JWT token generation and validation
+- [ ] AuthController (login, register endpoints)
+- [ ] Security filter chain configuration
+- [ ] Public vs protected endpoints
 
 ---
 
 ## 📋 Roadmap: What's Next After Spring Boot Setup
 
-### Phase 2: Repositories (Spring Data JPA)
+### Phase 2: Repositories (Spring Data JPA) ✅ COMPLETED
 
-**Goal:** Create repository interfaces for database access
-
-- [ ] UserRepository
-- [ ] CategoryRepository
-- [ ] IncomeRecordRepository
-- [ ] ExpenseRecordRepository
-- [ ] TransferRepository
-- [ ] MovementRepository
-
-**Learning focus:**
-
-- Spring Data JPA magic (no SQL needed)
-- Query methods by naming convention
-- Custom @Query annotations
-- Repository patterns
+**See above for completion details**
 
 ---
 
-### Phase 3: Services (Business Logic)
+### Phase 3: Services (Business Logic) ✅ COMPLETED
 
-**Goal:** Implement core business rules
+**See above for completion details**
 
-- [ ] CategoryService
-  - Create/edit categories
-  - Validate percentage sums (must = 100%)
-  - Archive/unarchive logic
-  - Rebalance percentages
-- [ ] IncomeService
-  - Register income
-  - Automatic distribution algorithm
-  - Create ASSIGNMENT movements
-- [ ] ExpenseService
-  - Register expenses
-  - Update category balances
-  - Create EXPENSE movements
-- [ ] TransferService
-  - Zero-sum transfers
-  - Create two TRANSFER movements
-  - Validate source ≠ destination
+---
 
-**Learning focus:**
+### Phase 4: REST Controllers 🔄 IN PROGRESS
 
-- Service layer patterns
-- Transaction management (@Transactional)
-- Business rule validation
-- Exception handling
+**See "Phase 4" section above for current status**
 
 ---
 
@@ -409,7 +512,7 @@ by step, explaining concepts before providing code, not just
 giving complete solutions.
 
 I want to continue from where I left off. The next step is
-to create NexusFiApplication.java (main Spring Boot class).
+to implement Spring Security with JWT authentication.
 
 Current branch: develop
 ```
@@ -417,7 +520,7 @@ Current branch: develop
 ### For Copilot (Acting as Mentor):
 
 **Context Summary:**
-Francisco is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created. Next task is creating the main Spring Boot application class to start the app. Please act as mentor - guide, don't just provide code. Explain each step.
+Francisco is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created, repositories are set up (6 interfaces), service layer is complete (6 services + exception handling, 846 lines), and REST controller layer is complete (5 controllers, 21 endpoints, 1,229 lines). Next task is implementing JWT-based authentication with Spring Security. Please act as mentor - guide, don't just provide code. Explain each step, especially JWT concepts, Spring Security filter chain, and authentication flow.
 
 ### Alternative Opening Messages:
 
@@ -431,8 +534,8 @@ development. Act as my mentor, guide step-by-step."
 **Option 2 - With more context:**
 
 ```
-"Hi! I'm continuing development of NexusFi. I need to create the
-main Spring Boot application class (NexusFiApplication.java).
+"Hi! I'm continuing development of NexusFi. REST API is complete.
+I need to implement Spring Security with JWT authentication.
 Please guide me step-by-step as my mentor. Current branch: develop"
 ```
 
