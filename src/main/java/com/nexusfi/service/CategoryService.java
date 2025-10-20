@@ -1,5 +1,7 @@
 package com.nexusfi.service;
 
+import com.nexusfi.exception.InvalidPercentageException;
+import com.nexusfi.exception.ResourceNotFoundException;
 import com.nexusfi.model.Category;
 import com.nexusfi.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
@@ -28,7 +30,7 @@ public class CategoryService {
      *
      * @param category the category to create
      * @return the saved category
-     * @throws IllegalArgumentException if percentages would exceed 100%
+     * @throws InvalidPercentageException if percentages would exceed 100%
      */
     public Category createCategory(Category category) {
         validatePercentageLimit(category.getUser().getId(), category.getAssignedPercentage(), null);
@@ -41,7 +43,7 @@ public class CategoryService {
      *
      * @param category the category to update
      * @return the updated category
-     * @throws IllegalArgumentException if percentages would exceed 100%
+     * @throws InvalidPercentageException if percentages would exceed 100%
      */
     public Category updateCategory(Category category) {
         validatePercentageLimit(
@@ -76,11 +78,11 @@ public class CategoryService {
      *
      * @param categoryId the category ID
      * @return the category
-     * @throws IllegalArgumentException if category not found
+     * @throws ResourceNotFoundException if category not found
      */
     public Category getCategoryById(Long categoryId) {
         return categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new IllegalArgumentException("Category not found: " + categoryId));
+            .orElseThrow(() -> new ResourceNotFoundException("Category", categoryId));
     }
     
     /**
@@ -89,7 +91,8 @@ public class CategoryService {
      * @param userId the user's ID
      * @param newPercentage the percentage being added/changed
      * @param excludeCategoryId category ID to exclude (when updating, exclude current value)
-     * @throws IllegalArgumentException if total would exceed 100%
+     * @throws InvalidPercentageException if total would exceed 100%
+     * @throws ResourceNotFoundException if category to update is not found
      */
     private void validatePercentageLimit(Long userId, BigDecimal newPercentage, Long excludeCategoryId) {
         // Get current sum of all percentages
@@ -98,7 +101,7 @@ public class CategoryService {
         // If updating, subtract the old percentage first
         if (excludeCategoryId != null) {
             Category existingCategory = categoryRepository.findById(excludeCategoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found: " + excludeCategoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", excludeCategoryId));
             currentSum = currentSum.subtract(existingCategory.getAssignedPercentage());
         }
         
@@ -107,9 +110,7 @@ public class CategoryService {
         
         // Validate
         if (newTotal.compareTo(new BigDecimal("100")) > 0) {
-            throw new IllegalArgumentException(
-                String.format("Total percentage would be %s%%. Maximum is 100%%.", newTotal.toString())
-            );
+            throw new InvalidPercentageException(newTotal);
         }
     }
     

@@ -1,10 +1,10 @@
 package com.nexusfi.service;
 
+import com.nexusfi.exception.InvalidPercentageException;
+import com.nexusfi.exception.ResourceNotFoundException;
 import com.nexusfi.model.Category;
 import com.nexusfi.model.IncomeRecord;
-import com.nexusfi.model.Movement;
 import com.nexusfi.repository.IncomeRecordRepository;
-import com.nexusfi.repository.MovementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +45,7 @@ public class IncomeService {
      *
      * @param incomeRecord the income to record
      * @return the saved income record
-     * @throws IllegalArgumentException if user doesn't have 100% allocated
+     * @throws InvalidPercentageException if user doesn't have 100% allocated
      */
     public IncomeRecord recordIncome(IncomeRecord incomeRecord) {
         Long userId = incomeRecord.getUser().getId();
@@ -55,7 +55,7 @@ public class IncomeService {
         List<Category> categories = categoryService.getUserCategories(userId);
         
         if (categories.isEmpty()) {
-            throw new IllegalArgumentException("Cannot record income: No categories defined. Create categories first.");
+            throw new InvalidPercentageException("Cannot record income: No categories defined. Create categories first.");
         }
         
         BigDecimal totalPercentage = categories.stream()
@@ -63,7 +63,7 @@ public class IncomeService {
             .reduce(BigDecimal.ZERO, BigDecimal::add);
         
         if (totalPercentage.compareTo(new BigDecimal("100")) != 0) {
-            throw new IllegalArgumentException(
+            throw new InvalidPercentageException(
                 String.format("Cannot record income: Total category percentages is %s%%. Must be exactly 100%%.", 
                     totalPercentage.toString())
             );
@@ -142,10 +142,10 @@ public class IncomeService {
      *
      * @param incomeId the income record ID
      * @return the income record
-     * @throws IllegalArgumentException if not found
+     * @throws ResourceNotFoundException if not found
      */
     public IncomeRecord getIncomeRecordById(Long incomeId) {
         return incomeRecordRepository.findById(incomeId)
-            .orElseThrow(() -> new IllegalArgumentException("Income record not found: " + incomeId));
+            .orElseThrow(() -> new ResourceNotFoundException("Income record", incomeId));
     }
 }

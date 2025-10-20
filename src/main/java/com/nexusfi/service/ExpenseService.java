@@ -1,5 +1,7 @@
 package com.nexusfi.service;
 
+import com.nexusfi.exception.InsufficientBalanceException;
+import com.nexusfi.exception.ResourceNotFoundException;
 import com.nexusfi.model.Category;
 import com.nexusfi.model.ExpenseRecord;
 import com.nexusfi.repository.ExpenseRecordRepository;
@@ -42,7 +44,7 @@ public class ExpenseService {
      *
      * @param expenseRecord the expense to record
      * @return the saved expense record
-     * @throws IllegalArgumentException if insufficient balance
+     * @throws InsufficientBalanceException if insufficient balance
      */
     public ExpenseRecord recordExpense(ExpenseRecord expenseRecord) {
         Category category = expenseRecord.getCategory();
@@ -51,13 +53,10 @@ public class ExpenseService {
         
         // Validate sufficient balance
         if (currentBalance.compareTo(expenseAmount) < 0) {
-            throw new IllegalArgumentException(
-                String.format(
-                    "Insufficient balance in category '%s'. Available: %s, Required: %s",
-                    category.getName(),
-                    currentBalance.toString(),
-                    expenseAmount.toString()
-                )
+            throw new InsufficientBalanceException(
+                category.getName(),
+                currentBalance,
+                expenseAmount
             );
         }
         
@@ -109,10 +108,10 @@ public class ExpenseService {
      *
      * @param expenseId the expense record ID
      * @return the expense record
-     * @throws IllegalArgumentException if not found
+     * @throws ResourceNotFoundException if not found
      */
     public ExpenseRecord getExpenseRecordById(Long expenseId) {
         return expenseRecordRepository.findById(expenseId)
-            .orElseThrow(() -> new IllegalArgumentException("Expense record not found: " + expenseId));
+            .orElseThrow(() -> new ResourceNotFoundException("Expense record", expenseId));
     }
 }

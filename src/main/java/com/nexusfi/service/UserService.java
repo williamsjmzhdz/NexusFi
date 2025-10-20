@@ -1,5 +1,6 @@
 package com.nexusfi.service;
 
+import com.nexusfi.exception.DuplicateResourceException;
 import com.nexusfi.model.User;
 import com.nexusfi.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -30,11 +31,11 @@ public class UserService {
      *
      * @param user the user to register
      * @return the saved user with generated ID
-     * @throws IllegalArgumentException if email already exists
+     * @throws DuplicateResourceException if email already exists
      */
     public User registerUser(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Email already registered: " + user.getEmail());
+            throw new DuplicateResourceException("User", user.getEmail());
         }
         
         // TODO: Add password encryption here when we implement security

@@ -1,5 +1,6 @@
 package com.nexusfi.service;
 
+import com.nexusfi.exception.ResourceNotFoundException;
 import com.nexusfi.model.Movement;
 import com.nexusfi.model.enums.MovementType;
 import com.nexusfi.repository.MovementRepository;
@@ -80,10 +81,10 @@ public class MovementService {
      *
      * @param movementId the movement ID
      * @return the movement record
-     * @throws IllegalArgumentException if not found
+     * @throws ResourceNotFoundException if not found
      */
     public Movement getMovementById(Long movementId) {
         return movementRepository.findById(movementId)
-            .orElseThrow(() -> new IllegalArgumentException("Movement not found: " + movementId));
+            .orElseThrow(() -> new ResourceNotFoundException("Movement", movementId));
     }
 }

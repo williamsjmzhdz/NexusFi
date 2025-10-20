@@ -1,5 +1,7 @@
 package com.nexusfi.service;
 
+import com.nexusfi.exception.InsufficientBalanceException;
+import com.nexusfi.exception.ResourceNotFoundException;
 import com.nexusfi.model.Category;
 import com.nexusfi.model.Transfer;
 import com.nexusfi.repository.TransferRepository;
@@ -43,7 +45,8 @@ public class TransferService {
      *
      * @param transfer the transfer to execute
      * @return the saved transfer record
-     * @throws IllegalArgumentException if validation fails
+     * @throws IllegalArgumentException if attempting transfer to same category
+     * @throws InsufficientBalanceException if source doesn't have sufficient balance
      */
     public Transfer executeTransfer(Transfer transfer) {
         Category sourceCategory = transfer.getSourceCategory();
@@ -60,13 +63,10 @@ public class TransferService {
         // Validate sufficient balance in source
         BigDecimal sourceBalance = sourceCategory.getCurrentBalance();
         if (sourceBalance.compareTo(amount) < 0) {
-            throw new IllegalArgumentException(
-                String.format(
-                    "Insufficient balance in category '%s'. Available: %s, Required: %s",
-                    sourceCategory.getName(),
-                    sourceBalance.toString(),
-                    amount.toString()
-                )
+            throw new InsufficientBalanceException(
+                sourceCategory.getName(),
+                sourceBalance,
+                amount
             );
         }
         
@@ -122,10 +122,10 @@ public class TransferService {
      *
      * @param transferId the transfer ID
      * @return the transfer record
-     * @throws IllegalArgumentException if not found
+     * @throws ResourceNotFoundException if not found
      */
     public Transfer getTransferById(Long transferId) {
         return transferRepository.findById(transferId)
-            .orElseThrow(() -> new IllegalArgumentException("Transfer not found: " + transferId));
+            .orElseThrow(() -> new ResourceNotFoundException("Transfer", transferId));
     }
 }
