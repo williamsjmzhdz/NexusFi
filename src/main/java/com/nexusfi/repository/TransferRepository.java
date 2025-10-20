@@ -40,11 +40,12 @@ public interface TransferRepository extends JpaRepository<Transfer, Long> {
      * Find all transfers involving a specific category (as source or destination).
      * Useful to see transfer history for a category.
      *
-     * @param categoryId the category's ID
+     * @param sourceCategoryId the category's ID (as source)
+     * @param destinationCategoryId the category's ID (as destination)
      * @return list of transfers involving the category
      */
-    List<Transfer> findByFromCategoryIdOrToCategoryIdOrderByRecordedAtDesc(
-        Long categoryId, 
-        Long categoryId2
+    List<Transfer> findBySourceCategoryIdOrDestinationCategoryIdOrderByRecordedAtDesc(
+        Long sourceCategoryId, 
+        Long destinationCategoryId
     );
 }
