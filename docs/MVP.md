@@ -49,18 +49,27 @@ The MVP is the **minimum feature set** that makes NexusFi **useful and deployabl
 
 **Completed:** October 19, 2025 (3 hours including refactoring)
 
-#### 1.3 REST Controllers 🔄 IN PROGRESS
+#### 1.3 REST Controllers ✅ COMPLETED
 
-- [ ] `CategoryController` - CRUD endpoints for categories
-- [ ] `IncomeController` - POST `/api/income`, GET `/api/income`
-- [ ] `ExpenseController` - POST `/api/expense`, GET `/api/expense`
-- [ ] `TransferController` - POST `/api/transfer`, GET `/api/transfer`
-- [ ] `MovementController` - GET `/api/movements` (with filters)
+- [x] `CategoryController` - CRUD endpoints for categories (6 endpoints)
+- [x] `IncomeController` - POST `/api/incomes`, GET `/api/incomes` (3 endpoints)
+- [x] `ExpenseController` - POST `/api/expenses`, GET `/api/expenses` (4 endpoints)
+- [x] `TransferController` - POST `/api/transfers`, GET `/api/transfers` (4 endpoints)
+- [x] `MovementController` - GET `/api/movements` (with filters) (4 endpoints)
+
+**Additional:** 11 DTO classes (Request + Response objects) for all controllers
+
+**Total:** 21 REST endpoints, 1229 lines of code
+
+**Features:**
+- Input validation with @Valid annotations
+- Proper HTTP status codes (200, 201, 204, 404)
+- CategoryName embedding in responses for better UX
+- Consistent patterns across all controllers
 
 **Note:** AuthController delayed until security configuration phase
 
-**Started:** October 19, 2025  
-**Estimated Time:** 2-3 hours (DTOs + validation + endpoints)
+**Completed:** October 20, 2025 (4 hours)
 
 #### 1.4 Security Configuration
 

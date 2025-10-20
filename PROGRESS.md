@@ -1,6 +1,6 @@
 # NexusFi - Development Progress & Learning Journey
 
-**Last Updated:** October 19, 2025  
+**Last Updated:** October 20, 2025  
 **Developer:** Francisco (williamsjmzhdz)  
 **Learning Approach:** Hands-on, step-by-step, with mentor guidance
 
@@ -37,9 +37,9 @@ When continuing in a new chat session, please:
 
 ---
 
-## 📍 Current Status: Controller Layer Development
+## 📍 Current Status: REST API Complete - Ready for Security Layer
 
-We are currently building the **REST Controller layer** to expose our business logic via HTTP APIs.
+We have successfully completed the **REST Controller layer** with a full CRUD API. Next step is implementing JWT authentication and Spring Security.
 
 ### ✅ Phase 1: Project Setup & Database (COMPLETED - Oct 12, 2025)
 
@@ -253,43 +253,71 @@ All entity classes created with:
 
 ---
 
-## 🔄 Phase 4: REST Controller Layer (IN PROGRESS - Started Oct 19, 2025)
+## ✅ Phase 4: REST Controller Layer (COMPLETED - Oct 20, 2025)
 
-### 📍 Current Task: Build REST API Endpoints
+### ✨ What We Accomplished:
 
-**Goal:** Expose business logic via HTTP REST API
+**Created 5 REST Controllers with 21 Endpoints:**
 
-**Controllers to Create:**
+1. ✅ `CategoryController` (6 endpoints) - Full CRUD + remaining percentage query
+2. ✅ `IncomeController` (3 endpoints) - Record and query income
+3. ✅ `ExpenseController` (4 endpoints) - Record and query expenses with category filtering
+4. ✅ `TransferController` (4 endpoints) - Execute zero-sum transfers between categories
+5. ✅ `MovementController` (4 endpoints) - Read-only transaction history with filtering
 
-- [ ] `CategoryController` - CRUD operations for categories
-- [ ] `IncomeController` - Record and query income
-- [ ] `ExpenseController` - Record and query expenses
-- [ ] `TransferController` - Execute and query transfers
-- [ ] `MovementController` - Query unified transaction history
+**Created 11 DTO Classes:**
 
-**What Each Controller Includes:**
+- Request DTOs: CategoryRequest, IncomeRequest, ExpenseRequest, TransferRequest
+- Response DTOs: CategoryResponse, IncomeResponse, ExpenseResponse, TransferResponse, MovementResponse
+- 2 additional DTOs for CategoryController
 
-- DTOs (Data Transfer Objects) for request/response
-- Input validation with @Valid
-- Proper HTTP status codes (201 Created, 204 No Content, etc.)
-- RESTful endpoint design
-- Exception handling (already done via GlobalExceptionHandler!)
+**Key Features Implemented:**
+
+- ✅ Input validation with @Valid and Bean Validation annotations
+- ✅ Proper HTTP status codes (200 OK, 201 Created, 204 No Content, 404 Not Found)
+- ✅ RESTful endpoint design following best practices
+- ✅ CategoryName embedding in responses (reduces frontend API calls)
+- ✅ Consistent patterns across all controllers
+- ✅ Constructor injection for dependencies
+- ✅ Stream API for entity-to-DTO transformations
+- ✅ TODO comments for Spring Security integration
+
+**Total Code:** 1,229 lines across 16 files
 
 **Git Workflow:**
 
-- ✅ Feature branch created: `feature/controller-layer`
-- ✅ Pushed to GitHub (tracking established)
-- 🔄 Controllers being developed
-- ⏳ Will merge to `develop` when complete
+- ✅ Feature branch: `feature/controller-layer`
+- ✅ Multiple commits (CategoryController first, then remaining 4 controllers)
+- ✅ All code pushed to GitHub
+- ⏳ Ready to merge to `develop`
 
-**Learning Focus:**
+**Key Learning:**
 
-- REST API design principles
-- @RestController, @RequestMapping annotations
-- DTOs vs Entities (separation of concerns)
-- HTTP methods (GET, POST, PUT, DELETE)
-- Request/Response body handling
-- Path variables and query parameters
+- **REST API Design Principles:**
+  - Resources (nouns) not actions (verbs)
+  - HTTP methods for CRUD (GET, POST, PUT, DELETE)
+  - Status codes communicate operation results
+  - URLs should be intuitive and predictable
+  
+- **DTOs vs Entities:**
+  - Security: Don't expose passwords, internal fields
+  - Flexibility: Different shapes for input vs output
+  - Decoupling: Change entity without breaking API
+  
+- **@RestController vs @Controller:**
+  - @RestController = @Controller + @ResponseBody
+  - Returns JSON automatically via Jackson
+  - Perfect for modern SPAs and mobile apps
+  
+- **Zero-Sum Operations:**
+  - Transfers preserve total balance
+  - Source decreases, destination increases
+  - No money created or destroyed
+  
+- **Read-Only Transaction History:**
+  - Movements created automatically by system
+  - Provides audit trail of all operations
+  - Cannot be created or modified directly
 
 ---
 
@@ -488,15 +516,15 @@ by step, explaining concepts before providing code, not just
 giving complete solutions.
 
 I want to continue from where I left off. The next step is
-to create the REST Controller layer (CategoryController first).
+to implement Spring Security with JWT authentication.
 
-Current branch: feature/controller-layer
+Current branch: develop
 ```
 
 ### For Copilot (Acting as Mentor):
 
 **Context Summary:**
-Francisco is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created, repositories are set up (6 interfaces), and service layer is complete (6 services + exception handling, 846 lines). Next task is creating REST Controllers starting with CategoryController. Please act as mentor - guide, don't just provide code. Explain each step, especially REST API design principles, DTOs, and HTTP status codes.
+Francisco is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created, repositories are set up (6 interfaces), service layer is complete (6 services + exception handling, 846 lines), and REST controller layer is complete (5 controllers, 21 endpoints, 1,229 lines). Next task is implementing JWT-based authentication with Spring Security. Please act as mentor - guide, don't just provide code. Explain each step, especially JWT concepts, Spring Security filter chain, and authentication flow.
 
 ### Alternative Opening Messages:
 
@@ -510,9 +538,9 @@ development. Act as my mentor, guide step-by-step."
 **Option 2 - With more context:**
 
 ```
-"Hi! I'm continuing development of NexusFi. I need to create the
-REST Controller layer (starting with CategoryController).
-Please guide me step-by-step as my mentor. Current branch: feature/controller-layer"
+"Hi! I'm continuing development of NexusFi. REST API is complete.
+I need to implement Spring Security with JWT authentication.
+Please guide me step-by-step as my mentor. Current branch: develop"
 ```
 
 ### Quick Git Status Check:
