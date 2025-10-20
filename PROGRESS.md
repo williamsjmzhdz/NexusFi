@@ -37,9 +37,18 @@ When continuing in a new chat session, please:
 
 ---
 
-## 📍 Current Status: REST API Complete - Ready for Security Layer
+## 📍 Current Status: v0.2.0 Released! 🎉
 
-We have successfully completed the **REST Controller layer** with a full CRUD API. Next step is implementing JWT authentication and Spring Security.
+**Latest Release:** v0.2.0 - REST API Complete (October 20, 2025)
+
+We have successfully completed and **released** the REST Controller layer with a full CRUD API (21 endpoints). The release is tagged and published on GitHub. Next step is implementing JWT authentication and Spring Security for v0.3.
+
+**Release Highlights:**
+- 5 Controllers, 21 REST endpoints
+- 11 DTO classes
+- Complete backend API (3,300+ lines of code)
+- Professional exception handling
+- Ready for security layer implementation
 
 ### ✅ Phase 1: Project Setup & Database (COMPLETED - Oct 12, 2025)
 
@@ -317,9 +326,53 @@ All entity classes created with:
 
 ---
 
-## 🚧 Next Tasks: After Controller Layer
+## 🎉 Releases
 
-### Phase 5: Security Configuration (Pending)
+### v0.2.0 - REST API Complete (October 20, 2025)
+
+**Status:** Released and tagged on GitHub
+
+**What's Included:**
+- 5 REST Controllers (21 endpoints total)
+  - CategoryController: 6 endpoints
+  - IncomeController: 3 endpoints
+  - ExpenseController: 4 endpoints
+  - TransferController: 4 endpoints
+  - MovementController: 4 endpoints
+- 11 DTO classes (Request + Response)
+- Professional exception handling
+- Input validation with Bean Validation
+- Complete backend API (~3,300 lines of code)
+
+**GitHub Release:** [v0.2.0](https://github.com/williamsjmzhdz/NexusFi/releases/tag/v0.2.0)
+
+**Known Limitations:**
+- No authentication (endpoints unsecured)
+- Not production-ready
+- Hardcoded user ID in controllers
+
+---
+
+### v0.1.0 - Spring Boot + Database (October 16-18, 2025)
+
+**Status:** Released and tagged on GitHub
+
+**What's Included:**
+- PostgreSQL database with complete schema
+- 7 JPA entities with relationships
+- Spring Boot application setup
+- 6 Repository interfaces
+- 6 Service classes (846 lines)
+- 6 Custom exception classes
+- GlobalExceptionHandler
+
+**GitHub Release:** [v0.1.0](https://github.com/williamsjmzhdz/NexusFi/releases/tag/v0.1)
+
+---
+
+## 🚧 Next Tasks: After v0.2.0
+
+### Phase 5: Security Configuration (Next for v0.3)
 
 **Goal:** Implement JWT-based authentication
 
