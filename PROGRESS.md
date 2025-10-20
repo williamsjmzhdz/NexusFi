@@ -44,6 +44,7 @@ When continuing in a new chat session, please:
 We have successfully completed and **released** the REST Controller layer with a full CRUD API (21 endpoints). The release is tagged and published on GitHub. Next step is implementing JWT authentication and Spring Security for v0.3.
 
 **Release Highlights:**
+
 - 5 Controllers, 21 REST endpoints
 - 11 DTO classes
 - Complete backend API (3,300+ lines of code)
@@ -333,6 +334,7 @@ All entity classes created with:
 **Status:** Released and tagged on GitHub
 
 **What's Included:**
+
 - 5 REST Controllers (21 endpoints total)
   - CategoryController: 6 endpoints
   - IncomeController: 3 endpoints
@@ -347,6 +349,7 @@ All entity classes created with:
 **GitHub Release:** [v0.2.0](https://github.com/williamsjmzhdz/NexusFi/releases/tag/v0.2.0)
 
 **Known Limitations:**
+
 - No authentication (endpoints unsecured)
 - Not production-ready
 - Hardcoded user ID in controllers
@@ -358,6 +361,7 @@ All entity classes created with:
 **Status:** Released and tagged on GitHub
 
 **What's Included:**
+
 - PostgreSQL database with complete schema
 - 7 JPA entities with relationships
 - Spring Boot application setup
