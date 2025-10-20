@@ -22,38 +22,44 @@ The MVP is the **minimum feature set** that makes NexusFi **useful and deployabl
 
 ### 1. Backend API (Spring Boot)
 
-#### 1.1 Repository Layer
+#### 1.1 Repository Layer ✅ COMPLETED
 
-- [ ] `UserRepository` - User data access
-- [ ] `CategoryRepository` - Category CRUD with user filtering
-- [ ] `IncomeRecordRepository` - Income records with date filtering
-- [ ] `ExpenseRecordRepository` - Expense records with date filtering
-- [ ] `TransferRepository` - Transfer records
-- [ ] `MovementRepository` - All movements view (read-only)
+- [x] `UserRepository` - User data access
+- [x] `CategoryRepository` - Category CRUD with user filtering
+- [x] `IncomeRecordRepository` - Income records with date filtering
+- [x] `ExpenseRecordRepository` - Expense records with date filtering
+- [x] `TransferRepository` - Transfer records
+- [x] `MovementRepository` - All movements view (read-only)
 
-**Estimated Time:** 30-45 minutes (mostly typing, Spring Data JPA generates implementation)
+**Completed:** October 18, 2025 (45 minutes)
 
-#### 1.2 Service Layer
+#### 1.2 Service Layer ✅ COMPLETED
 
-- [ ] `AuthService` - Registration, login, JWT token generation
-- [ ] `CategoryService` - Create/update/delete categories, validate percentages sum to 100%
-- [ ] `IncomeService` - Record income, implement distribution algorithm
-- [ ] `ExpenseService` - Record expenses, validate sufficient balance
-- [ ] `TransferService` - Transfer between categories (zero-sum validation)
-- [ ] `MovementService` - Query all movements with filters
+- [x] `UserService` - Registration, user lookup
+- [x] `CategoryService` - Create/update/delete categories, validate percentages sum to 100%
+- [x] `IncomeService` - Record income, implement distribution algorithm
+- [x] `ExpenseService` - Record expenses, validate sufficient balance
+- [x] `TransferService` - Transfer between categories (zero-sum validation)
+- [x] `MovementService` - Query all movements with filters
 
-**Estimated Time:** 2-3 hours (core business logic)
+**Additional:** Professional exception handling
+- [x] Custom exception classes (ResourceNotFoundException, DuplicateResourceException, etc.)
+- [x] GlobalExceptionHandler for REST error responses
 
-#### 1.3 REST Controllers
+**Completed:** October 19, 2025 (3 hours including refactoring)
 
-- [ ] `AuthController` - `/api/auth/register`, `/api/auth/login`
+#### 1.3 REST Controllers 🔄 IN PROGRESS
+
 - [ ] `CategoryController` - CRUD endpoints for categories
 - [ ] `IncomeController` - POST `/api/income`, GET `/api/income`
 - [ ] `ExpenseController` - POST `/api/expense`, GET `/api/expense`
 - [ ] `TransferController` - POST `/api/transfer`, GET `/api/transfer`
 - [ ] `MovementController` - GET `/api/movements` (with filters)
 
-**Estimated Time:** 2-3 hours (DTOs + validation + error handling)
+**Note:** AuthController delayed until security configuration phase
+
+**Started:** October 19, 2025  
+**Estimated Time:** 2-3 hours (DTOs + validation + endpoints)
 
 #### 1.4 Security Configuration
 

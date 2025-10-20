@@ -1,6 +1,6 @@
 # NexusFi - Development Progress & Learning Journey
 
-**Last Updated:** October 12, 2025  
+**Last Updated:** October 19, 2025  
 **Developer:** Francisco (williamsjmzhdz)  
 **Learning Approach:** Hands-on, step-by-step, with mentor guidance
 
@@ -37,11 +37,11 @@ When continuing in a new chat session, please:
 
 ---
 
-## 📍 Current Status: Database Setup Complete
+## 📍 Current Status: Controller Layer Development
 
-We are at the **beginning of the Spring Boot application development**. All foundational work is complete.
+We are currently building the **REST Controller layer** to expose our business logic via HTTP APIs.
 
-### ✅ Phase 1: Project Setup & Database (COMPLETED)
+### ✅ Phase 1: Project Setup & Database (COMPLETED - Oct 12, 2025)
 
 #### 1.1 PostgreSQL Database ✅
 
@@ -170,81 +170,143 @@ All entity classes created with:
 
 ---
 
-## 🚧 Next Task: Create Spring Data JPA Repositories
+## ✅ Phase 2: Repository Layer (COMPLETED - Oct 18, 2025)
 
-### Phase 2: Repository Layer
+### ✨ What We Accomplished:
 
-**What needs to be done:**
-Create repository interfaces to access the database without writing SQL.
+**Created 6 Spring Data JPA Repository Interfaces:**
+- ✅ `UserRepository` - User authentication and lookup
+- ✅ `CategoryRepository` - Category CRUD with percentage calculations
+- ✅ `IncomeRecordRepository` - Income records with date filtering
+- ✅ `ExpenseRecordRepository` - Expense records by user and category
+- ✅ `TransferRepository` - Transfer operations
+- ✅ `MovementRepository` - Unified transaction history (read-only view)
 
-**Location:** `src/main/java/com/nexusfi/repository/`
+**Key Features:**
+- Query methods derived from method names (Spring magic!)
+- Custom JPQL queries with @Query annotation
+- Date range filtering
+- No SQL needed - Spring generates implementation
 
-**Repositories to create:**
-1. `UserRepository` - User management
-2. `CategoryRepository` - Category CRUD and hierarchy queries
-3. `IncomeRecordRepository` - Income tracking
-4. `ExpenseRecordRepository` - Expense tracking
-5. `TransferRepository` - Transfer operations
-6. `MovementRepository` - Movement ledger queries
+**Git Workflow:**
+- ✅ Feature branch: `feature/repository-layer`
+- ✅ Merged to `develop` with `--no-ff`
+- ✅ Branch cleaned up (local and remote deleted)
+- ✅ Pushed to GitHub
 
-**This will enable:**
-- Database access without writing SQL
-- Type-safe queries
-- Spring Data JPA magic methods
-- Custom query methods for complex operations
+**Key Learning:**
+- Spring Data JPA method naming conventions
+- `findByUserIdOrderByRecordedAtDesc` → automatic SQL generation
+- Custom @Query for complex operations (SUM aggregations)
+- Repository pattern benefits
+
+---
+
+## ✅ Phase 3: Service Layer (COMPLETED - Oct 19, 2025)
+
+### ✨ What We Accomplished:
+
+**Created 6 Service Classes with Business Logic:**
+1. ✅ `UserService` - User registration, email validation
+2. ✅ `CategoryService` - **Core percentage validation** (must sum to 100%)
+3. ✅ `IncomeService` - **Auto-distribution algorithm** (splits income across categories)
+4. ✅ `ExpenseService` - Balance validation before spending
+5. ✅ `TransferService` - Zero-sum transfers between categories
+6. ✅ `MovementService` - Read-only transaction history queries
+
+**Professional Exception Handling:**
+- ✅ Custom exception hierarchy (`NexusFiException` base class)
+- ✅ `ResourceNotFoundException` → HTTP 404
+- ✅ `DuplicateResourceException` → HTTP 409 Conflict
+- ✅ `InsufficientBalanceException` → HTTP 400
+- ✅ `InvalidPercentageException` → HTTP 400
+- ✅ `GlobalExceptionHandler` - Centralized error responses with proper HTTP status codes
+
+**Git Workflow:**
+- ✅ Feature branch: `feature/service-layer`
+- ✅ Multiple commits (services, then exception refactor)
+- ✅ Merged to `develop` with `--no-ff`
+- ✅ Branch cleaned up
+- ✅ **Total:** 846 lines of business logic added!
+
+**Key Learning:**
+- Service layer architecture (@Service, @Transactional)
+- Constructor injection (best practice)
+- Business rule enforcement in services
+- BigDecimal arithmetic for financial calculations
+- Income distribution algorithm with rounding error handling
+- Professional exception handling vs generic IllegalArgumentException
+- @RestControllerAdvice for global exception handling
+
+---
+
+## 🔄 Phase 4: REST Controller Layer (IN PROGRESS - Started Oct 19, 2025)
+
+### 📍 Current Task: Build REST API Endpoints
+
+**Goal:** Expose business logic via HTTP REST API
+
+**Controllers to Create:**
+- [ ] `CategoryController` - CRUD operations for categories
+- [ ] `IncomeController` - Record and query income
+- [ ] `ExpenseController` - Record and query expenses
+- [ ] `TransferController` - Execute and query transfers
+- [ ] `MovementController` - Query unified transaction history
+
+**What Each Controller Includes:**
+- DTOs (Data Transfer Objects) for request/response
+- Input validation with @Valid
+- Proper HTTP status codes (201 Created, 204 No Content, etc.)
+- RESTful endpoint design
+- Exception handling (already done via GlobalExceptionHandler!)
+
+**Git Workflow:**
+- ✅ Feature branch created: `feature/controller-layer`
+- ✅ Pushed to GitHub (tracking established)
+- 🔄 Controllers being developed
+- ⏳ Will merge to `develop` when complete
+
+**Learning Focus:**
+- REST API design principles
+- @RestController, @RequestMapping annotations
+- DTOs vs Entities (separation of concerns)
+- HTTP methods (GET, POST, PUT, DELETE)
+- Request/Response body handling
+- Path variables and query parameters
+
+---
+
+## 🚧 Next Tasks: After Controller Layer
+
+### Phase 5: Security Configuration (Pending)
+
+**Goal:** Implement JWT-based authentication
+
+- [ ] Password encryption with BCrypt
+- [ ] JWT token generation and validation
+- [ ] AuthController (login, register endpoints)
+- [ ] Security filter chain configuration
+- [ ] Public vs protected endpoints
 
 ---
 
 ## 📋 Roadmap: What's Next After Spring Boot Setup
 
-### Phase 2: Repositories (Spring Data JPA)
+### Phase 2: Repositories (Spring Data JPA) ✅ COMPLETED
 
-**Goal:** Create repository interfaces for database access
-
-- [ ] UserRepository
-- [ ] CategoryRepository
-- [ ] IncomeRecordRepository
-- [ ] ExpenseRecordRepository
-- [ ] TransferRepository
-- [ ] MovementRepository
-
-**Learning focus:**
-
-- Spring Data JPA magic (no SQL needed)
-- Query methods by naming convention
-- Custom @Query annotations
-- Repository patterns
+**See above for completion details**
 
 ---
 
-### Phase 3: Services (Business Logic)
+### Phase 3: Services (Business Logic) ✅ COMPLETED
 
-**Goal:** Implement core business rules
+**See above for completion details**
 
-- [ ] CategoryService
-  - Create/edit categories
-  - Validate percentage sums (must = 100%)
-  - Archive/unarchive logic
-  - Rebalance percentages
-- [ ] IncomeService
-  - Register income
-  - Automatic distribution algorithm
-  - Create ASSIGNMENT movements
-- [ ] ExpenseService
-  - Register expenses
-  - Update category balances
-  - Create EXPENSE movements
-- [ ] TransferService
-  - Zero-sum transfers
-  - Create two TRANSFER movements
-  - Validate source ≠ destination
+---
 
-**Learning focus:**
+### Phase 4: REST Controllers 🔄 IN PROGRESS
 
-- Service layer patterns
-- Transaction management (@Transactional)
-- Business rule validation
-- Exception handling
+**See "Phase 4" section above for current status**
 
 ---
 
