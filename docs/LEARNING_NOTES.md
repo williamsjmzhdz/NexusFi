@@ -8,18 +8,22 @@
 
 ## 📑 Table of Contents
 
-1. [Project Overview](#project-overview)
-2. [Spring Boot Fundamentals](#spring-boot-fundamentals)
-3. [JPA & Hibernate (Database Layer)](#jpa--hibernate-database-layer)
-4. [Repository Layer](#repository-layer)
-5. [Service Layer](#service-layer)
-6. [Controller Layer (REST API)](#controller-layer-rest-api)
-7. [Exception Handling](#exception-handling)
-8. [DTOs (Data Transfer Objects)](#dtos-data-transfer-objects)
-9. [Maven Commands](#maven-commands)
-10. [Git Workflow](#git-workflow)
-11. [Configuration Files](#configuration-files)
-12. [Quick Command Reference](#quick-command-reference)
+1. [Project Overview](#-project-overview)
+2. [Spring Boot Fundamentals](#-spring-boot-fundamentals)
+3. [JPA & Hibernate (Database Layer)](#️-jpa--hibernate-database-layer)
+4. [Repository Layer](#-repository-layer)
+5. [Service Layer](#️-service-layer)
+6. [Controller Layer (REST API)](#-controller-layer-rest-api)
+7. [Exception Handling](#-exception-handling)
+8. [DTOs (Data Transfer Objects)](#-dtos-data-transfer-objects)
+9. [Maven Commands](#-maven-commands)
+10. [Git Workflow](#-git-workflow)
+11. [Configuration Files](#️-configuration-files)
+12. [Quick Command Reference](#-quick-command-reference)
+13. [Best Practices Learned](#-best-practices-learned)
+14. [Key Takeaways](#-key-takeaways)
+15. [What's Next (Phase 5)](#-whats-next-phase-5)
+16. [Quick Search](#-quick-search)
 
 ---
 

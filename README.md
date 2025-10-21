@@ -59,20 +59,23 @@ NexusFi/
 ### Instalación
 
 1. **Clonar el repositorio**
+
    ```bash
    git clone <repository-url>
    cd NexusFi
    ```
 
 2. **Crear la base de datos**
+
    ```bash
    createdb nexusfi
    psql -U postgres -d nexusfi -f database/schema.sql
    ```
 
 3. **Configurar la aplicación**
-   
+
    Edita `src/main/resources/application.yml` con tus credenciales:
+
    ```yaml
    spring:
      datasource:
@@ -81,16 +84,18 @@ NexusFi/
    ```
 
 4. **Compilar y ejecutar**
+
    ```bash
    mvn clean install
    mvn spring-boot:run
    ```
 
 5. **Acceder a la aplicación**
-   
+
    Abre tu navegador en: `http://localhost:8080`
-   
+
    Usuario de prueba:
+
    - Email: `user@nexusfi.com`
    - Password: `password123`
 
@@ -133,9 +138,11 @@ NexusFi/
 ## 🎓 Principios Fundamentales
 
 ### 1. Integridad Contable
+
 El sistema garantiza que no se cree ni se destruya dinero. El balance total del sistema solo cambia con ingresos y gastos. Los traspasos y reasignaciones siempre deben sumar cero.
 
 ### 2. Integridad de Asignación
+
 La suma de los porcentajes de todas las categorías "hermanas" (aquellas bajo el mismo padre) siempre debe ser 100%. Esta regla es inviolable y está reforzada por la lógica de la aplicación.
 
 ---
