@@ -1,7 +1,7 @@
 # NexusFi - Development Progress & Learning Journey
 
 **Last Updated:** October 20, 2025  
-**Developer:** Francisco (williamsjmzhdz)  
+**Developer:** Francisco Williams Jiménez Hernández (williamsjmzhdz)  
 **Learning Approach:** Hands-on, step-by-step, with mentor guidance
 
 ---
@@ -11,7 +11,7 @@
 This project is being developed as a **hands-on learning experience**. The approach is:
 
 - ✅ **Step-by-step guidance** - One feature at a time
-- ✅ **Learn by doing** - Francisco writes the code himself
+- ✅ **Learn by doing** - Willy writes the code himself
 - ✅ **Mentor-style support** - Copilot acts as Tech Lead/Mentor, not code generator
 - ✅ **Explanations first** - Understanding the "why" before the "what"
 - ✅ **No code dumps** - Guide, review, and help debug, don't just provide complete solutions
@@ -23,9 +23,9 @@ When continuing in a new chat session, please:
 1. **Act as a Tech Lead/Senior Developer**, not just a code assistant
 2. **Explain concepts** before providing code
 3. **Guide step-by-step** - break down complex tasks
-4. **Review code** Francisco writes and suggest improvements
+4. **Review code** Willy writes and suggest improvements
 5. **Answer questions** about why things work the way they do
-6. **Help debug** when stuck, but let Francisco solve problems
+6. **Help debug** when stuck, but let Willy solve problems
 7. **Encourage best practices** and professional development habits
 
 **DO NOT:**
@@ -146,7 +146,7 @@ All entity classes created with:
 
 **Created Spring Boot Application:**
 
-- ✅ `NexusFiApplication.java` - Main application class written by Francisco
+- ✅ `NexusFiApplication.java` - Main application class written by Willy
 - ✅ Fixed duplicate lifecycle callbacks in `Transfer.java`
 - ✅ Created `application-dev.yml` for development configuration
 - ✅ Configured environment variables for database credentials (professional approach)
@@ -493,7 +493,7 @@ All entity classes created with:
 
 ## 🎯 Learning Goals for This Project
 
-By completing NexusFi, Francisco will learn:
+By completing NexusFi, Willy will learn:
 
 ### Backend
 
@@ -577,7 +577,7 @@ Current branch: develop
 ### For Copilot (Acting as Mentor):
 
 **Context Summary:**
-Francisco is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created, repositories are set up (6 interfaces), service layer is complete (6 services + exception handling, 846 lines), and REST controller layer is complete (5 controllers, 21 endpoints, 1,229 lines). Next task is implementing JWT-based authentication with Spring Security. Please act as mentor - guide, don't just provide code. Explain each step, especially JWT concepts, Spring Security filter chain, and authentication flow.
+Willy is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created, repositories are set up (6 interfaces), service layer is complete (6 services + exception handling, 846 lines), and REST controller layer is complete (5 controllers, 21 endpoints, 1,229 lines). Next task is implementing JWT-based authentication with Spring Security. Please act as mentor - guide, don't just provide code. Explain each step, especially JWT concepts, Spring Security filter chain, and authentication flow.
 
 ### Alternative Opening Messages:
 

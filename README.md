@@ -188,7 +188,7 @@ Este proyecto es de uso personal y educativo.
 
 ## 👤 Autor
 
-**Francisco**
+**Francisco Williams Jiménez Hernández**
 
 Desarrollado como proyecto de aprendizaje para dominar Spring Boot, JPA, y arquitectura de aplicaciones financieras.
 
