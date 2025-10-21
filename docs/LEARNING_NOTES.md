@@ -1182,21 +1182,128 @@ HTTP Response (JSON)
 
 ---
 
-## 📚 What's Next (Phase 5)
+## 📚 What's Next (Phase 5) - IN PROGRESS 🔄
 
-**Spring Security with JWT:**
+**Spring Security with JWT (Partially Complete):**
 
-- Password encryption (BCrypt)
-- Login endpoint
-- JWT token generation
-- Authentication filter
-- Secure endpoints
-- Authorization roles
+**✅ Completed:**
+
+- JWT dependencies added (Spring Security + JJWT library)
+- CustomUserDetails adapter class
+- JwtUtil for token generation and validation
+- Authentication DTOs (LoginRequest, RegisterRequest, AuthResponse)
+- JWT configuration in application.yml
+
+**🔜 Remaining:**
+
+- AuthController (login/register endpoints)
+- JwtAuthenticationFilter (intercept and validate requests)
+- SecurityConfig (Spring Security configuration)
+- BCrypt password encryption
+- Secure all endpoints except /api/auth/\*\*
+
+**Key Concepts Learned:**
+
+- JWT structure: Header.Payload.Signature
+- Token signing with HMAC-SHA algorithm
+- Base64 encoding for cryptographic keys
+- Spring Security UserDetails interface
+- Stateless authentication (no server-side sessions)
+- Token expiration and validation
 
 **After completing Phase 5:**
 
 - Create `v0.3.0` tag
-- Update this document with security notes
+- Add detailed Spring Security section to this document
+
+---
+
+## 🔐 Spring Security & JWT (Phase 5 Notes)
+
+### JWT (JSON Web Token) Basics
+
+**What is JWT?**
+
+- Stateless authentication token
+- Contains user information (email, expiration)
+- Signed with secret key to prevent tampering
+- No database lookup needed to validate
+
+**JWT Structure:**
+
+```
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIn0.signature
+    ↑ Header          ↑ Payload (claims)         ↑ Signature
+```
+
+**Token Flow:**
+
+```
+1. User logs in with email/password
+2. Server validates credentials
+3. Server generates JWT token (signed with secret key)
+4. Client stores token (localStorage, memory)
+5. Client sends token in Authorization header with every request
+6. Server validates token signature and expiration
+7. Request is allowed/denied
+```
+
+### Key Security Classes Created
+
+**CustomUserDetails:**
+
+- Adapter between User entity and Spring Security
+- Implements UserDetails interface
+- Returns email as username
+- Wraps User entity for authentication
+
+**JwtUtil:**
+
+- Generates JWT tokens with email, timestamps, expiration
+- Validates tokens (signature + expiration check)
+- Extracts claims (email, expiration date)
+- Converts Base64 secret key to cryptographic key
+
+### Important Security Concepts
+
+**BCrypt Password Hashing:**
+
+- One-way encryption (cannot decrypt)
+- Includes random salt (prevents rainbow table attacks)
+- Adaptive algorithm (can increase difficulty)
+- Example: `password123` → `$2a$10$N9qo8uLOickgx2...`
+
+**Salt & Rainbow Tables:**
+
+- **Salt** = Random data added before hashing
+- Same password + different salt = different hash
+- **Rainbow table** = Precomputed hash lookup table
+- Salt makes rainbow tables useless
+
+**Token Signing:**
+
+- Secret key signs the token (like a wax seal)
+- Prevents tampering with token contents
+- Server verifies signature on every request
+- Different from password salting (serves different purpose)
+
+### Configuration
+
+**application.yml JWT settings:**
+
+```yaml
+jwt:
+  secret: <Base64-encoded-key> # 64+ characters
+  expiration: 86400000 # 24 hours in milliseconds
+```
+
+**Security Note:** In production, use environment variables:
+
+```yaml
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
+```
 
 ---
 

@@ -1,6 +1,6 @@
 # NexusFi - Development Progress & Learning Journey
 
-**Last Updated:** October 20, 2025  
+**Last Updated:** October 21, 2025  
 **Developer:** Francisco Williams Jiménez Hernández (williamsjmzhdz)  
 **Learning Approach:** Hands-on, step-by-step, with mentor guidance
 
@@ -37,17 +37,106 @@ When continuing in a new chat session, please:
 
 ---
 
-## 📍 Current Status: v0.2.0 Released! 🎉
+## 📍 Current Status: Phase 5 In Progress 🔐
+
+**Current Phase:** Phase 5 - Spring Security with JWT Authentication (In Progress)
+
+We are implementing JWT-based authentication to secure the REST API. The infrastructure for token generation and validation is complete, with controller and filter configuration remaining.
+
+**Current Branch:** `feature/spring-security`
+
+**Progress:**
+
+- ✅ Spring Security and JWT dependencies added
+- ✅ CustomUserDetails wrapper class created
+- ✅ JwtUtil for token generation and validation
+- ✅ JWT configuration in application.yml
+- ✅ Authentication DTOs (LoginRequest, RegisterRequest, AuthResponse)
+- 🔜 AuthController (login, register endpoints)
+- 🔜 JwtAuthenticationFilter (request interception)
+- 🔜 SecurityConfig (Spring Security configuration)
 
 **Latest Release:** v0.2.0 - REST API Complete (October 20, 2025)
 
-We have successfully completed and **released** the REST Controller layer with a full CRUD API (21 endpoints). The release is tagged and published on GitHub. Next step is implementing JWT authentication and Spring Security for v0.3.
+---
 
-**Release Highlights:**
+## ✅ Phase 5: Spring Security + JWT Authentication (IN PROGRESS - Oct 21, 2025)
 
-- 5 Controllers, 21 REST endpoints
-- 11 DTO classes
-- Complete backend API (3,300+ lines of code)
+### ✨ What We've Accomplished So Far (October 21, 2025):
+
+**Maven Setup:**
+
+- ✅ Installed Apache Maven 3.9.11
+- ✅ Configured system PATH for Maven commands
+- ✅ Verified Maven installation and project compilation
+
+**Dependencies Added:**
+
+- ✅ `spring-boot-starter-security` - Spring Security framework
+- ✅ `jjwt-api`, `jjwt-impl`, `jjwt-jackson` (v0.12.5) - JWT library
+
+**Security Infrastructure Created:**
+
+- ✅ `CustomUserDetails` - Adapter between User entity and Spring Security
+  - Implements UserDetails interface
+  - Wraps User entity for authentication
+  - Returns email as username
+  - Comprehensive Javadoc comments
+- ✅ `JwtUtil` - JWT token operations utility
+  - Token generation with email, timestamps, expiration
+  - Token validation (signature and expiration)
+  - Claims extraction (email, expiration date)
+  - Base64 secret key conversion to cryptographic key
+  - Comprehensive Javadoc comments
+
+**Configuration:**
+
+- ✅ JWT configuration in `application.yml`
+  - Secret key (Base64 encoded, 64 characters)
+  - Expiration time (24 hours = 86400000 ms)
+
+**Authentication DTOs:**
+
+- ✅ `LoginRequest` - Email + password for login
+- ✅ `RegisterRequest` - Email + password for registration (min 8 chars)
+- ✅ `AuthResponse` - Returns JWT token + email
+
+**Git Workflow:**
+
+- ✅ Created `feature/spring-security` branch from develop
+- ✅ Committed JWT infrastructure with proper message
+
+**Key Learning:**
+
+- JWT (JSON Web Token) structure and purpose
+- Stateless authentication vs session-based
+- Token signing with HMAC-SHA and secret keys
+- BCrypt password hashing with salt
+- Base64 encoding for cryptographic keys
+- Spring Security UserDetails interface
+- Proper Git branching workflow
+- Moving commits between branches with reset/checkout
+
+### 🔜 Next Steps (Remaining for Phase 5):
+
+**Still To Do:**
+
+- [ ] `AuthController` - REST endpoints for login and register
+- [ ] `JwtAuthenticationFilter` - Intercepts requests, validates tokens
+- [ ] `SecurityConfig` - Configure Spring Security filter chain
+- [ ] `AuthenticationService` - Handle authentication logic
+- [ ] Update `UserService` - Add password encryption with BCrypt
+- [ ] Test authentication flow end-to-end
+- [ ] Update existing controllers to use authenticated user
+
+**Estimated Time Remaining:** 2-3 hours
+
+---
+
+## 🎉 Releases
+
+### v0.2.0 - REST API Complete (October 20, 2025)
+
 - Professional exception handling
 - Ready for security layer implementation
 
@@ -374,16 +463,20 @@ All entity classes created with:
 
 ---
 
-## 🚧 Next Tasks: After v0.2.0
+## 🚧 Next Tasks: Phase 5 Completion
 
-### Phase 5: Security Configuration (Next for v0.3)
+### Phase 5: Security Configuration (IN PROGRESS for v0.3)
 
 **Goal:** Implement JWT-based authentication
 
+- ✅ Spring Security and JWT dependencies
+- ✅ CustomUserDetails wrapper class
+- ✅ JWT token generation and validation utility
+- ✅ Authentication DTOs
+- 🔄 AuthController (login, register endpoints) - **NEXT**
+- [ ] JWT authentication filter
+- [ ] Security configuration
 - [ ] Password encryption with BCrypt
-- [ ] JWT token generation and validation
-- [ ] AuthController (login, register endpoints)
-- [ ] Security filter chain configuration
 - [ ] Public vs protected endpoints
 
 ---
@@ -500,12 +593,13 @@ By completing NexusFi, Willy will learn:
 - ✅ PostgreSQL database design and SQL
 - ✅ JPA/Hibernate entities and relationships
 - ✅ Git version control and GitHub
-- 🚧 Spring Boot framework
-- 🔜 Spring Data JPA (repositories)
-- 🔜 Service layer architecture
-- 🔜 REST API design
-- 🔜 Spring Security
-- 🔜 Exception handling
+- ✅ Spring Boot framework
+- ✅ Spring Data JPA (repositories)
+- ✅ Service layer architecture
+- ✅ REST API design
+- � Spring Security (in progress)
+- � JWT authentication (in progress)
+- ✅ Exception handling
 - 🔜 Transaction management
 - 🔜 Testing (JUnit, Mockito)
 
@@ -577,7 +671,7 @@ Current branch: develop
 ### For Copilot (Acting as Mentor):
 
 **Context Summary:**
-Willy is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created, repositories are set up (6 interfaces), service layer is complete (6 services + exception handling, 846 lines), and REST controller layer is complete (5 controllers, 21 endpoints, 1,229 lines). Next task is implementing JWT-based authentication with Spring Security. Please act as mentor - guide, don't just provide code. Explain each step, especially JWT concepts, Spring Security filter chain, and authentication flow.
+Willy is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created, repositories are set up (6 interfaces), service layer is complete (6 services + exception handling, 846 lines), REST controller layer is complete (5 controllers, 21 endpoints, 1,229 lines), and JWT authentication infrastructure is partially complete (CustomUserDetails, JwtUtil, DTOs created). Next tasks: Create AuthController, JwtAuthenticationFilter, and SecurityConfig. Please act as mentor - guide, don't just provide code. Explain each step, especially Spring Security filter chain, authentication flow, and BCrypt password encryption.
 
 ### Alternative Opening Messages:
 

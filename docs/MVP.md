@@ -72,15 +72,26 @@ The MVP is the **minimum feature set** that makes NexusFi **useful and deployabl
 
 **Completed:** October 20, 2025 (4 hours)
 
-#### 1.4 Security Configuration
+#### 1.4 Security Configuration 🔄 IN PROGRESS
 
-- [ ] JWT-based authentication (stateless)
-- [ ] Password encryption with BCrypt
-- [ ] Public endpoints: `/api/auth/**`
-- [ ] Protected endpoints: `/api/**` (require authentication)
+- [x] Install Maven and configure development environment
+- [x] Add Spring Security and JWT dependencies
+- [x] Create CustomUserDetails (UserDetails adapter)
+- [x] Create JwtUtil (token generation and validation)
+- [x] Add JWT configuration to application.yml
+- [x] Create authentication DTOs (LoginRequest, RegisterRequest, AuthResponse)
+- [ ] Create AuthController (login, register endpoints)
+- [ ] Create JwtAuthenticationFilter (request interception)
+- [ ] Create SecurityConfig (Spring Security configuration)
+- [ ] Update UserService with BCrypt password encryption
+- [ ] Configure public endpoints: `/api/auth/**`
+- [ ] Configure protected endpoints: `/api/**` (require authentication)
 - [ ] CORS configuration for frontend
 
-**Estimated Time:** 1-2 hours
+**Status:** Partially complete - JWT infrastructure ready, controller and filters remaining
+
+**Started:** October 21, 2025  
+**Estimated Time Remaining:** 2-3 hours
 
 #### 1.5 Testing (Basic)
 
