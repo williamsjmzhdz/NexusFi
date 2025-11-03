@@ -1,8 +1,8 @@
 # NexusFi - Learning Notes & Reference Guide
 
 > **Personal study guide for Francisco Williams Jiménez Hernández**  
-> Everything learned up to v0.2.0 (Complete REST API)  
-> Last updated: October 21, 2025
+> Everything learned including Phase 5 (Spring Security + JWT)  
+> Last updated: November 3, 2025
 
 ---
 
@@ -1236,16 +1236,21 @@ eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIn0.signature
     ↑ Header          ↑ Payload (claims)         ↑ Signature
 ```
 
+- **Header**: Algorithm and token type (Base64 encoded)
+- **Payload**: User data (claims) like email, expiration (Base64 encoded)
+- **Signature**: HMAC-SHA hash of header+payload+secret (prevents tampering)
+
 **Token Flow:**
 
 ```
 1. User logs in with email/password
-2. Server validates credentials
+2. Server validates credentials via AuthenticationManager
 3. Server generates JWT token (signed with secret key)
-4. Client stores token (localStorage, memory)
-5. Client sends token in Authorization header with every request
-6. Server validates token signature and expiration
-7. Request is allowed/denied
+4. Client stores token (localStorage, sessionStorage, memory)
+5. Client sends token in Authorization header: "Bearer <token>"
+6. JwtAuthenticationFilter validates token signature and expiration
+7. Filter sets SecurityContext authentication
+8. Request reaches controller with authenticated user
 ```
 
 ### Key Security Classes Created
@@ -1256,13 +1261,59 @@ eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIn0.signature
 - Implements UserDetails interface
 - Returns email as username
 - Wraps User entity for authentication
+- Used by AuthenticationManager during login
 
 **JwtUtil:**
 
 - Generates JWT tokens with email, timestamps, expiration
 - Validates tokens (signature + expiration check)
 - Extracts claims (email, expiration date)
-- Converts Base64 secret key to cryptographic key
+- Converts Base64 secret key to cryptographic key (SecretKey)
+- Uses JJWT library (io.jsonwebtoken)
+
+**CustomUserDetailsService:**
+
+- Implements UserDetailsService interface
+- Loads users from database by email
+- Returns CustomUserDetails wrapper
+- Throws UsernameNotFoundException if user not found
+- Called by AuthenticationManager and JwtAuthenticationFilter
+
+**JwtAuthenticationFilter:**
+
+- Extends OncePerRequestFilter (runs once per request)
+- Extracts JWT from "Authorization: Bearer <token>" header
+- Validates token with JwtUtil
+- Loads user from database via CustomUserDetailsService
+- Creates UsernamePasswordAuthenticationToken
+- Sets authentication in SecurityContext
+- Always continues filter chain (doesn't block)
+
+**SecurityConfig:**
+
+- Main Spring Security configuration class
+- **PasswordEncoder bean**: BCryptPasswordEncoder for password hashing
+- **AuthenticationManager bean**: Exposed from AuthenticationConfiguration for controller injection
+- **SecurityFilterChain bean**: Configures security rules
+  - Disables CSRF (stateless JWT doesn't need it)
+  - Public endpoints: `/api/v1/auth/**` (permitAll)
+  - Protected endpoints: all others (authenticated)
+  - Stateless session management (no cookies)
+  - Registers JwtAuthenticationFilter before UsernamePasswordAuthenticationFilter
+
+**AuthController:**
+
+- Public endpoints (no JWT required)
+- POST `/api/v1/auth/register` - User registration
+  - Creates User object, hashes password with PasswordEncoder
+  - Calls UserService.registerUser()
+  - Generates JWT token
+  - Returns 201 Created with AuthResponse (token + email)
+- POST `/api/v1/auth/login` - User login
+  - Uses AuthenticationManager.authenticate()
+  - Validates email/password (calls CustomUserDetailsService)
+  - Generates JWT token on success
+  - Returns 200 OK with AuthResponse
 
 ### Important Security Concepts
 
@@ -1271,14 +1322,19 @@ eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIn0.signature
 - One-way encryption (cannot decrypt)
 - Includes random salt (prevents rainbow table attacks)
 - Adaptive algorithm (can increase difficulty)
-- Example: `password123` → `$2a$10$N9qo8uLOickgx2...`
+- Example: `password123` → `$2a$10$N9qo8uLOickgx2ZibSz5...`
+- Salt is stored IN the hash string itself
+- Same salt + same password = same hash (required for login to work!)
+- BCrypt strength: 10 = 2^10 = 1024 rounds (configurable)
 
 **Salt & Rainbow Tables:**
 
 - **Salt** = Random data added before hashing
 - Same password + different salt = different hash
-- **Rainbow table** = Precomputed hash lookup table
-- Salt makes rainbow tables useless
+- **Rainbow table** = Precomputed hash lookup table (e.g., "password123" → "5f4dcc3b5aa765d61d8327deb882cf99")
+- Salt makes rainbow tables useless (attacker must brute-force each password individually)
+- Salt doesn't prevent attacks but makes them VERY slow (years per password)
+- Salt changes only when password changes
 
 **Token Signing:**
 
@@ -1286,16 +1342,54 @@ eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIn0.signature
 - Prevents tampering with token contents
 - Server verifies signature on every request
 - Different from password salting (serves different purpose)
+- JWT is encoded (Base64), NOT encrypted (anyone can decode and read payload)
+- Signature ensures token wasn't modified
+
+**AuthenticationManager How It Works:**
+
+- Spring Security's central authentication component
+- When you call `authenticationManager.authenticate(token)`:
+  1. AuthenticationManager calls CustomUserDetailsService.loadUserByUsername(email)
+  2. Gets CustomUserDetails with hashed password from database
+  3. Compares submitted password (plain) with stored hash using PasswordEncoder
+  4. BCrypt hashes submitted password with SAME salt from stored hash
+  5. Compares both hashes - if match, authentication successful
+  6. Returns authenticated Authentication object
+  7. If no match, throws AuthenticationException
+
+**SecurityContext:**
+
+- Spring Security's "clipboard" for current request
+- Stores authentication information (who is logged in)
+- JwtAuthenticationFilter WRITES to it (sets authentication)
+- Controllers READ from it (get current user with @AuthenticationPrincipal)
+- Thread-local (each request has its own SecurityContext)
+- Cleared after request completes
+
+**Filter Chain Order:**
+
+- Filters run in order before reaching controllers
+- JwtAuthenticationFilter runs BEFORE UsernamePasswordAuthenticationFilter
+- Order matters: JWT validation must happen first
+- Filter chain continues even if token invalid (SecurityConfig blocks at end)
 
 ### Configuration
 
-**application.yml JWT settings:**
+**application.yml JWT settings (IMPORTANT - Root Level!):**
 
 ```yaml
+# JWT Configuration (at ROOT level, NOT inside spring:)
 jwt:
   secret: <Base64-encoded-key> # 64+ characters
   expiration: 86400000 # 24 hours in milliseconds
+
+spring:
+  application:
+    name: nexusfi
+  # ... rest of spring config
 ```
+
+**Common Mistake:** Putting JWT config inside `spring:` block causes "Could not resolve placeholder" error!
 
 **Security Note:** In production, use environment variables:
 
@@ -1303,6 +1397,85 @@ jwt:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:86400000}
+```
+
+### Dependencies Added
+
+```xml
+<!-- Spring Security -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+<!-- JWT Library (JJWT) -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.12.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.12.5</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.12.5</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+### Key Annotations Learned
+
+- `@EnableWebSecurity` - Enables Spring Security configuration
+- `@Configuration` - Marks class as configuration (defines beans)
+- `@Bean` - Creates singleton object managed by Spring
+- `@Component` - Makes filter discoverable by Spring
+- `@NonNull` - Method parameter cannot be null (from org.springframework.lang)
+
+### Testing Workflow (Postman)
+
+**1. Register a user:**
+
+```http
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+Expected: 201 Created
+Response: { "token": "eyJhbGci...", "email": "test@example.com" }
+```
+
+**2. Login:**
+
+```http
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+Expected: 200 OK
+Response: { "token": "eyJhbGci...", "email": "test@example.com" }
+```
+
+**3. Access protected endpoint:**
+
+```http
+GET http://localhost:8080/api/v1/categories
+Authorization: Bearer eyJhbGci...
+
+Expected: 200 OK (if token valid)
+Expected: 401 Unauthorized (if no token or invalid)
 ```
 
 ---

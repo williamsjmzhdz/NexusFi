@@ -1,6 +1,6 @@
 # NexusFi - Development Progress & Learning Journey
 
-**Last Updated:** October 21, 2025  
+**Last Updated:** November 3, 2025  
 **Developer:** Francisco Williams Jiménez Hernández (williamsjmzhdz)  
 **Learning Approach:** Hands-on, step-by-step, with mentor guidance
 
@@ -37,32 +37,36 @@ When continuing in a new chat session, please:
 
 ---
 
-## 📍 Current Status: Phase 5 In Progress 🔐
+## 📍 Current Status: Phase 5 Complete - Pending Testing 🔐✅
 
-**Current Phase:** Phase 5 - Spring Security with JWT Authentication (In Progress)
+**Current Phase:** Phase 5 - Spring Security with JWT Authentication (Implementation Complete)
 
-We are implementing JWT-based authentication to secure the REST API. The infrastructure for token generation and validation is complete, with controller and filter configuration remaining.
+JWT-based authentication implementation is **complete**! All security components have been created and the code compiles successfully. Smoke testing is pending (requires PostgreSQL database).
 
 **Current Branch:** `feature/spring-security`
 
-**Progress:**
+**Implementation Status:**
 
 - ✅ Spring Security and JWT dependencies added
 - ✅ CustomUserDetails wrapper class created
 - ✅ JwtUtil for token generation and validation
-- ✅ JWT configuration in application.yml
+- ✅ JWT configuration in application.yml (fixed placement)
 - ✅ Authentication DTOs (LoginRequest, RegisterRequest, AuthResponse)
-- 🔜 AuthController (login, register endpoints)
-- 🔜 JwtAuthenticationFilter (request interception)
-- 🔜 SecurityConfig (Spring Security configuration)
+- ✅ AuthController (register and login endpoints)
+- ✅ CustomUserDetailsService (loads users from database)
+- ✅ JwtAuthenticationFilter (intercepts requests, validates tokens)
+- ✅ SecurityConfig (PasswordEncoder, AuthenticationManager, SecurityFilterChain)
+- ✅ UserService updated with BCrypt password hashing
+- ✅ Build successful (mvn clean package -DskipTests)
+- ⏳ Smoke testing pending (requires PostgreSQL on other computer)
 
 **Latest Release:** v0.2.0 - REST API Complete (October 20, 2025)
 
 ---
 
-## ✅ Phase 5: Spring Security + JWT Authentication (IN PROGRESS - Oct 21, 2025)
+## ✅ Phase 5: Spring Security + JWT Authentication (IMPLEMENTATION COMPLETE - Nov 3, 2025)
 
-### ✨ What We've Accomplished So Far (October 21, 2025):
+### ✨ What We've Accomplished (Oct 21 - Nov 3, 2025):
 
 **Maven Setup:**
 
@@ -73,7 +77,7 @@ We are implementing JWT-based authentication to secure the REST API. The infrast
 **Dependencies Added:**
 
 - ✅ `spring-boot-starter-security` - Spring Security framework
-- ✅ `jjwt-api`, `jjwt-impl`, `jjwt-jackson` (v0.12.5) - JWT library
+- ✅ `jjwt-api`, `jjwt-impl`, `jjwt-jackson` (v0.12.5) - JWT library for token operations
 
 **Security Infrastructure Created:**
 
@@ -82,54 +86,112 @@ We are implementing JWT-based authentication to secure the REST API. The infrast
   - Wraps User entity for authentication
   - Returns email as username
   - Comprehensive Javadoc comments
+  
 - ✅ `JwtUtil` - JWT token operations utility
   - Token generation with email, timestamps, expiration
   - Token validation (signature and expiration)
   - Claims extraction (email, expiration date)
   - Base64 secret key conversion to cryptographic key
   - Comprehensive Javadoc comments
+  
+- ✅ `CustomUserDetailsService` - Spring Security user loader
+  - Implements UserDetailsService interface
+  - Loads users from database by email
+  - Throws UsernameNotFoundException if user doesn't exist
+  - Used by AuthenticationManager during login
+  
+- ✅ `JwtAuthenticationFilter` - Request interceptor
+  - Extends OncePerRequestFilter
+  - Extracts JWT from Authorization header ("Bearer <token>")
+  - Validates token signature and expiration
+  - Sets SecurityContext authentication for valid tokens
+  - Allows filter chain to continue for all requests
+  
+- ✅ `SecurityConfig` - Spring Security configuration
+  - PasswordEncoder bean (BCryptPasswordEncoder)
+  - AuthenticationManager bean (exposed from AuthenticationConfiguration)
+  - SecurityFilterChain with JwtAuthenticationFilter registration
+  - CSRF disabled (stateless JWT authentication)
+  - Public endpoints: `/api/v1/auth/**` (permitAll)
+  - All other endpoints require authentication
+  - Stateless session management (no cookies)
 
 **Configuration:**
 
 - ✅ JWT configuration in `application.yml`
+  - **Fixed placement:** Moved from `spring:` block to root level
   - Secret key (Base64 encoded, 64 characters)
   - Expiration time (24 hours = 86400000 ms)
 
 **Authentication DTOs:**
 
-- ✅ `LoginRequest` - Email + password for login
+- ✅ `LoginRequest` - Email + password for login (with validation)
 - ✅ `RegisterRequest` - Email + password for registration (min 8 chars)
 - ✅ `AuthResponse` - Returns JWT token + email
+
+**Controllers:**
+
+- ✅ `AuthController` - Public authentication endpoints
+  - POST `/api/v1/auth/register` - User registration with password hashing
+  - POST `/api/v1/auth/login` - User login with AuthenticationManager validation
+  - Returns 201 Created for register, 200 OK for login
+  - Returns AuthResponse with JWT token
+
+**Services Updated:**
+
+- ✅ `UserService` - Updated for BCrypt password encryption
+  - Constructor now injects PasswordEncoder
+  - `registerUser()` hashes password before saving
+  - Throws DuplicateResourceException for existing emails
+
+**Build & Compilation:**
+
+- ✅ Build successful: `mvn clean package -DskipTests`
+- ✅ All code compiles without errors
+- ✅ No syntax or import issues
 
 **Git Workflow:**
 
 - ✅ Created `feature/spring-security` branch from develop
-- ✅ Committed JWT infrastructure with proper message
+- ✅ Committed JWT infrastructure with proper messages
 
 **Key Learning:**
 
-- JWT (JSON Web Token) structure and purpose
-- Stateless authentication vs session-based
-- Token signing with HMAC-SHA and secret keys
-- BCrypt password hashing with salt
+- JWT (JSON Web Token) structure and purpose (Header.Payload.Signature)
+- Stateless authentication vs session-based (no cookies, token in every request)
+- Token signing with HMAC-SHA and secret keys (like wax seal)
+- BCrypt password hashing with automatic salt generation
+- How salt is stored in hash string and why it doesn't weaken security
 - Base64 encoding for cryptographic keys
-- Spring Security UserDetails interface
+- Spring Security UserDetails interface and UserDetailsService
+- SecurityContext and SecurityFilterChain concepts
+- Filter registration order (addFilterBefore)
+- CSRF protection and when to disable it
+- AuthenticationManager and how it validates credentials
+- PasswordEncoder bean exposure and dependency injection
 - Proper Git branching workflow
 - Moving commits between branches with reset/checkout
 
-### 🔜 Next Steps (Remaining for Phase 5):
+### 🧪 Next Steps (Testing & Deployment):
 
-**Still To Do:**
+**Pending Tasks:**
 
-- [ ] `AuthController` - REST endpoints for login and register
-- [ ] `JwtAuthenticationFilter` - Intercepts requests, validates tokens
-- [ ] `SecurityConfig` - Configure Spring Security filter chain
-- [ ] `AuthenticationService` - Handle authentication logic
-- [ ] Update `UserService` - Add password encryption with BCrypt
-- [ ] Test authentication flow end-to-end
-- [ ] Update existing controllers to use authenticated user
+- [ ] **Smoke testing on computer with PostgreSQL:**
+  - Test POST `/api/v1/auth/register` with valid credentials
+  - Test POST `/api/v1/auth/login` with registered user
+  - Test protected endpoints without token (should return 401)
+  - Test protected endpoints with valid token (should return 200)
+- [ ] **Optional enhancements:**
+  - Add AuthenticationException handler in GlobalExceptionHandler
+  - Add token refresh endpoint
+  - Add logout (client-side only for stateless JWT)
+- [ ] **Merge to develop:**
+  - Final commit and push to `feature/spring-security`
+  - Merge feature branch to develop (--no-ff)
+  - Tag release v0.3.0
+  - Push to GitHub
 
-**Estimated Time Remaining:** 2-3 hours
+**Estimated Time for Testing:** 30 minutes - 1 hour (on computer with PostgreSQL)
 
 ---
 
@@ -662,16 +724,47 @@ I need you to act as my mentor (Tech Lead) guiding me step
 by step, explaining concepts before providing code, not just
 giving complete solutions.
 
-I want to continue from where I left off. The next step is
-to implement Spring Security with JWT authentication.
+Phase 5 (Spring Security + JWT) is complete but needs testing.
+Next step: Test authentication on computer with PostgreSQL.
 
-Current branch: develop
+Current branch: feature/spring-security
 ```
 
 ### For Copilot (Acting as Mentor):
 
 **Context Summary:**
-Willy is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created, repositories are set up (6 interfaces), service layer is complete (6 services + exception handling, 846 lines), REST controller layer is complete (5 controllers, 21 endpoints, 1,229 lines), and JWT authentication infrastructure is partially complete (CustomUserDetails, JwtUtil, DTOs created). Next tasks: Create AuthController, JwtAuthenticationFilter, and SecurityConfig. Please act as mentor - guide, don't just provide code. Explain each step, especially Spring Security filter chain, authentication flow, and BCrypt password encryption.
+Willy is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. 
+
+**Completed (Nov 3, 2025):**
+- Database schema with 6 tables (PostgreSQL)
+- 7 JPA entities with relationships
+- 6 Repository interfaces (Spring Data JPA)
+- 6 Service classes with business logic (846 lines)
+- 5 REST Controllers with 21 endpoints (1,229 lines)
+- Professional exception handling (GlobalExceptionHandler)
+- **Phase 5 - Spring Security + JWT (IMPLEMENTATION COMPLETE):**
+  - CustomUserDetails (UserDetails adapter)
+  - JwtUtil (token generation/validation)
+  - CustomUserDetailsService (loads users from DB)
+  - JwtAuthenticationFilter (intercepts requests, validates tokens)
+  - SecurityConfig (PasswordEncoder, AuthenticationManager, SecurityFilterChain)
+  - AuthController (register/login endpoints)
+  - UserService updated with BCrypt password hashing
+  - JWT config in application.yml (fixed placement to root level)
+  - Build successful: `mvn clean package -DskipTests` ✅
+
+**Current Branch:** `feature/spring-security`
+
+**Pending Tasks:**
+1. **Smoke testing** (requires computer with PostgreSQL):
+   - Test POST /api/v1/auth/register
+   - Test POST /api/v1/auth/login
+   - Test protected endpoints with/without JWT token
+2. **Commit and push** all Phase 5 changes
+3. **Merge to develop** and tag v0.3.0
+
+**Mentor Guidance Needed:**
+Please continue acting as mentor - guide step-by-step with explanations. Help with testing setup (Postman/HTTP client), explain expected responses, and guide through merge/tag workflow. Keep explanations concise but clear.
 
 ### Alternative Opening Messages:
 
@@ -685,9 +778,9 @@ development. Act as my mentor, guide step-by-step."
 **Option 2 - With more context:**
 
 ```
-"Hi! I'm continuing development of NexusFi. REST API is complete.
-I need to implement Spring Security with JWT authentication.
-Please guide me step-by-step as my mentor. Current branch: develop"
+"Hi! I'm continuing development of NexusFi. Phase 5 (Spring Security + JWT)
+is implemented but needs testing. Please guide me step-by-step as my mentor.
+Current branch: feature/spring-security"
 ```
 
 ### Quick Git Status Check:

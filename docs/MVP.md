@@ -72,32 +72,41 @@ The MVP is the **minimum feature set** that makes NexusFi **useful and deployabl
 
 **Completed:** October 20, 2025 (4 hours)
 
-#### 1.4 Security Configuration 🔄 IN PROGRESS
+#### 1.4 Security Configuration ✅ COMPLETED (Implementation)
 
 - [x] Install Maven and configure development environment
 - [x] Add Spring Security and JWT dependencies
 - [x] Create CustomUserDetails (UserDetails adapter)
 - [x] Create JwtUtil (token generation and validation)
-- [x] Add JWT configuration to application.yml
+- [x] Fix JWT configuration in application.yml (moved to root level)
 - [x] Create authentication DTOs (LoginRequest, RegisterRequest, AuthResponse)
-- [ ] Create AuthController (login, register endpoints)
-- [ ] Create JwtAuthenticationFilter (request interception)
-- [ ] Create SecurityConfig (Spring Security configuration)
-- [ ] Update UserService with BCrypt password encryption
-- [ ] Configure public endpoints: `/api/auth/**`
-- [ ] Configure protected endpoints: `/api/**` (require authentication)
-- [ ] CORS configuration for frontend
+- [x] Create AuthController (register and login endpoints)
+- [x] Create CustomUserDetailsService (loads users from database)
+- [x] Create JwtAuthenticationFilter (intercepts requests, validates tokens)
+- [x] Create SecurityConfig (PasswordEncoder, AuthenticationManager, SecurityFilterChain)
+- [x] Update UserService with BCrypt password encryption
+- [x] Configure public endpoints: `/api/v1/auth/**`
+- [x] Configure protected endpoints: all others require authentication
+- [x] Build verification: `mvn clean package -DskipTests` ✅ SUCCESS
 
-**Status:** Partially complete - JWT infrastructure ready, controller and filters remaining
+**Status:** Implementation complete - Testing pending (requires PostgreSQL)
 
 **Started:** October 21, 2025  
-**Estimated Time Remaining:** 2-3 hours
+**Completed:** November 3, 2025  
+**Time Spent:** ~4 hours
 
-#### 1.5 Testing (Basic)
+#### 1.5 Testing (Basic) ⏳ PENDING
 
-- [ ] Manual testing with Postman/Thunder Client
-- [ ] Verify all endpoints work
-- [ ] Test business rules (percentages, balance validation)
+- [ ] Manual smoke testing with Postman/Thunder Client
+- [ ] Test authentication flow (register, login, get token)
+- [ ] Test protected endpoints with valid JWT token
+- [ ] Test protected endpoints without token (expect 401)
+- [ ] Verify business rules (percentages, balance validation)
+- [ ] End-to-end scenario testing
+
+**Status:** Pending - Requires computer with PostgreSQL database
+
+**Estimated Time:** 30 minutes - 1 hour
 - [ ] Test authentication flow
 
 **Estimated Time:** 1 hour
