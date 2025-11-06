@@ -107,6 +107,7 @@ The MVP is the **minimum feature set** that makes NexusFi **useful and deployabl
 **Status:** Pending - Requires computer with PostgreSQL database
 
 **Estimated Time:** 30 minutes - 1 hour
+
 - [ ] Test authentication flow
 
 **Estimated Time:** 1 hour

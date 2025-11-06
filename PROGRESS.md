@@ -86,27 +86,23 @@ JWT-based authentication implementation is **complete**! All security components
   - Wraps User entity for authentication
   - Returns email as username
   - Comprehensive Javadoc comments
-  
 - ✅ `JwtUtil` - JWT token operations utility
   - Token generation with email, timestamps, expiration
   - Token validation (signature and expiration)
   - Claims extraction (email, expiration date)
   - Base64 secret key conversion to cryptographic key
   - Comprehensive Javadoc comments
-  
 - ✅ `CustomUserDetailsService` - Spring Security user loader
   - Implements UserDetailsService interface
   - Loads users from database by email
   - Throws UsernameNotFoundException if user doesn't exist
   - Used by AuthenticationManager during login
-  
 - ✅ `JwtAuthenticationFilter` - Request interceptor
   - Extends OncePerRequestFilter
   - Extracts JWT from Authorization header ("Bearer <token>")
   - Validates token signature and expiration
   - Sets SecurityContext authentication for valid tokens
   - Allows filter chain to continue for all requests
-  
 - ✅ `SecurityConfig` - Spring Security configuration
   - PasswordEncoder bean (BCryptPasswordEncoder)
   - AuthenticationManager bean (exposed from AuthenticationConfiguration)
@@ -733,9 +729,10 @@ Current branch: feature/spring-security
 ### For Copilot (Acting as Mentor):
 
 **Context Summary:**
-Willy is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. 
+Willy is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance.
 
 **Completed (Nov 3, 2025):**
+
 - Database schema with 6 tables (PostgreSQL)
 - 7 JPA entities with relationships
 - 6 Repository interfaces (Spring Data JPA)
@@ -756,6 +753,7 @@ Willy is building NexusFi, a personal finance app with Spring Boot + PostgreSQL.
 **Current Branch:** `feature/spring-security`
 
 **Pending Tasks:**
+
 1. **Smoke testing** (requires computer with PostgreSQL):
    - Test POST /api/v1/auth/register
    - Test POST /api/v1/auth/login
