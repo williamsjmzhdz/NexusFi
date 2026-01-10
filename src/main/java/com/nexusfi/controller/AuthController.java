@@ -55,6 +55,8 @@ public class AuthController {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
         
         User savedUser = userService.registerUser(user);
         String token = jwtUtil.generateToken(savedUser.getEmail());

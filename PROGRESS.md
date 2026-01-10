@@ -1,6 +1,6 @@
 # NexusFi - Development Progress & Learning Journey
 
-**Last Updated:** November 3, 2025  
+**Last Updated:** January 9, 2026  
 **Developer:** Francisco Williams Jiménez Hernández (williamsjmzhdz)  
 **Learning Approach:** Hands-on, step-by-step, with mentor guidance
 
@@ -37,13 +37,13 @@ When continuing in a new chat session, please:
 
 ---
 
-## 📍 Current Status: Phase 5 Complete - Pending Testing 🔐✅
+## 📍 Current Status: Phase 5 Complete ✅🔐
 
-**Current Phase:** Phase 5 - Spring Security with JWT Authentication (Implementation Complete)
+**Current Phase:** Phase 5 - Spring Security with JWT Authentication (COMPLETE)
 
-JWT-based authentication implementation is **complete**! All security components have been created and the code compiles successfully. Smoke testing is pending (requires PostgreSQL database).
+JWT-based authentication implementation is **complete and tested**! All smoke tests passed successfully.
 
-**Current Branch:** `feature/spring-security`
+**Current Branch:** `feature/spring-security` (ready to merge)
 
 **Implementation Status:**
 
@@ -58,9 +58,11 @@ JWT-based authentication implementation is **complete**! All security components
 - ✅ SecurityConfig (PasswordEncoder, AuthenticationManager, SecurityFilterChain)
 - ✅ UserService updated with BCrypt password hashing
 - ✅ Build successful (mvn clean package -DskipTests)
-- ⏳ Smoke testing pending (requires PostgreSQL on other computer)
+- ✅ **Smoke testing PASSED** (January 9, 2026)
+- ✅ **All controllers updated to `/api/v1/` versioning**
 
 **Latest Release:** v0.2.0 - REST API Complete (October 20, 2025)
+**Next Release:** v0.3.0 - Spring Security Complete (ready to tag)
 
 ---
 
@@ -168,30 +170,51 @@ JWT-based authentication implementation is **complete**! All security components
 - Proper Git branching workflow
 - Moving commits between branches with reset/checkout
 
-### 🧪 Next Steps (Testing & Deployment):
+### 🧪 Smoke Testing Results (January 9, 2026):
 
-**Pending Tasks:**
+**All Tests PASSED ✅**
 
-- [ ] **Smoke testing on computer with PostgreSQL:**
-  - Test POST `/api/v1/auth/register` with valid credentials
-  - Test POST `/api/v1/auth/login` with registered user
-  - Test protected endpoints without token (should return 401)
-  - Test protected endpoints with valid token (should return 200)
-- [ ] **Optional enhancements:**
-  - Add AuthenticationException handler in GlobalExceptionHandler
-  - Add token refresh endpoint
-  - Add logout (client-side only for stateless JWT)
+| Test | Endpoint | Result |
+|------|----------|--------|
+| ✅ Registration | `POST /api/v1/auth/register` | 201 Created + JWT Token |
+| ✅ Login | `POST /api/v1/auth/login` | 200 OK + JWT Token |
+| ✅ Protected (no token) | `GET /api/v1/categories` | 403 Forbidden |
+| ✅ Protected (with token) | `GET /api/v1/categories` | 200 OK |
+
+**Bugs Fixed During Testing:**
+
+1. **RegisterRequest missing fields** - Added `firstName` and `lastName` fields to DTO
+2. **Repository method name mismatches** - Fixed `recordedAt` → actual field names:
+   - `ExpenseRecordRepository`: `recordedAt` → `expenseDate`
+   - `IncomeRecordRepository`: `recordedAt` → `incomeDate`
+   - `TransferRepository`: `recordedAt` → `transferDate`
+   - `MovementRepository`: `recordedAt` → `movementDate`
+3. **MovementRepository field mismatch** - Fixed `movementType` → `type`
+4. **API versioning inconsistency** - Updated all controllers to use `/api/v1/` prefix
+
+**Next Steps:**
+
 - [ ] **Merge to develop:**
   - Final commit and push to `feature/spring-security`
   - Merge feature branch to develop (--no-ff)
   - Tag release v0.3.0
   - Push to GitHub
-
-**Estimated Time for Testing:** 30 minutes - 1 hour (on computer with PostgreSQL)
+- [ ] **Optional enhancements (future):**
+  - Add AuthenticationException handler in GlobalExceptionHandler
+  - Add token refresh endpoint
+  - Add logout (client-side only for stateless JWT)
 
 ---
 
 ## 🎉 Releases
+
+### v0.3.0 - Spring Security Complete (January 9, 2026)
+
+- JWT-based authentication (register/login)
+- BCrypt password hashing
+- Protected API endpoints
+- All endpoints versioned under `/api/v1/`
+- Smoke tests passed
 
 ### v0.2.0 - REST API Complete (October 20, 2025)
 
@@ -362,7 +385,7 @@ All entity classes created with:
 **Key Learning:**
 
 - Spring Data JPA method naming conventions
-- `findByUserIdOrderByRecordedAtDesc` → automatic SQL generation
+- `findByUserIdOrderByExpenseDateDesc` → automatic SQL generation
 - Custom @Query for complex operations (SUM aggregations)
 - Repository pattern benefits
 

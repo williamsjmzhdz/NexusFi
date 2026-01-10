@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -74,7 +74,7 @@ public class ExpenseService {
      * @return list of expense records
      */
     public List<ExpenseRecord> getUserExpenseRecords(Long userId) {
-        return expenseRecordRepository.findByUserIdOrderByRecordedAtDesc(userId);
+        return expenseRecordRepository.findByUserIdOrderByExpenseDateDesc(userId);
     }
     
     /**
@@ -87,10 +87,10 @@ public class ExpenseService {
      */
     public List<ExpenseRecord> getExpenseRecordsByDateRange(
         Long userId,
-        LocalDateTime startDate,
-        LocalDateTime endDate
+        LocalDate startDate,
+        LocalDate endDate
     ) {
-        return expenseRecordRepository.findByUserIdAndRecordedAtBetween(userId, startDate, endDate);
+        return expenseRecordRepository.findByUserIdAndExpenseDateBetween(userId, startDate, endDate);
     }
     
     /**
@@ -100,7 +100,7 @@ public class ExpenseService {
      * @return list of expense records
      */
     public List<ExpenseRecord> getCategoryExpenses(Long categoryId) {
-        return expenseRecordRepository.findByCategoryIdOrderByRecordedAtDesc(categoryId);
+        return expenseRecordRepository.findByCategoryIdOrderByExpenseDateDesc(categoryId);
     }
     
     /**

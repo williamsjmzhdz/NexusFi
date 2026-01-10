@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * Handles expense recording and queries.
  */
 @RestController
-@RequestMapping("/api/expenses")
+@RequestMapping("/api/v1/expenses")
 public class ExpenseController {
 
     private final ExpenseService expenseService;
@@ -39,7 +39,7 @@ public class ExpenseController {
      * Record new expense for the authenticated user.
      * Validates sufficient balance in the specified category.
      * 
-     * POST /api/expenses
+     * POST /api/v1/expenses
      * 
      * @param request the expense data
      * @return 201 Created with the recorded expense
@@ -74,7 +74,7 @@ public class ExpenseController {
     /**
      * Get all expense records for the authenticated user.
      * 
-     * GET /api/expenses
+     * GET /api/v1/expenses
      * 
      * @return 200 OK with list of expense records
      */
@@ -95,7 +95,7 @@ public class ExpenseController {
     /**
      * Get a single expense record by ID.
      * 
-     * GET /api/expenses/{id}
+     * GET /api/v1/expenses/{id}
      * 
      * @param id the expense record ID
      * @return 200 OK with the expense record, or 404 Not Found
@@ -111,7 +111,7 @@ public class ExpenseController {
     /**
      * Get all expenses for a specific category.
      * 
-     * GET /api/expenses/category/{categoryId}
+     * GET /api/v1/expenses/category/{categoryId}
      * 
      * @param categoryId the category ID
      * @return 200 OK with list of expense records for the category

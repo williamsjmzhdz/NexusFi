@@ -7,7 +7,7 @@ import com.nexusfi.repository.MovementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -33,7 +33,7 @@ public class MovementService {
      * @return list of all movements (income, expenses, transfers)
      */
     public List<Movement> getUserMovements(Long userId) {
-        return movementRepository.findByUserIdOrderByRecordedAtDesc(userId);
+        return movementRepository.findByUserIdOrderByMovementDateDesc(userId);
     }
     
     /**
@@ -47,10 +47,10 @@ public class MovementService {
      */
     public List<Movement> getMovementsByDateRange(
         Long userId,
-        LocalDateTime startDate,
-        LocalDateTime endDate
+        LocalDate startDate,
+        LocalDate endDate
     ) {
-        return movementRepository.findByUserIdAndRecordedAtBetween(userId, startDate, endDate);
+        return movementRepository.findByUserIdAndMovementDateBetween(userId, startDate, endDate);
     }
     
     /**
@@ -62,7 +62,7 @@ public class MovementService {
      * @return list of movements of the specified type
      */
     public List<Movement> getMovementsByType(Long userId, MovementType type) {
-        return movementRepository.findByUserIdAndMovementTypeOrderByRecordedAtDesc(userId, type);
+        return movementRepository.findByUserIdAndTypeOrderByMovementDateDesc(userId, type);
     }
     
     /**
@@ -73,7 +73,7 @@ public class MovementService {
      * @return list of movements involving the category
      */
     public List<Movement> getCategoryMovements(Long categoryId) {
-        return movementRepository.findByCategoryIdOrderByRecordedAtDesc(categoryId);
+        return movementRepository.findByCategoryIdOrderByMovementDateDesc(categoryId);
     }
     
     /**

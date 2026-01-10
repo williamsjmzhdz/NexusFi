@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * This controller provides the unified transaction history view.
  */
 @RestController
-@RequestMapping("/api/movements")
+@RequestMapping("/api/v1/movements")
 public class MovementController {
 
     private final MovementService movementService;
@@ -33,7 +33,7 @@ public class MovementController {
      * Get all movements for the authenticated user.
      * Returns complete transaction history.
      * 
-     * GET /api/movements
+     * GET /api/v1/movements
      * 
      * @return 200 OK with list of all movements
      */
@@ -54,7 +54,7 @@ public class MovementController {
     /**
      * Get a single movement by ID.
      * 
-     * GET /api/movements/{id}
+     * GET /api/v1/movements/{id}
      * 
      * @param id the movement ID
      * @return 200 OK with the movement, or 404 Not Found
@@ -70,7 +70,7 @@ public class MovementController {
     /**
      * Get movements filtered by type.
      * 
-     * GET /api/movements/type/{type}
+     * GET /api/v1/movements/type/{type}
      * 
      * @param type the movement type (ASSIGNMENT, EXPENSE, TRANSFER, REBALANCE)
      * @return 200 OK with list of movements of the specified type
@@ -92,7 +92,7 @@ public class MovementController {
     /**
      * Get all movements for a specific category.
      * 
-     * GET /api/movements/category/{categoryId}
+     * GET /api/v1/movements/category/{categoryId}
      * 
      * @param categoryId the category ID
      * @return 200 OK with list of movements for the category

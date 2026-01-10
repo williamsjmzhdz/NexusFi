@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * Handles CRUD operations and percentage allocation queries.
  */
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/v1/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -34,7 +34,7 @@ public class CategoryController {
     /**
      * Create a new category for the authenticated user.
      * 
-     * POST /api/categories
+     * POST /api/v1/categories
      * 
      * @param request the category data
      * @return 201 Created with the created category
@@ -61,7 +61,7 @@ public class CategoryController {
     /**
      * Get all categories for the authenticated user.
      * 
-     * GET /api/categories
+     * GET /api/v1/categories
      * 
      * @return 200 OK with list of categories
      */
@@ -82,7 +82,7 @@ public class CategoryController {
     /**
      * Get a single category by ID.
      * 
-     * GET /api/categories/{id}
+     * GET /api/v1/categories/{id}
      * 
      * @param id the category ID
      * @return 200 OK with the category, or 404 Not Found
@@ -98,7 +98,7 @@ public class CategoryController {
     /**
      * Update an existing category.
      * 
-     * PUT /api/categories/{id}
+     * PUT /api/v1/categories/{id}
      * 
      * @param id the category ID
      * @param request the updated category data
@@ -123,7 +123,7 @@ public class CategoryController {
     /**
      * Delete a category.
      * 
-     * DELETE /api/categories/{id}
+     * DELETE /api/v1/categories/{id}
      * 
      * @param id the category ID
      * @return 204 No Content
@@ -138,7 +138,7 @@ public class CategoryController {
     /**
      * Get the remaining unassigned percentage for the authenticated user.
      * 
-     * GET /api/categories/remaining
+     * GET /api/v1/categories/remaining
      * 
      * @return 200 OK with the remaining percentage
      */

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -85,7 +85,7 @@ public class TransferService {
      * @return list of transfers
      */
     public List<Transfer> getUserTransfers(Long userId) {
-        return transferRepository.findByUserIdOrderByRecordedAtDesc(userId);
+        return transferRepository.findByUserIdOrderByTransferDateDesc(userId);
     }
     
     /**
@@ -98,10 +98,10 @@ public class TransferService {
      */
     public List<Transfer> getTransfersByDateRange(
         Long userId,
-        LocalDateTime startDate,
-        LocalDateTime endDate
+        LocalDate startDate,
+        LocalDate endDate
     ) {
-        return transferRepository.findByUserIdAndRecordedAtBetween(userId, startDate, endDate);
+        return transferRepository.findByUserIdAndTransferDateBetween(userId, startDate, endDate);
     }
     
     /**
@@ -111,7 +111,7 @@ public class TransferService {
      * @return list of transfers (as source or destination)
      */
     public List<Transfer> getCategoryTransfers(Long categoryId) {
-        return transferRepository.findBySourceCategoryIdOrDestinationCategoryIdOrderByRecordedAtDesc(
+        return transferRepository.findBySourceCategoryIdOrDestinationCategoryIdOrderByTransferDateDesc(
             categoryId, 
             categoryId
         );

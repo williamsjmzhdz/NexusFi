@@ -19,10 +19,10 @@ NexusFi es una aplicación de finanzas personales diseñada para un único usuar
 
 ## 🏗️ Tecnologías
 
-- **Backend**: Java 17, Spring Boot 3.2.0
+- **Backend**: Java 17+, Spring Boot 3.2.0
 - **Base de Datos**: PostgreSQL 14+
 - **ORM**: JPA/Hibernate
-- **Seguridad**: Spring Security con BCrypt
+- **Seguridad**: Spring Security con JWT + BCrypt
 - **Build**: Maven
 
 ---
@@ -119,19 +119,34 @@ NexusFi/
 - [x] Diseño del modelo de datos
 - [x] Schema de base de datos
 - [x] Entidades JPA
-- [ ] Repositorios
-- [ ] Servicios de negocio
-- [ ] API REST
+- [x] Repositorios Spring Data JPA
+- [x] Servicios de negocio
+- [x] API REST (21 endpoints)
+- [x] Spring Security + JWT Authentication
 - [ ] Frontend
 - [ ] Tests
 
+### API Endpoints
+
+Base URL: `http://localhost:8080/api/v1`
+
+| Resource | Endpoints |
+|----------|-----------|
+| Auth | `POST /auth/register`, `POST /auth/login` |
+| Categories | CRUD + remaining percentage |
+| Incomes | Record and query |
+| Expenses | Record and query |
+| Transfers | Execute zero-sum transfers |
+| Movements | Read-only transaction history |
+
 ### Próximos Pasos
 
-1. Crear repositorios Spring Data JPA
-2. Implementar servicios de negocio
-3. Desarrollar controladores REST API
-4. Crear frontend (Thymeleaf/React)
-5. Implementar tests unitarios e integración
+1. ~~Crear repositorios Spring Data JPA~~ ✅
+2. ~~Implementar servicios de negocio~~ ✅
+3. ~~Desarrollar controladores REST API~~ ✅
+4. ~~Implementar Spring Security + JWT~~ ✅
+5. Crear frontend (Thymeleaf/React)
+6. Implementar tests unitarios e integración
 
 ---
 

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -118,7 +118,7 @@ public class IncomeService {
      * @return list of income records
      */
     public List<IncomeRecord> getUserIncomeRecords(Long userId) {
-        return incomeRecordRepository.findByUserIdOrderByRecordedAtDesc(userId);
+        return incomeRecordRepository.findByUserIdOrderByIncomeDateDesc(userId);
     }
     
     /**
@@ -131,10 +131,10 @@ public class IncomeService {
      */
     public List<IncomeRecord> getIncomeRecordsByDateRange(
         Long userId, 
-        LocalDateTime startDate, 
-        LocalDateTime endDate
+        LocalDate startDate, 
+        LocalDate endDate
     ) {
-        return incomeRecordRepository.findByUserIdAndRecordedAtBetween(userId, startDate, endDate);
+        return incomeRecordRepository.findByUserIdAndIncomeDateBetween(userId, startDate, endDate);
     }
     
     /**

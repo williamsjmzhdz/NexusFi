@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * Handles income recording and queries.
  */
 @RestController
-@RequestMapping("/api/incomes")
+@RequestMapping("/api/v1/incomes")
 public class IncomeController {
 
     private final IncomeService incomeService;
@@ -34,7 +34,7 @@ public class IncomeController {
      * Record new income for the authenticated user.
      * This triggers automatic distribution to categories.
      * 
-     * POST /api/incomes
+     * POST /api/v1/incomes
      * 
      * @param request the income data
      * @return 201 Created with the recorded income
@@ -63,7 +63,7 @@ public class IncomeController {
     /**
      * Get all income records for the authenticated user.
      * 
-     * GET /api/incomes
+     * GET /api/v1/incomes
      * 
      * @return 200 OK with list of income records
      */
@@ -84,7 +84,7 @@ public class IncomeController {
     /**
      * Get a single income record by ID.
      * 
-     * GET /api/incomes/{id}
+     * GET /api/v1/incomes/{id}
      * 
      * @param id the income record ID
      * @return 200 OK with the income record, or 404 Not Found
