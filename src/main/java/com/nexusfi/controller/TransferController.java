@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * Handles zero-sum transfers and queries.
  */
 @RestController
-@RequestMapping("/api/transfers")
+@RequestMapping("/api/v1/transfers")
 public class TransferController {
 
     private final TransferService transferService;
@@ -39,7 +39,7 @@ public class TransferController {
      * Execute a transfer between two categories.
      * This is a zero-sum operation: source decreases, destination increases.
      * 
-     * POST /api/transfers
+     * POST /api/v1/transfers
      * 
      * @param request the transfer data
      * @return 201 Created with the executed transfer
@@ -75,7 +75,7 @@ public class TransferController {
     /**
      * Get all transfers for the authenticated user.
      * 
-     * GET /api/transfers
+     * GET /api/v1/transfers
      * 
      * @return 200 OK with list of transfers
      */
@@ -96,7 +96,7 @@ public class TransferController {
     /**
      * Get a single transfer by ID.
      * 
-     * GET /api/transfers/{id}
+     * GET /api/v1/transfers/{id}
      * 
      * @param id the transfer ID
      * @return 200 OK with the transfer, or 404 Not Found
@@ -112,7 +112,7 @@ public class TransferController {
     /**
      * Get all transfers involving a specific category.
      * 
-     * GET /api/transfers/category/{categoryId}
+     * GET /api/v1/transfers/category/{categoryId}
      * 
      * @param categoryId the category ID
      * @return 200 OK with list of transfers (as source or destination)

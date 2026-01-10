@@ -4,11 +4,13 @@ import com.nexusfi.dto.IncomeRequest;
 import com.nexusfi.dto.IncomeResponse;
 import com.nexusfi.model.IncomeRecord;
 import com.nexusfi.model.User;
+import com.nexusfi.security.CustomUserDetails;
 import com.nexusfi.service.IncomeService;
 import com.nexusfi.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
  * Handles income recording and queries.
  */
 @RestController
-@RequestMapping("/api/incomes")
+@RequestMapping("/api/v1/incomes")
 public class IncomeController {
 
     private final IncomeService incomeService;
@@ -34,16 +36,18 @@ public class IncomeController {
      * Record new income for the authenticated user.
      * This triggers automatic distribution to categories.
      * 
-     * POST /api/incomes
+     * POST /api/v1/incomes
      * 
      * @param request the income data
+     * @param userDetails the authenticated user
      * @return 201 Created with the recorded income
      */
     @PostMapping
-    public ResponseEntity<IncomeResponse> recordIncome(@Valid @RequestBody IncomeRequest request) {
-        // TODO: Get authenticated user from SecurityContext
-        // For now, we'll use a hardcoded user ID (will be replaced with Spring Security)
-        User user = userService.findById(1L)
+    public ResponseEntity<IncomeResponse> recordIncome(
+            @Valid @RequestBody IncomeRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        
+        User user = userService.findById(userDetails.getId())
             .orElseThrow(() -> new RuntimeException("User not found"));
         
         // Build income record entity
@@ -63,17 +67,16 @@ public class IncomeController {
     /**
      * Get all income records for the authenticated user.
      * 
-     * GET /api/incomes
+     * GET /api/v1/incomes
      * 
+     * @param userDetails the authenticated user
      * @return 200 OK with list of income records
      */
     @GetMapping
-    public ResponseEntity<List<IncomeResponse>> getAllIncomes() {
-        // TODO: Get authenticated user from SecurityContext
-        User user = userService.findById(1L)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    public ResponseEntity<List<IncomeResponse>> getAllIncomes(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         
-        List<IncomeRecord> incomes = incomeService.getUserIncomeRecords(user.getId());
+        List<IncomeRecord> incomes = incomeService.getUserIncomeRecords(userDetails.getId());
         List<IncomeResponse> response = incomes.stream()
             .map(IncomeResponse::fromEntity)
             .collect(Collectors.toList());
@@ -84,7 +87,7 @@ public class IncomeController {
     /**
      * Get a single income record by ID.
      * 
-     * GET /api/incomes/{id}
+     * GET /api/v1/incomes/{id}
      * 
      * @param id the income record ID
      * @return 200 OK with the income record, or 404 Not Found

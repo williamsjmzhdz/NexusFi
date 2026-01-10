@@ -48,11 +48,11 @@ CREATE INDEX idx_category_parent ON categories(parent_id);
 CREATE INDEX idx_category_active ON categories(is_active);
 CREATE INDEX idx_category_user_active ON categories(user_id, is_active);
 
-COMMENT ON TABLE categories IS 'Budget categories with hierarchical structure';
-COMMENT ON COLUMN categories.assigned_percentage IS 'Percentage of parent allocation (must sum to 100% with siblings)';
+COMMENT ON TABLE categories IS 'Budget categories with hierarchical structure (max 2 levels enforced at app level)';
+COMMENT ON COLUMN categories.assigned_percentage IS 'Percentage of parent allocation. Root categories must sum to 100%, subcategories can sum to <= 100%';
 COMMENT ON COLUMN categories.current_balance IS 'Current balance in this category';
 COMMENT ON COLUMN categories.is_active IS 'Soft delete flag - can only archive when balance=0 and percentage=0';
-COMMENT ON COLUMN categories.parent_id IS 'Parent category (NULL for root categories)';
+COMMENT ON COLUMN categories.parent_id IS 'Parent category (NULL for root categories). Max depth: 2 levels (root and subcategory only)';
 
 -- ============================================================================
 -- 3. INCOME RECORDS TABLE

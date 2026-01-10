@@ -56,7 +56,7 @@ public class Transfer {
      * Category from which money is transferred (debit)
      */
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "source_category_id", nullable = false, foreignKey = @ForeignKey(name = "fk_transfer_source"))
     private Category sourceCategory;
 
@@ -64,7 +64,7 @@ public class Transfer {
      * Category to which money is transferred (credit)
      */
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "destination_category_id", nullable = false, foreignKey = @ForeignKey(name = "fk_transfer_destination"))
     private Category destinationCategory;
 

@@ -3,13 +3,16 @@ package com.nexusfi.service;
 import com.nexusfi.exception.InsufficientBalanceException;
 import com.nexusfi.exception.ResourceNotFoundException;
 import com.nexusfi.model.Category;
+import com.nexusfi.model.Movement;
 import com.nexusfi.model.Transfer;
+import com.nexusfi.model.enums.MovementType;
+import com.nexusfi.repository.MovementRepository;
 import com.nexusfi.repository.TransferRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -21,13 +24,16 @@ import java.util.List;
 public class TransferService {
     
     private final TransferRepository transferRepository;
+    private final MovementRepository movementRepository;
     private final CategoryService categoryService;
     
     public TransferService(
         TransferRepository transferRepository,
+        MovementRepository movementRepository,
         CategoryService categoryService
     ) {
         this.transferRepository = transferRepository;
+        this.movementRepository = movementRepository;
         this.categoryService = categoryService;
     }
     
@@ -74,8 +80,34 @@ public class TransferService {
         sourceCategory.setCurrentBalance(sourceBalance.subtract(amount));
         destinationCategory.setCurrentBalance(destinationCategory.getCurrentBalance().add(amount));
         
-        // Save transfer record (DB trigger creates movements)
-        return transferRepository.save(transfer);
+        // Save transfer record
+        Transfer savedTransfer = transferRepository.save(transfer);
+        
+        // Create TRANSFER movement (debit from source)
+        Movement outMovement = Movement.builder()
+            .amount(amount.negate()) // Negative for outgoing
+            .type(MovementType.TRANSFER)
+            .description("Transfer to: " + destinationCategory.getName())
+            .movementDate(transfer.getTransferDate())
+            .category(sourceCategory)
+            .user(transfer.getUser())
+            .transfer(savedTransfer)
+            .build();
+        movementRepository.save(outMovement);
+        
+        // Create TRANSFER movement (credit to destination)
+        Movement inMovement = Movement.builder()
+            .amount(amount) // Positive for incoming
+            .type(MovementType.TRANSFER)
+            .description("Transfer from: " + sourceCategory.getName())
+            .movementDate(transfer.getTransferDate())
+            .category(destinationCategory)
+            .user(transfer.getUser())
+            .transfer(savedTransfer)
+            .build();
+        movementRepository.save(inMovement);
+        
+        return savedTransfer;
     }
     
     /**
@@ -85,7 +117,7 @@ public class TransferService {
      * @return list of transfers
      */
     public List<Transfer> getUserTransfers(Long userId) {
-        return transferRepository.findByUserIdOrderByRecordedAtDesc(userId);
+        return transferRepository.findByUserIdOrderByTransferDateDesc(userId);
     }
     
     /**
@@ -98,10 +130,10 @@ public class TransferService {
      */
     public List<Transfer> getTransfersByDateRange(
         Long userId,
-        LocalDateTime startDate,
-        LocalDateTime endDate
+        LocalDate startDate,
+        LocalDate endDate
     ) {
-        return transferRepository.findByUserIdAndRecordedAtBetween(userId, startDate, endDate);
+        return transferRepository.findByUserIdAndTransferDateBetween(userId, startDate, endDate);
     }
     
     /**
@@ -111,7 +143,7 @@ public class TransferService {
      * @return list of transfers (as source or destination)
      */
     public List<Transfer> getCategoryTransfers(Long categoryId) {
-        return transferRepository.findBySourceCategoryIdOrDestinationCategoryIdOrderByRecordedAtDesc(
+        return transferRepository.findBySourceCategoryIdOrDestinationCategoryIdOrderByTransferDateDesc(
             categoryId, 
             categoryId
         );

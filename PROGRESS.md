@@ -1,6 +1,6 @@
 # NexusFi - Development Progress & Learning Journey
 
-**Last Updated:** October 20, 2025  
+**Last Updated:** January 10, 2026  
 **Developer:** Francisco Williams Jiménez Hernández (williamsjmzhdz)  
 **Learning Approach:** Hands-on, step-by-step, with mentor guidance
 
@@ -37,17 +37,294 @@ When continuing in a new chat session, please:
 
 ---
 
-## 📍 Current Status: v0.2.0 Released! 🎉
+## 📍 Current Status: Phase 5 Complete ✅🔐
+
+**Current Phase:** Phase 5 - Spring Security with JWT Authentication (COMPLETE)
+
+JWT-based authentication implementation is **complete and fully tested**! All smoke tests and CRUD tests passed successfully.
+
+**Current Branch:** `feature/spring-security` (ready to merge and tag v0.3.0)
+
+**Implementation Status:**
+
+- ✅ Spring Security and JWT dependencies added
+- ✅ CustomUserDetails wrapper class created
+- ✅ JwtUtil for token generation and validation
+- ✅ JWT configuration in application.yml (fixed placement)
+- ✅ Authentication DTOs (LoginRequest, RegisterRequest, AuthResponse)
+- ✅ AuthController (register and login endpoints)
+- ✅ CustomUserDetailsService (loads users from database)
+- ✅ JwtAuthenticationFilter (intercepts requests, validates tokens)
+- ✅ SecurityConfig (PasswordEncoder, AuthenticationManager, SecurityFilterChain)
+- ✅ UserService updated with BCrypt password hashing
+- ✅ Build successful (mvn clean package -DskipTests)
+- ✅ **Smoke testing PASSED** (January 9, 2026)
+- ✅ **All controllers updated to `/api/v1/` versioning**
+- ✅ **Hierarchical categories with 2-level max depth** (January 10, 2026)
+- ✅ **Recursive income distribution to subcategories**
+- ✅ **36 CRUD tests PASSED**
+- ✅ **Postman collection updated (35 requests)**
 
 **Latest Release:** v0.2.0 - REST API Complete (October 20, 2025)
+**Next Release:** v0.3.0 - Spring Security + Hierarchical Categories (ready to tag)
 
-We have successfully completed and **released** the REST Controller layer with a full CRUD API (21 endpoints). The release is tagged and published on GitHub. Next step is implementing JWT authentication and Spring Security for v0.3.
+---
 
-**Release Highlights:**
+## ✅ Phase 5.1: Hierarchical Categories Enhancement (January 10, 2026)
 
-- 5 Controllers, 21 REST endpoints
-- 11 DTO classes
-- Complete backend API (3,300+ lines of code)
+### ✨ What We've Accomplished:
+
+**Hierarchical Category System:**
+
+- ✅ Parent/child category relationships
+- ✅ **Maximum 2 levels enforced** (root → subcategory, no sub-subcategories)
+- ✅ `MaxDepthExceededException` for 3rd level attempts (returns 400 Bad Request)
+- ✅ FetchType.EAGER for category relationships (solves LazyInitializationException)
+
+**Percentage Distribution Rules:**
+
+- ✅ **Level 1 (root categories):** Must sum to exactly 100%
+- ✅ **Level 2 (subcategories):** Can sum to < 100% (remainder stays in parent)
+- ✅ Subcategory percentages are relative to parent's balance
+
+**Income Distribution:**
+
+- ✅ Recursive distribution algorithm in `IncomeService`
+- ✅ When income arrives:
+  1. Distributes to root categories by percentage
+  2. For each parent with subcategories, redistributes its share to children
+  3. Remainder (if subcategories < 100%) stays in parent
+  4. Creates movements for each distribution
+
+**New API Endpoints:**
+
+- ✅ `GET /api/v1/categories/tree` - Full category hierarchy
+- ✅ `GET /api/v1/categories/root` - Only root categories
+- ✅ `GET /api/v1/categories/{id}/subcategories` - Get children of category
+- ✅ `POST /api/v1/categories` with `parentId` - Create subcategory
+
+**Testing:**
+
+- ✅ All 36 CRUD tests passed
+- ✅ Level 3 creation correctly blocked with 400 error
+- ✅ Income correctly distributed to subcategories
+
+**Key Learning:**
+
+- LazyInitializationException and why EAGER loading solves it
+- Recursive algorithms for hierarchical data
+- BigDecimal arithmetic for financial calculations with rounding
+- Exception handling hierarchy in Spring
+
+---
+
+## ✅ Phase 5: Spring Security + JWT Authentication (IMPLEMENTATION COMPLETE - Nov 3, 2025)
+
+### ✨ What We've Accomplished (Oct 21 - Nov 3, 2025):
+
+**Maven Setup:**
+
+- ✅ Installed Apache Maven 3.9.11
+- ✅ Configured system PATH for Maven commands
+- ✅ Verified Maven installation and project compilation
+
+**Dependencies Added:**
+
+- ✅ `spring-boot-starter-security` - Spring Security framework
+- ✅ `jjwt-api`, `jjwt-impl`, `jjwt-jackson` (v0.12.5) - JWT library for token operations
+
+**Security Infrastructure Created:**
+
+- ✅ `CustomUserDetails` - Adapter between User entity and Spring Security
+  - Implements UserDetails interface
+  - Wraps User entity for authentication
+  - Returns email as username
+  - Comprehensive Javadoc comments
+- ✅ `JwtUtil` - JWT token operations utility
+  - Token generation with email, timestamps, expiration
+  - Token validation (signature and expiration)
+  - Claims extraction (email, expiration date)
+  - Base64 secret key conversion to cryptographic key
+  - Comprehensive Javadoc comments
+- ✅ `CustomUserDetailsService` - Spring Security user loader
+  - Implements UserDetailsService interface
+  - Loads users from database by email
+  - Throws UsernameNotFoundException if user doesn't exist
+  - Used by AuthenticationManager during login
+- ✅ `JwtAuthenticationFilter` - Request interceptor
+  - Extends OncePerRequestFilter
+  - Extracts JWT from Authorization header ("Bearer <token>")
+  - Validates token signature and expiration
+  - Sets SecurityContext authentication for valid tokens
+  - Allows filter chain to continue for all requests
+- ✅ `SecurityConfig` - Spring Security configuration
+  - PasswordEncoder bean (BCryptPasswordEncoder)
+  - AuthenticationManager bean (exposed from AuthenticationConfiguration)
+  - SecurityFilterChain with JwtAuthenticationFilter registration
+  - CSRF disabled (stateless JWT authentication)
+  - Public endpoints: `/api/v1/auth/**` (permitAll)
+  - All other endpoints require authentication
+  - Stateless session management (no cookies)
+
+**Configuration:**
+
+- ✅ JWT configuration in `application.yml`
+  - **Fixed placement:** Moved from `spring:` block to root level
+  - Secret key (Base64 encoded, 64 characters)
+  - Expiration time (24 hours = 86400000 ms)
+
+**Authentication DTOs:**
+
+- ✅ `LoginRequest` - Email + password for login (with validation)
+- ✅ `RegisterRequest` - Email + password for registration (min 8 chars)
+- ✅ `AuthResponse` - Returns JWT token + email
+
+**Controllers:**
+
+- ✅ `AuthController` - Public authentication endpoints
+  - POST `/api/v1/auth/register` - User registration with password hashing
+  - POST `/api/v1/auth/login` - User login with AuthenticationManager validation
+  - Returns 201 Created for register, 200 OK for login
+  - Returns AuthResponse with JWT token
+
+**Services Updated:**
+
+- ✅ `UserService` - Updated for BCrypt password encryption
+  - Constructor now injects PasswordEncoder
+  - `registerUser()` hashes password before saving
+  - Throws DuplicateResourceException for existing emails
+
+**Build & Compilation:**
+
+- ✅ Build successful: `mvn clean package -DskipTests`
+- ✅ All code compiles without errors
+- ✅ No syntax or import issues
+
+**Git Workflow:**
+
+- ✅ Created `feature/spring-security` branch from develop
+- ✅ Committed JWT infrastructure with proper messages
+
+**Key Learning:**
+
+- JWT (JSON Web Token) structure and purpose (Header.Payload.Signature)
+- Stateless authentication vs session-based (no cookies, token in every request)
+- Token signing with HMAC-SHA and secret keys (like wax seal)
+- BCrypt password hashing with automatic salt generation
+- How salt is stored in hash string and why it doesn't weaken security
+- Base64 encoding for cryptographic keys
+- Spring Security UserDetails interface and UserDetailsService
+- SecurityContext and SecurityFilterChain concepts
+- Filter registration order (addFilterBefore)
+- CSRF protection and when to disable it
+- AuthenticationManager and how it validates credentials
+- PasswordEncoder bean exposure and dependency injection
+- Proper Git branching workflow
+- Moving commits between branches with reset/checkout
+
+### 🧪 Smoke Testing Results (January 9-10, 2026):
+
+**All Tests PASSED ✅**
+
+| Test | Endpoint | Result |
+|------|----------|--------|
+| ✅ Registration | `POST /api/v1/auth/register` | 201 Created + JWT Token |
+| ✅ Login | `POST /api/v1/auth/login` | 200 OK + JWT Token |
+| ✅ Protected (no token) | `GET /api/v1/categories` | 403 Forbidden |
+| ✅ Protected (with token) | `GET /api/v1/categories` | 200 OK |
+| ✅ Create Root Categories | `POST /api/v1/categories` | 201 Created (3 = 100%) |
+| ✅ Create Subcategory | `POST /api/v1/categories` | 201 Created with parentId |
+| ✅ Level 3 Blocked | `POST /api/v1/categories` | 400 Bad Request |
+| ✅ Income Distribution | `POST /api/v1/incomes` | Recursive distribution ✅ |
+| ✅ All 36 CRUD Tests | Postman Collection | 100% Pass Rate |
+
+**Bugs Fixed During Testing:**
+
+1. **RegisterRequest missing fields** - Added `firstName` and `lastName` fields to DTO
+2. **Repository method name mismatches** - Fixed `recordedAt` → actual field names:
+   - `ExpenseRecordRepository`: `recordedAt` → `expenseDate`
+   - `IncomeRecordRepository`: `recordedAt` → `incomeDate`
+   - `TransferRepository`: `recordedAt` → `transferDate`
+   - `MovementRepository`: `recordedAt` → `movementDate`
+3. **MovementRepository field mismatch** - Fixed `movementType` → `type`
+4. **API versioning inconsistency** - Updated all controllers to use `/api/v1/` prefix
+5. **LazyInitializationException** - Changed Category relationships to `FetchType.EAGER`
+6. **Movements not created** - Implemented movement creation in Income/Expense/Transfer services
+7. **GlobalExceptionHandler** - Added 401 for `BadCredentialsException`
+8. **MaxDepthExceededException** - Created custom exception for 2-level limit enforcement
+
+**Next Steps:**
+
+- [x] ~~Smoke testing on computer with PostgreSQL~~
+- [x] ~~Implement hierarchical categories~~
+- [x] ~~Test 2-level depth limit~~
+- [x] ~~Update Postman collection~~
+- [ ] **Final commit and push to `feature/spring-security`**
+- [ ] **Merge feature branch to develop (--no-ff)**
+- [ ] **Tag release v0.3.0**
+- [ ] **Push to GitHub**
+
+---
+
+## 🚀 Next Session: What to Do
+
+### Immediate Tasks (Tag v0.3.0):
+
+```bash
+# 1. Commit all changes
+git add .
+git commit -m "feat: hierarchical categories with 2-level limit, all tests passing"
+
+# 2. Push to feature branch
+git push
+
+# 3. Merge to develop
+git checkout develop
+git merge --no-ff feature/spring-security
+
+# 4. Tag release
+git tag -a v0.3.0 -m "Spring Security + Hierarchical Categories"
+
+# 5. Push everything
+git push
+git push --tags
+```
+
+### Future Enhancements (v0.4.0+):
+
+- [ ] Token refresh endpoint
+- [ ] Logout functionality (client-side for stateless JWT)
+- [ ] Category icons/colors
+- [ ] Budget reports and visualizations
+- [ ] Frontend (Thymeleaf or React)
+- [ ] Unit and integration tests
+
+---
+
+## 🎉 Releases
+
+### v0.3.0 - Spring Security + Hierarchical Categories (January 10, 2026)
+
+**Status:** Ready to tag
+
+**What's Included:**
+
+- JWT-based authentication (register/login)
+- BCrypt password hashing
+- Protected API endpoints
+- All endpoints versioned under `/api/v1/`
+- **Hierarchical categories** (parent/child)
+- **Maximum 2 levels** (root → subcategory)
+- **Recursive income distribution** to subcategories
+- Percentage rules:
+  - Level 1 (root): Must sum to 100%
+  - Level 2 (sub): Can be < 100% (remainder to parent)
+- New custom exceptions: `MaxDepthExceededException`
+- 35 Postman requests (8 new subcategory endpoints)
+- All 36 CRUD tests passing
+
+### v0.2.0 - REST API Complete (October 20, 2025)
+
 - Professional exception handling
 - Ready for security layer implementation
 
@@ -215,7 +492,7 @@ All entity classes created with:
 **Key Learning:**
 
 - Spring Data JPA method naming conventions
-- `findByUserIdOrderByRecordedAtDesc` → automatic SQL generation
+- `findByUserIdOrderByExpenseDateDesc` → automatic SQL generation
 - Custom @Query for complex operations (SUM aggregations)
 - Repository pattern benefits
 
@@ -374,16 +651,20 @@ All entity classes created with:
 
 ---
 
-## 🚧 Next Tasks: After v0.2.0
+## 🚧 Next Tasks: Phase 5 Completion
 
-### Phase 5: Security Configuration (Next for v0.3)
+### Phase 5: Security Configuration (IN PROGRESS for v0.3)
 
 **Goal:** Implement JWT-based authentication
 
+- ✅ Spring Security and JWT dependencies
+- ✅ CustomUserDetails wrapper class
+- ✅ JWT token generation and validation utility
+- ✅ Authentication DTOs
+- 🔄 AuthController (login, register endpoints) - **NEXT**
+- [ ] JWT authentication filter
+- [ ] Security configuration
 - [ ] Password encryption with BCrypt
-- [ ] JWT token generation and validation
-- [ ] AuthController (login, register endpoints)
-- [ ] Security filter chain configuration
 - [ ] Public vs protected endpoints
 
 ---
@@ -500,12 +781,13 @@ By completing NexusFi, Willy will learn:
 - ✅ PostgreSQL database design and SQL
 - ✅ JPA/Hibernate entities and relationships
 - ✅ Git version control and GitHub
-- 🚧 Spring Boot framework
-- 🔜 Spring Data JPA (repositories)
-- 🔜 Service layer architecture
-- 🔜 REST API design
-- 🔜 Spring Security
-- 🔜 Exception handling
+- ✅ Spring Boot framework
+- ✅ Spring Data JPA (repositories)
+- ✅ Service layer architecture
+- ✅ REST API design
+- � Spring Security (in progress)
+- � JWT authentication (in progress)
+- ✅ Exception handling
 - 🔜 Transaction management
 - 🔜 Testing (JUnit, Mockito)
 
@@ -568,40 +850,74 @@ I need you to act as my mentor (Tech Lead) guiding me step
 by step, explaining concepts before providing code, not just
 giving complete solutions.
 
-I want to continue from where I left off. The next step is
-to implement Spring Security with JWT authentication.
+Phase 5 is COMPLETE (Spring Security + Hierarchical Categories).
+All 36 tests passing. Ready to tag v0.3.0.
 
-Current branch: develop
+Next step: Merge to develop and create tag, then start frontend.
+
+Current branch: feature/spring-security
 ```
 
 ### For Copilot (Acting as Mentor):
 
 **Context Summary:**
-Willy is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance. Database is ready, entities are created, repositories are set up (6 interfaces), service layer is complete (6 services + exception handling, 846 lines), and REST controller layer is complete (5 controllers, 21 endpoints, 1,229 lines). Next task is implementing JWT-based authentication with Spring Security. Please act as mentor - guide, don't just provide code. Explain each step, especially JWT concepts, Spring Security filter chain, and authentication flow.
+Willy is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance.
 
-### Alternative Opening Messages:
+**Completed (January 10, 2026):**
 
-**Option 1 - Direct and concise:**
+- Database schema with 6 tables (PostgreSQL)
+- 7 JPA entities with relationships
+- 6 Repository interfaces (Spring Data JPA)
+- 6 Service classes with business logic
+- 6 REST Controllers with 35 endpoints
+- Professional exception handling (GlobalExceptionHandler)
+- **Phase 5 - Spring Security + JWT:**
+  - CustomUserDetails, JwtUtil, JwtAuthenticationFilter
+  - SecurityConfig with BCrypt password hashing
+  - AuthController (register/login endpoints)
+  - All endpoints versioned under `/api/v1/`
+- **Hierarchical Categories:**
+  - Max 2 levels (root + subcategory)
+  - MaxDepthExceededException for Level 3 attempts
+  - Recursive income distribution
+  - FetchType.EAGER to prevent LazyInitializationException
+- **Testing:**
+  - All 36 CRUD tests passing
+  - Postman collection with 35 requests
 
-```
-"Hi! Please read PROGRESS.md and help me continue NexusFi
-development. Act as my mentor, guide step-by-step."
-```
+**Current Branch:** `feature/spring-security`
 
-**Option 2 - With more context:**
+**Next Tasks:**
 
-```
-"Hi! I'm continuing development of NexusFi. REST API is complete.
-I need to implement Spring Security with JWT authentication.
-Please guide me step-by-step as my mentor. Current branch: develop"
-```
+1. Final commit and push
+2. Merge to develop (`--no-ff`)
+3. Tag `v0.3.0`
+4. Push to GitHub
+5. Start frontend development
 
-### Quick Git Status Check:
+**Mentor Guidance Needed:**
+Continue acting as mentor - guide step-by-step with explanations. Help with Git merge workflow, and guide through frontend planning.
+
+### Quick Git Commands for Tag:
 
 ```bash
-git status
-git branch
-git log --oneline -5
+# 1. Commit all changes
+git add .
+git commit -m "feat: hierarchical categories with 2-level limit, all tests passing"
+
+# 2. Push to feature branch
+git push
+
+# 3. Merge to develop
+git checkout develop
+git merge --no-ff feature/spring-security -m "Merge feature/spring-security"
+
+# 4. Tag release
+git tag -a v0.3.0 -m "Spring Security + Hierarchical Categories"
+
+# 5. Push everything
+git push
+git push --tags
 ```
 
 ---

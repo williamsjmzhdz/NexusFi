@@ -1,25 +1,31 @@
 # NexusFi - Learning Notes & Reference Guide
 
 > **Personal study guide for Francisco Williams Jiménez Hernández**  
-> Everything learned up to v0.2.0 (Complete REST API)  
-> Last updated: October 21, 2025
+> Everything learned including Phase 5 (Spring Security + JWT) and Hierarchical Categories  
+> Last updated: January 10, 2026
 
 ---
 
 ## 📑 Table of Contents
 
-1. [Project Overview](#project-overview)
-2. [Spring Boot Fundamentals](#spring-boot-fundamentals)
-3. [JPA & Hibernate (Database Layer)](#jpa--hibernate-database-layer)
-4. [Repository Layer](#repository-layer)
-5. [Service Layer](#service-layer)
-6. [Controller Layer (REST API)](#controller-layer-rest-api)
-7. [Exception Handling](#exception-handling)
-8. [DTOs (Data Transfer Objects)](#dtos-data-transfer-objects)
-9. [Maven Commands](#maven-commands)
-10. [Git Workflow](#git-workflow)
-11. [Configuration Files](#configuration-files)
-12. [Quick Command Reference](#quick-command-reference)
+1. [Project Overview](#-project-overview)
+2. [Spring Boot Fundamentals](#-spring-boot-fundamentals)
+3. [JPA & Hibernate (Database Layer)](#️-jpa--hibernate-database-layer)
+4. [Repository Layer](#-repository-layer)
+5. [Service Layer](#️-service-layer)
+6. [Controller Layer (REST API)](#-controller-layer-rest-api)
+7. [Exception Handling](#-exception-handling)
+8. [DTOs (Data Transfer Objects)](#-dtos-data-transfer-objects)
+9. [Spring Security & JWT](#-spring-security--jwt)
+10. [Hierarchical Categories](#-hierarchical-categories)
+11. [Maven Commands](#-maven-commands)
+12. [Git Workflow](#-git-workflow)
+13. [Configuration Files](#️-configuration-files)
+14. [Quick Command Reference](#-quick-command-reference)
+15. [Best Practices Learned](#-best-practices-learned)
+16. [Key Takeaways](#-key-takeaways)
+17. [What's Next](#-whats-next)
+18. [Quick Search](#-quick-search)
 
 ---
 
@@ -33,6 +39,8 @@
 ┌─────────────────────────┐
 │   Controller Layer      │ ← REST API endpoints (HTTP)
 ├─────────────────────────┤
+│   Security Layer        │ ← JWT Authentication
+├─────────────────────────┤
 │   Service Layer         │ ← Business logic
 ├─────────────────────────┤
 │   Repository Layer      │ ← Database access (JPA)
@@ -43,14 +51,16 @@
 └─────────────────────────┘
 ```
 
-**Current Status (v0.2.0):**
+**Current Status (v0.3.0 - ready to tag):**
 
 - ✅ 7 Entities
 - ✅ 6 Repositories
 - ✅ 6 Services
-- ✅ 5 Controllers (21 endpoints)
+- ✅ 6 Controllers (35 endpoints)
 - ✅ 11 DTOs
 - ✅ Exception handling
+- ✅ JWT Authentication
+- ✅ Hierarchical Categories (2-level max)
 
 ---
 
@@ -1178,21 +1188,435 @@ HTTP Response (JSON)
 
 ---
 
-## 📚 What's Next (Phase 5)
+## 📚 What's Next
 
-**Spring Security with JWT:**
+**Phase 5 COMPLETE ✅** (January 10, 2026)
 
-- Password encryption (BCrypt)
-- Login endpoint
-- JWT token generation
-- Authentication filter
-- Secure endpoints
-- Authorization roles
+**Next Steps:**
 
-**After completing Phase 5:**
+1. **Tag v0.3.0** - Merge to develop and create release
+2. **Frontend Development** - Build UI for the application
+   - Login/Register page
+   - Dashboard with category balances
+   - Income/Expense forms
+   - Movements history view
+3. **Unit Tests** - Add JUnit/Mockito tests for services
+4. **Integration Tests** - Test API endpoints with MockMvc
+5. **Deployment** - Set up production environment
 
-- Create `v0.3.0` tag
-- Update this document with security notes
+---
+
+## 🔐 Spring Security & JWT (Phase 5) ✅ COMPLETE
+
+### JWT (JSON Web Token) Basics
+
+**What is JWT?**
+
+- Stateless authentication token
+- Contains user information (email, expiration)
+- Signed with secret key to prevent tampering
+- No database lookup needed to validate
+
+**JWT Structure:**
+
+```
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIn0.signature
+    ↑ Header          ↑ Payload (claims)         ↑ Signature
+```
+
+- **Header**: Algorithm and token type (Base64 encoded)
+- **Payload**: User data (claims) like email, expiration (Base64 encoded)
+- **Signature**: HMAC-SHA hash of header+payload+secret (prevents tampering)
+
+**Token Flow:**
+
+```
+1. User logs in with email/password
+2. Server validates credentials via AuthenticationManager
+3. Server generates JWT token (signed with secret key)
+4. Client stores token (localStorage, sessionStorage, memory)
+5. Client sends token in Authorization header: "Bearer <token>"
+6. JwtAuthenticationFilter validates token signature and expiration
+7. Filter sets SecurityContext authentication
+8. Request reaches controller with authenticated user
+```
+
+### Key Security Classes Created
+
+**CustomUserDetails:**
+
+- Adapter between User entity and Spring Security
+- Implements UserDetails interface
+- Returns email as username
+- Wraps User entity for authentication
+- Used by AuthenticationManager during login
+
+**JwtUtil:**
+
+- Generates JWT tokens with email, timestamps, expiration
+- Validates tokens (signature + expiration check)
+- Extracts claims (email, expiration date)
+- Converts Base64 secret key to cryptographic key (SecretKey)
+- Uses JJWT library (io.jsonwebtoken)
+
+**CustomUserDetailsService:**
+
+- Implements UserDetailsService interface
+- Loads users from database by email
+- Returns CustomUserDetails wrapper
+- Throws UsernameNotFoundException if user not found
+- Called by AuthenticationManager and JwtAuthenticationFilter
+
+**JwtAuthenticationFilter:**
+
+- Extends OncePerRequestFilter (runs once per request)
+- Extracts JWT from "Authorization: Bearer <token>" header
+- Validates token with JwtUtil
+- Loads user from database via CustomUserDetailsService
+- Creates UsernamePasswordAuthenticationToken
+- Sets authentication in SecurityContext
+- Always continues filter chain (doesn't block)
+
+**SecurityConfig:**
+
+- Main Spring Security configuration class
+- **PasswordEncoder bean**: BCryptPasswordEncoder for password hashing
+- **AuthenticationManager bean**: Exposed from AuthenticationConfiguration for controller injection
+- **SecurityFilterChain bean**: Configures security rules
+  - Disables CSRF (stateless JWT doesn't need it)
+  - Public endpoints: `/api/v1/auth/**` (permitAll)
+  - Protected endpoints: all others (authenticated)
+  - Stateless session management (no cookies)
+  - Registers JwtAuthenticationFilter before UsernamePasswordAuthenticationFilter
+
+**AuthController:**
+
+- Public endpoints (no JWT required)
+- POST `/api/v1/auth/register` - User registration
+  - Creates User object, hashes password with PasswordEncoder
+  - Calls UserService.registerUser()
+  - Generates JWT token
+  - Returns 201 Created with AuthResponse (token + email)
+- POST `/api/v1/auth/login` - User login
+  - Uses AuthenticationManager.authenticate()
+  - Validates email/password (calls CustomUserDetailsService)
+  - Generates JWT token on success
+  - Returns 200 OK with AuthResponse
+
+### Important Security Concepts
+
+**BCrypt Password Hashing:**
+
+- One-way encryption (cannot decrypt)
+- Includes random salt (prevents rainbow table attacks)
+- Adaptive algorithm (can increase difficulty)
+- Example: `password123` → `$2a$10$N9qo8uLOickgx2ZibSz5...`
+- Salt is stored IN the hash string itself
+- Same salt + same password = same hash (required for login to work!)
+- BCrypt strength: 10 = 2^10 = 1024 rounds (configurable)
+
+**Salt & Rainbow Tables:**
+
+- **Salt** = Random data added before hashing
+- Same password + different salt = different hash
+- **Rainbow table** = Precomputed hash lookup table (e.g., "password123" → "5f4dcc3b5aa765d61d8327deb882cf99")
+- Salt makes rainbow tables useless (attacker must brute-force each password individually)
+- Salt doesn't prevent attacks but makes them VERY slow (years per password)
+- Salt changes only when password changes
+
+**Token Signing:**
+
+- Secret key signs the token (like a wax seal)
+- Prevents tampering with token contents
+- Server verifies signature on every request
+- Different from password salting (serves different purpose)
+- JWT is encoded (Base64), NOT encrypted (anyone can decode and read payload)
+- Signature ensures token wasn't modified
+
+**AuthenticationManager How It Works:**
+
+- Spring Security's central authentication component
+- When you call `authenticationManager.authenticate(token)`:
+  1. AuthenticationManager calls CustomUserDetailsService.loadUserByUsername(email)
+  2. Gets CustomUserDetails with hashed password from database
+  3. Compares submitted password (plain) with stored hash using PasswordEncoder
+  4. BCrypt hashes submitted password with SAME salt from stored hash
+  5. Compares both hashes - if match, authentication successful
+  6. Returns authenticated Authentication object
+  7. If no match, throws AuthenticationException
+
+**SecurityContext:**
+
+- Spring Security's "clipboard" for current request
+- Stores authentication information (who is logged in)
+- JwtAuthenticationFilter WRITES to it (sets authentication)
+- Controllers READ from it (get current user with @AuthenticationPrincipal)
+- Thread-local (each request has its own SecurityContext)
+- Cleared after request completes
+
+**Filter Chain Order:**
+
+- Filters run in order before reaching controllers
+- JwtAuthenticationFilter runs BEFORE UsernamePasswordAuthenticationFilter
+- Order matters: JWT validation must happen first
+- Filter chain continues even if token invalid (SecurityConfig blocks at end)
+
+### Configuration
+
+**application.yml JWT settings (IMPORTANT - Root Level!):**
+
+```yaml
+# JWT Configuration (at ROOT level, NOT inside spring:)
+jwt:
+  secret: <Base64-encoded-key> # 64+ characters
+  expiration: 86400000 # 24 hours in milliseconds
+
+spring:
+  application:
+    name: nexusfi
+  # ... rest of spring config
+```
+
+**Common Mistake:** Putting JWT config inside `spring:` block causes "Could not resolve placeholder" error!
+
+**Security Note:** In production, use environment variables:
+
+```yaml
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
+```
+
+### Dependencies Added
+
+```xml
+<!-- Spring Security -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+<!-- JWT Library (JJWT) -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.12.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.12.5</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.12.5</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+### Key Annotations Learned
+
+- `@EnableWebSecurity` - Enables Spring Security configuration
+- `@Configuration` - Marks class as configuration (defines beans)
+- `@Bean` - Creates singleton object managed by Spring
+- `@Component` - Makes filter discoverable by Spring
+- `@NonNull` - Method parameter cannot be null (from org.springframework.lang)
+
+### Testing Workflow (Postman)
+
+**1. Register a user:**
+
+```http
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+Expected: 201 Created
+Response: { "token": "eyJhbGci...", "email": "test@example.com" }
+```
+
+**2. Login:**
+
+```http
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+Expected: 200 OK
+Response: { "token": "eyJhbGci...", "email": "test@example.com" }
+```
+
+**3. Access protected endpoint:**
+
+```http
+GET http://localhost:8080/api/v1/categories
+Authorization: Bearer eyJhbGci...
+
+Expected: 200 OK (if token valid)
+Expected: 401 Unauthorized (if no token or invalid)
+```
+
+---
+
+## 🌳 Hierarchical Categories (Phase 5.1) ✅ COMPLETE
+
+### Overview
+
+Categories can have parent-child relationships, allowing for hierarchical budget organization:
+
+```
+📁 Gastos Fijos (50%)      ← Root Category (Level 1)
+├── 🏠 Renta (60%)         ← Subcategory (Level 2)
+├── 💡 Servicios (30%)     ← Subcategory (Level 2)
+└── [10% remainder]        ← Stays in parent
+📁 Ahorros (30%)           ← Root Category (Level 1)
+📁 Inversiones (20%)       ← Root Category (Level 1)
+```
+
+### Key Rules
+
+**Hierarchy Depth:**
+- Maximum 2 levels allowed
+- Level 1: Root categories (parent_id = NULL)
+- Level 2: Subcategories (parent_id = root category ID)
+- Level 3+: NOT ALLOWED → `MaxDepthExceededException` → HTTP 400
+
+**Percentage Rules:**
+
+| Level | Rule | Example |
+|-------|------|---------|
+| Level 1 (Root) | MUST sum to exactly 100% | 50% + 30% + 20% = 100% ✅ |
+| Level 2 (Sub) | CAN sum to ≤ 100% | 60% + 30% = 90% ✅ (10% stays in parent) |
+
+### Income Distribution Algorithm
+
+When recording income, distribution is **recursive**:
+
+```java
+// Simplified algorithm (in IncomeService)
+1. Get all root categories
+2. For each root category:
+   a. Calculate share = income * (percentage / 100)
+   b. Get active subcategories
+   c. If has subcategories:
+      - Calculate subcategory distributions
+      - Remainder = share - sum(subcategory amounts)
+      - Create movement for parent (remainder)
+      - Create movements for each subcategory
+   d. If no subcategories:
+      - Create movement for full share
+3. Update all category balances
+```
+
+### Example: $10,000 Income
+
+```
+Root categories (100%):
+  Gastos Fijos (50%) → $5,000
+  Ahorros (30%) → $3,000
+  Inversiones (20%) → $2,000
+
+Gastos Fijos subcategories (90%):
+  Renta (60%) → $3,000 (60% of $5,000)
+  Servicios (30%) → $1,500 (30% of $5,000)
+  [Remainder 10%] → $500 (stays in Gastos Fijos)
+
+Final balances:
+  Gastos Fijos: $500 (remainder only)
+  Renta: $3,000
+  Servicios: $1,500
+  Ahorros: $3,000
+  Inversiones: $2,000
+  TOTAL: $10,000 ✅
+```
+
+### Technical Implementation
+
+**Entity Changes (Category.java):**
+```java
+// FetchType.EAGER prevents LazyInitializationException
+@ManyToOne(fetch = FetchType.EAGER)
+@JoinColumn(name = "parent_id")
+private Category parent;
+
+@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+private List<Category> children = new ArrayList<>();
+```
+
+**Depth Validation (CategoryService.java):**
+```java
+// Check if parent already has a parent (would make this level 3)
+if (parentId != null) {
+    Category parent = categoryRepository.findById(parentId)
+        .orElseThrow(() -> new ResourceNotFoundException("Parent not found"));
+    
+    if (parent.getParent() != null) {
+        throw new MaxDepthExceededException(
+            "Cannot create sub-subcategory. Maximum 2 levels allowed");
+    }
+}
+```
+
+**New Exception (MaxDepthExceededException.java):**
+```java
+public class MaxDepthExceededException extends NexusFiException {
+    public MaxDepthExceededException(String message) {
+        super(message);
+    }
+}
+```
+
+**GlobalExceptionHandler addition:**
+```java
+@ExceptionHandler({InvalidPercentageException.class, MaxDepthExceededException.class})
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public ErrorResponse handleBadRequest(NexusFiException ex) {
+    return new ErrorResponse(400, ex.getMessage());
+}
+```
+
+### New API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /categories/tree` | Full category hierarchy |
+| `GET /categories/root` | Only root categories (Level 1) |
+| `GET /categories/{id}/subcategories` | Children of a specific category |
+| `POST /categories` with `parentId` | Create subcategory |
+
+### LazyInitializationException
+
+**Problem:** When accessing `category.getChildren()` outside a Hibernate session, you get:
+```
+org.hibernate.LazyInitializationException: failed to lazily initialize a collection
+```
+
+**Solution:** Use `FetchType.EAGER` for relationships that are always needed:
+```java
+@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+private List<Category> children;
+```
+
+**Trade-off:** EAGER loading can be slower for large datasets, but for NexusFi's category count (~10-50), it's acceptable.
+
+### Testing Hierarchical Categories
+
+All 36 tests passing via Postman:
+1. ✅ Create 3 root categories (100%)
+2. ✅ Create subcategories under a root
+3. ✅ Attempt Level 3 → 400 Bad Request
+4. ✅ Record income → Recursive distribution
+5. ✅ Verify balances match expected amounts
 
 ---
 

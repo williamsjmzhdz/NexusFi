@@ -5,7 +5,7 @@ import com.nexusfi.model.enums.MovementType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -24,7 +24,7 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
      * @param userId the user's ID
      * @return list of all movements, ordered by date descending (newest first)
      */
-    List<Movement> findByUserIdOrderByRecordedAtDesc(Long userId);
+    List<Movement> findByUserIdOrderByMovementDateDesc(Long userId);
     
     /**
      * Find movements for a user within a date range.
@@ -35,10 +35,10 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
      * @param endDate end of the date range (inclusive)
      * @return list of movements in the date range
      */
-    List<Movement> findByUserIdAndRecordedAtBetween(
+    List<Movement> findByUserIdAndMovementDateBetween(
         Long userId, 
-        LocalDateTime startDate, 
-        LocalDateTime endDate
+        LocalDate startDate, 
+        LocalDate endDate
     );
     
     /**
@@ -49,7 +49,7 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
      * @param type the movement type (INCOME, EXPENSE, TRANSFER)
      * @return list of movements of the specified type
      */
-    List<Movement> findByUserIdAndMovementTypeOrderByRecordedAtDesc(
+    List<Movement> findByUserIdAndTypeOrderByMovementDateDesc(
         Long userId, 
         MovementType type
     );
@@ -61,5 +61,5 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
      * @param categoryId the category's ID
      * @return list of movements involving the category
      */
-    List<Movement> findByCategoryIdOrderByRecordedAtDesc(Long categoryId);
+    List<Movement> findByCategoryIdOrderByMovementDateDesc(Long categoryId);
 }

@@ -71,7 +71,7 @@ public class Movement {
      * Category affected by this movement
      */
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "category_id", nullable = false, foreignKey = @ForeignKey(name = "fk_movement_category"))
     private Category category;
 
