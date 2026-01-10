@@ -59,7 +59,7 @@ public class ExpenseRecord {
      * Category from which the expense is made
      */
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "category_id", nullable = false, foreignKey = @ForeignKey(name = "fk_expense_category"))
     private Category category;
 

@@ -1,6 +1,6 @@
 # NexusFi - Development Progress & Learning Journey
 
-**Last Updated:** January 9, 2026  
+**Last Updated:** January 10, 2026  
 **Developer:** Francisco Williams Jiménez Hernández (williamsjmzhdz)  
 **Learning Approach:** Hands-on, step-by-step, with mentor guidance
 
@@ -41,9 +41,9 @@ When continuing in a new chat session, please:
 
 **Current Phase:** Phase 5 - Spring Security with JWT Authentication (COMPLETE)
 
-JWT-based authentication implementation is **complete and tested**! All smoke tests passed successfully.
+JWT-based authentication implementation is **complete and fully tested**! All smoke tests and CRUD tests passed successfully.
 
-**Current Branch:** `feature/spring-security` (ready to merge)
+**Current Branch:** `feature/spring-security` (ready to merge and tag v0.3.0)
 
 **Implementation Status:**
 
@@ -60,9 +60,61 @@ JWT-based authentication implementation is **complete and tested**! All smoke te
 - ✅ Build successful (mvn clean package -DskipTests)
 - ✅ **Smoke testing PASSED** (January 9, 2026)
 - ✅ **All controllers updated to `/api/v1/` versioning**
+- ✅ **Hierarchical categories with 2-level max depth** (January 10, 2026)
+- ✅ **Recursive income distribution to subcategories**
+- ✅ **36 CRUD tests PASSED**
+- ✅ **Postman collection updated (35 requests)**
 
 **Latest Release:** v0.2.0 - REST API Complete (October 20, 2025)
-**Next Release:** v0.3.0 - Spring Security Complete (ready to tag)
+**Next Release:** v0.3.0 - Spring Security + Hierarchical Categories (ready to tag)
+
+---
+
+## ✅ Phase 5.1: Hierarchical Categories Enhancement (January 10, 2026)
+
+### ✨ What We've Accomplished:
+
+**Hierarchical Category System:**
+
+- ✅ Parent/child category relationships
+- ✅ **Maximum 2 levels enforced** (root → subcategory, no sub-subcategories)
+- ✅ `MaxDepthExceededException` for 3rd level attempts (returns 400 Bad Request)
+- ✅ FetchType.EAGER for category relationships (solves LazyInitializationException)
+
+**Percentage Distribution Rules:**
+
+- ✅ **Level 1 (root categories):** Must sum to exactly 100%
+- ✅ **Level 2 (subcategories):** Can sum to < 100% (remainder stays in parent)
+- ✅ Subcategory percentages are relative to parent's balance
+
+**Income Distribution:**
+
+- ✅ Recursive distribution algorithm in `IncomeService`
+- ✅ When income arrives:
+  1. Distributes to root categories by percentage
+  2. For each parent with subcategories, redistributes its share to children
+  3. Remainder (if subcategories < 100%) stays in parent
+  4. Creates movements for each distribution
+
+**New API Endpoints:**
+
+- ✅ `GET /api/v1/categories/tree` - Full category hierarchy
+- ✅ `GET /api/v1/categories/root` - Only root categories
+- ✅ `GET /api/v1/categories/{id}/subcategories` - Get children of category
+- ✅ `POST /api/v1/categories` with `parentId` - Create subcategory
+
+**Testing:**
+
+- ✅ All 36 CRUD tests passed
+- ✅ Level 3 creation correctly blocked with 400 error
+- ✅ Income correctly distributed to subcategories
+
+**Key Learning:**
+
+- LazyInitializationException and why EAGER loading solves it
+- Recursive algorithms for hierarchical data
+- BigDecimal arithmetic for financial calculations with rounding
+- Exception handling hierarchy in Spring
 
 ---
 
@@ -170,7 +222,7 @@ JWT-based authentication implementation is **complete and tested**! All smoke te
 - Proper Git branching workflow
 - Moving commits between branches with reset/checkout
 
-### 🧪 Smoke Testing Results (January 9, 2026):
+### 🧪 Smoke Testing Results (January 9-10, 2026):
 
 **All Tests PASSED ✅**
 
@@ -180,6 +232,11 @@ JWT-based authentication implementation is **complete and tested**! All smoke te
 | ✅ Login | `POST /api/v1/auth/login` | 200 OK + JWT Token |
 | ✅ Protected (no token) | `GET /api/v1/categories` | 403 Forbidden |
 | ✅ Protected (with token) | `GET /api/v1/categories` | 200 OK |
+| ✅ Create Root Categories | `POST /api/v1/categories` | 201 Created (3 = 100%) |
+| ✅ Create Subcategory | `POST /api/v1/categories` | 201 Created with parentId |
+| ✅ Level 3 Blocked | `POST /api/v1/categories` | 400 Bad Request |
+| ✅ Income Distribution | `POST /api/v1/incomes` | Recursive distribution ✅ |
+| ✅ All 36 CRUD Tests | Postman Collection | 100% Pass Rate |
 
 **Bugs Fixed During Testing:**
 
@@ -191,30 +248,80 @@ JWT-based authentication implementation is **complete and tested**! All smoke te
    - `MovementRepository`: `recordedAt` → `movementDate`
 3. **MovementRepository field mismatch** - Fixed `movementType` → `type`
 4. **API versioning inconsistency** - Updated all controllers to use `/api/v1/` prefix
+5. **LazyInitializationException** - Changed Category relationships to `FetchType.EAGER`
+6. **Movements not created** - Implemented movement creation in Income/Expense/Transfer services
+7. **GlobalExceptionHandler** - Added 401 for `BadCredentialsException`
+8. **MaxDepthExceededException** - Created custom exception for 2-level limit enforcement
 
 **Next Steps:**
 
-- [ ] **Merge to develop:**
-  - Final commit and push to `feature/spring-security`
-  - Merge feature branch to develop (--no-ff)
-  - Tag release v0.3.0
-  - Push to GitHub
-- [ ] **Optional enhancements (future):**
-  - Add AuthenticationException handler in GlobalExceptionHandler
-  - Add token refresh endpoint
-  - Add logout (client-side only for stateless JWT)
+- [x] ~~Smoke testing on computer with PostgreSQL~~
+- [x] ~~Implement hierarchical categories~~
+- [x] ~~Test 2-level depth limit~~
+- [x] ~~Update Postman collection~~
+- [ ] **Final commit and push to `feature/spring-security`**
+- [ ] **Merge feature branch to develop (--no-ff)**
+- [ ] **Tag release v0.3.0**
+- [ ] **Push to GitHub**
+
+---
+
+## 🚀 Next Session: What to Do
+
+### Immediate Tasks (Tag v0.3.0):
+
+```bash
+# 1. Commit all changes
+git add .
+git commit -m "feat: hierarchical categories with 2-level limit, all tests passing"
+
+# 2. Push to feature branch
+git push
+
+# 3. Merge to develop
+git checkout develop
+git merge --no-ff feature/spring-security
+
+# 4. Tag release
+git tag -a v0.3.0 -m "Spring Security + Hierarchical Categories"
+
+# 5. Push everything
+git push
+git push --tags
+```
+
+### Future Enhancements (v0.4.0+):
+
+- [ ] Token refresh endpoint
+- [ ] Logout functionality (client-side for stateless JWT)
+- [ ] Category icons/colors
+- [ ] Budget reports and visualizations
+- [ ] Frontend (Thymeleaf or React)
+- [ ] Unit and integration tests
 
 ---
 
 ## 🎉 Releases
 
-### v0.3.0 - Spring Security Complete (January 9, 2026)
+### v0.3.0 - Spring Security + Hierarchical Categories (January 10, 2026)
+
+**Status:** Ready to tag
+
+**What's Included:**
 
 - JWT-based authentication (register/login)
 - BCrypt password hashing
 - Protected API endpoints
 - All endpoints versioned under `/api/v1/`
-- Smoke tests passed
+- **Hierarchical categories** (parent/child)
+- **Maximum 2 levels** (root → subcategory)
+- **Recursive income distribution** to subcategories
+- Percentage rules:
+  - Level 1 (root): Must sum to 100%
+  - Level 2 (sub): Can be < 100% (remainder to parent)
+- New custom exceptions: `MaxDepthExceededException`
+- 35 Postman requests (8 new subcategory endpoints)
+- All 36 CRUD tests passing
 
 ### v0.2.0 - REST API Complete (October 20, 2025)
 
@@ -743,8 +850,10 @@ I need you to act as my mentor (Tech Lead) guiding me step
 by step, explaining concepts before providing code, not just
 giving complete solutions.
 
-Phase 5 (Spring Security + JWT) is complete but needs testing.
-Next step: Test authentication on computer with PostgreSQL.
+Phase 5 is COMPLETE (Spring Security + Hierarchical Categories).
+All 36 tests passing. Ready to tag v0.3.0.
+
+Next step: Merge to develop and create tag, then start frontend.
 
 Current branch: feature/spring-security
 ```
@@ -754,62 +863,61 @@ Current branch: feature/spring-security
 **Context Summary:**
 Willy is building NexusFi, a personal finance app with Spring Boot + PostgreSQL. He's learning hands-on with step-by-step guidance.
 
-**Completed (Nov 3, 2025):**
+**Completed (January 10, 2026):**
 
 - Database schema with 6 tables (PostgreSQL)
 - 7 JPA entities with relationships
 - 6 Repository interfaces (Spring Data JPA)
-- 6 Service classes with business logic (846 lines)
-- 5 REST Controllers with 21 endpoints (1,229 lines)
+- 6 Service classes with business logic
+- 6 REST Controllers with 35 endpoints
 - Professional exception handling (GlobalExceptionHandler)
-- **Phase 5 - Spring Security + JWT (IMPLEMENTATION COMPLETE):**
-  - CustomUserDetails (UserDetails adapter)
-  - JwtUtil (token generation/validation)
-  - CustomUserDetailsService (loads users from DB)
-  - JwtAuthenticationFilter (intercepts requests, validates tokens)
-  - SecurityConfig (PasswordEncoder, AuthenticationManager, SecurityFilterChain)
+- **Phase 5 - Spring Security + JWT:**
+  - CustomUserDetails, JwtUtil, JwtAuthenticationFilter
+  - SecurityConfig with BCrypt password hashing
   - AuthController (register/login endpoints)
-  - UserService updated with BCrypt password hashing
-  - JWT config in application.yml (fixed placement to root level)
-  - Build successful: `mvn clean package -DskipTests` ✅
+  - All endpoints versioned under `/api/v1/`
+- **Hierarchical Categories:**
+  - Max 2 levels (root + subcategory)
+  - MaxDepthExceededException for Level 3 attempts
+  - Recursive income distribution
+  - FetchType.EAGER to prevent LazyInitializationException
+- **Testing:**
+  - All 36 CRUD tests passing
+  - Postman collection with 35 requests
 
 **Current Branch:** `feature/spring-security`
 
-**Pending Tasks:**
+**Next Tasks:**
 
-1. **Smoke testing** (requires computer with PostgreSQL):
-   - Test POST /api/v1/auth/register
-   - Test POST /api/v1/auth/login
-   - Test protected endpoints with/without JWT token
-2. **Commit and push** all Phase 5 changes
-3. **Merge to develop** and tag v0.3.0
+1. Final commit and push
+2. Merge to develop (`--no-ff`)
+3. Tag `v0.3.0`
+4. Push to GitHub
+5. Start frontend development
 
 **Mentor Guidance Needed:**
-Please continue acting as mentor - guide step-by-step with explanations. Help with testing setup (Postman/HTTP client), explain expected responses, and guide through merge/tag workflow. Keep explanations concise but clear.
+Continue acting as mentor - guide step-by-step with explanations. Help with Git merge workflow, and guide through frontend planning.
 
-### Alternative Opening Messages:
-
-**Option 1 - Direct and concise:**
-
-```
-"Hi! Please read PROGRESS.md and help me continue NexusFi
-development. Act as my mentor, guide step-by-step."
-```
-
-**Option 2 - With more context:**
-
-```
-"Hi! I'm continuing development of NexusFi. Phase 5 (Spring Security + JWT)
-is implemented but needs testing. Please guide me step-by-step as my mentor.
-Current branch: feature/spring-security"
-```
-
-### Quick Git Status Check:
+### Quick Git Commands for Tag:
 
 ```bash
-git status
-git branch
-git log --oneline -5
+# 1. Commit all changes
+git add .
+git commit -m "feat: hierarchical categories with 2-level limit, all tests passing"
+
+# 2. Push to feature branch
+git push
+
+# 3. Merge to develop
+git checkout develop
+git merge --no-ff feature/spring-security -m "Merge feature/spring-security"
+
+# 4. Tag release
+git tag -a v0.3.0 -m "Spring Security + Hierarchical Categories"
+
+# 5. Push everything
+git push
+git push --tags
 ```
 
 ---

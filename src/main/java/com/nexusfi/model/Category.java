@@ -84,14 +84,15 @@ public class Category {
      * Hierarchical relationship - parent category
      * Null for root categories
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "fk_category_parent"))
     private Category parent;
 
     /**
      * Hierarchical relationship - child categories
+     * Using EAGER fetch to avoid LazyInitializationException when building tree structures
      */
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = false)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.EAGER)
     @Builder.Default
     private List<Category> children = new ArrayList<>();
 

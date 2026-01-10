@@ -81,12 +81,14 @@ User (1) ──< (N) Category
 ## 🎯 Key Features
 
 ### 1. Hierarchical Categories
-- Unlimited depth parent-child relationships
+- **Maximum 2 levels** (root → subcategory)
+- No sub-subcategories allowed (enforced at app level)
 - Each category can have subcategories
 - Root categories have `parent_id = NULL`
 
 ### 2. Percentage-Based Allocation
-- Sibling categories MUST sum to 100%
+- **Root categories (Level 1):** MUST sum to 100%
+- **Subcategories (Level 2):** Can sum to ≤ 100% (remainder stays in parent)
 - Enforced at application level
 - Rebalancing required before archiving
 

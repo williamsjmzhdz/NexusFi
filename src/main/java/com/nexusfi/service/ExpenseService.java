@@ -4,7 +4,10 @@ import com.nexusfi.exception.InsufficientBalanceException;
 import com.nexusfi.exception.ResourceNotFoundException;
 import com.nexusfi.model.Category;
 import com.nexusfi.model.ExpenseRecord;
+import com.nexusfi.model.Movement;
+import com.nexusfi.model.enums.MovementType;
 import com.nexusfi.repository.ExpenseRecordRepository;
+import com.nexusfi.repository.MovementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +24,16 @@ import java.util.List;
 public class ExpenseService {
     
     private final ExpenseRecordRepository expenseRecordRepository;
+    private final MovementRepository movementRepository;
     private final CategoryService categoryService;
     
     public ExpenseService(
         ExpenseRecordRepository expenseRecordRepository,
+        MovementRepository movementRepository,
         CategoryService categoryService
     ) {
         this.expenseRecordRepository = expenseRecordRepository;
+        this.movementRepository = movementRepository;
         this.categoryService = categoryService;
     }
     
@@ -63,8 +69,22 @@ public class ExpenseService {
         // Deduct from category balance
         category.setCurrentBalance(currentBalance.subtract(expenseAmount));
         
-        // Save expense record (DB trigger creates movement)
-        return expenseRecordRepository.save(expenseRecord);
+        // Save expense record
+        ExpenseRecord savedExpense = expenseRecordRepository.save(expenseRecord);
+        
+        // Create movement record
+        Movement movement = Movement.builder()
+            .amount(expenseAmount)
+            .type(MovementType.EXPENSE)
+            .description("Expense: " + expenseRecord.getMerchant())
+            .movementDate(expenseRecord.getExpenseDate())
+            .category(category)
+            .user(expenseRecord.getUser())
+            .expenseRecord(savedExpense)
+            .build();
+        movementRepository.save(movement);
+        
+        return savedExpense;
     }
     
     /**

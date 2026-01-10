@@ -108,4 +108,14 @@ public class CustomUserDetails implements UserDetails {
     public User getUser() {
         return user;
     }
+
+    /**
+     * Returns the user's ID.
+     * Convenience method for accessing the user's ID directly.
+     *
+     * @return the User's ID
+     */
+    public Long getId() {
+        return user.getId();
+    }
 }

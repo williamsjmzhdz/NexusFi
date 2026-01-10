@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "nexusfi-api-v1",
 		"name": "NexusFi API v1",
-		"description": "Complete API collection for NexusFi Personal Finance Management System.\n\n## Authentication\nThis API uses JWT Bearer tokens. Run the Login request first to automatically set the token.\n\n## Workflow\n1. Register or Login to get JWT token\n2. Create categories with percentages (must sum to 100%)\n3. Record incomes (auto-distributes to categories)\n4. Record expenses from categories\n5. Execute transfers between categories\n6. Query movements for transaction history",
+		"description": "Complete API collection for NexusFi Personal Finance Management System.\n\n## Authentication\nThis API uses JWT Bearer tokens. Run the Login request first to automatically set the token.\n\n## Category Hierarchy\n- **Level 1 (Root)**: Main budget categories (must sum to 100%)\n- **Level 2 (Subcategories)**: Optional breakdown of root categories\n- **Level 3+**: Not allowed (max 2 levels)\n\nSubcategories can sum to less than 100% - remainder stays in parent as buffer.\n\n## Workflow\n1. Register or Login to get JWT token\n2. Create root categories with percentages (must sum to 100%)\n3. Optionally create subcategories under root categories\n4. Record incomes (auto-distributes to categories hierarchically)\n5. Record expenses from categories\n6. Execute transfers between categories\n7. Query movements for transaction history",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
@@ -166,7 +166,7 @@
 		},
 		{
 			"name": "📁 Categories",
-			"description": "Budget category management with percentage allocation",
+			"description": "Budget category management with percentage allocation.\n\n**Hierarchy Rules:**\n- Level 1 (Root): Must sum to exactly 100%\n- Level 2 (Subcategories): Can be < 100%, remainder stays in parent\n- Level 3+: Not allowed",
 			"item": [
 				{
 					"name": "Create Category",
@@ -544,6 +544,391 @@
 							"path": ["categories"]
 						},
 						"description": "Negative test: Access without token should fail."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Subcategory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has subcategory with parent', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('parentId');",
+									"    pm.expect(jsonData.parentId).to.not.be.null;",
+									"});",
+									"",
+									"pm.test('Subcategory ID is saved', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('subcategory_id', jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Alquiler\",\n    \"percentage\": 60.00,\n    \"parentId\": {{category_id}}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}{{api_path}}/categories",
+							"host": ["{{base_url}}{{api_path}}"],
+							"path": ["categories"]
+						},
+						"description": "Create a subcategory under an existing category. Pass parentId in the request body."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Subcategory - Servicios",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Subcategory 2 ID is saved', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('subcategory_id_2', jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Servicios\",\n    \"percentage\": 30.00,\n    \"parentId\": {{category_id}}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}{{api_path}}/categories",
+							"host": ["{{base_url}}{{api_path}}"],
+							"path": ["categories"]
+						},
+						"description": "Create second subcategory. Total with Alquiler = 90%, leaving 10% buffer in parent."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category Tree",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is an array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"pm.test('Root categories have children array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.length > 0) {",
+									"        pm.expect(jsonData[0]).to.have.property('children');",
+									"        pm.expect(jsonData[0].children).to.be.an('array');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{api_path}}/categories/tree",
+							"host": ["{{base_url}}{{api_path}}"],
+							"path": ["categories", "tree"]
+						},
+						"description": "Get hierarchical category tree with nested children."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Root Categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is an array of root categories', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"    jsonData.forEach(function(cat) {",
+									"        pm.expect(cat.parentId).to.be.null;",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{api_path}}/categories/root",
+							"host": ["{{base_url}}{{api_path}}"],
+							"path": ["categories", "root"]
+						},
+						"description": "Get only root-level categories (no subcategories)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subcategories of Parent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('All items are subcategories of parent', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const parentId = pm.collectionVariables.get('category_id');",
+									"    jsonData.forEach(function(cat) {",
+									"        pm.expect(cat.parentId).to.equal(parseInt(parentId));",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{api_path}}/categories/{{category_id}}/subcategories",
+							"host": ["{{base_url}}{{api_path}}"],
+							"path": ["categories", "{{category_id}}", "subcategories"]
+						},
+						"description": "Get all subcategories of a specific parent category."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Remaining % for Subcategories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Remaining is 10% (100 - 60 - 30)', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.equal(10);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{api_path}}/categories/remaining?parentId={{category_id}}",
+							"host": ["{{base_url}}{{api_path}}"],
+							"path": ["categories", "remaining"],
+							"query": [
+								{
+									"key": "parentId",
+									"value": "{{category_id}}"
+								}
+							]
+						},
+						"description": "Get remaining unassigned percentage within a parent category's subcategories."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Level 3 - Should Fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400 Bad Request', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error message mentions max 2 levels', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.include('Maximum 2 levels');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Sub-sub-category\",\n    \"percentage\": 50.00,\n    \"parentId\": {{subcategory_id}}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}{{api_path}}/categories",
+							"host": ["{{base_url}}{{api_path}}"],
+							"path": ["categories"]
+						},
+						"description": "Negative test: Creating a Level 3 category (sub-subcategory) should fail. Maximum depth is 2 levels."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 204 No Content', function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{api_path}}/categories/{{subcategory_id_2}}",
+							"host": ["{{base_url}}{{api_path}}"],
+							"path": ["categories", "{{subcategory_id_2}}"]
+						},
+						"description": "Delete a category (soft delete). Only works if category has zero balance and no children."
 					},
 					"response": []
 				}

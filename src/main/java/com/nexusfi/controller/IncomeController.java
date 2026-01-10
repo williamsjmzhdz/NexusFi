@@ -4,11 +4,13 @@ import com.nexusfi.dto.IncomeRequest;
 import com.nexusfi.dto.IncomeResponse;
 import com.nexusfi.model.IncomeRecord;
 import com.nexusfi.model.User;
+import com.nexusfi.security.CustomUserDetails;
 import com.nexusfi.service.IncomeService;
 import com.nexusfi.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,13 +39,15 @@ public class IncomeController {
      * POST /api/v1/incomes
      * 
      * @param request the income data
+     * @param userDetails the authenticated user
      * @return 201 Created with the recorded income
      */
     @PostMapping
-    public ResponseEntity<IncomeResponse> recordIncome(@Valid @RequestBody IncomeRequest request) {
-        // TODO: Get authenticated user from SecurityContext
-        // For now, we'll use a hardcoded user ID (will be replaced with Spring Security)
-        User user = userService.findById(1L)
+    public ResponseEntity<IncomeResponse> recordIncome(
+            @Valid @RequestBody IncomeRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        
+        User user = userService.findById(userDetails.getId())
             .orElseThrow(() -> new RuntimeException("User not found"));
         
         // Build income record entity
@@ -65,15 +69,14 @@ public class IncomeController {
      * 
      * GET /api/v1/incomes
      * 
+     * @param userDetails the authenticated user
      * @return 200 OK with list of income records
      */
     @GetMapping
-    public ResponseEntity<List<IncomeResponse>> getAllIncomes() {
-        // TODO: Get authenticated user from SecurityContext
-        User user = userService.findById(1L)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    public ResponseEntity<List<IncomeResponse>> getAllIncomes(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         
-        List<IncomeRecord> incomes = incomeService.getUserIncomeRecords(user.getId());
+        List<IncomeRecord> incomes = incomeService.getUserIncomeRecords(userDetails.getId());
         List<IncomeResponse> response = incomes.stream()
             .map(IncomeResponse::fromEntity)
             .collect(Collectors.toList());

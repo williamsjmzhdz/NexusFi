@@ -82,7 +82,9 @@ Budget categories with hierarchical structure supporting parent-child relationsh
 - `uk_category_name_parent_user` on `(name, parent_id, user_id)`
 
 **Business Rules**:
-- Sibling categories (same parent) must sum to 100%
+- Maximum 2 levels of hierarchy (root → subcategory, no sub-subcategories)
+- Root categories (parent_id = NULL) must sum to 100%
+- Subcategories can sum to ≤ 100% (remainder stays in parent)
 - Can only archive when `current_balance = 0` and `assigned_percentage = 0`
 - Name must be unique among siblings
 
@@ -219,26 +221,32 @@ Central ledger table recording all money movements in the system.
 
 ### Allocation Integrity
 
-1. **Sibling Percentage Rule**:
-   ```sql
-   SELECT SUM(assigned_percentage) 
-   FROM categories 
-   WHERE parent_id = ? AND is_active = true
-   -- Must equal 100.00
-   ```
+1. **Hierarchy Depth Limit**:
+   - Maximum 2 levels allowed
+   - Level 1: Root categories (parent_id = NULL)
+   - Level 2: Subcategories (parent_id = root category)
+   - Level 3+: NOT ALLOWED (throws MaxDepthExceededException → 400 Bad Request)
 
-2. **Archive Prerequisites**:
-   - `current_balance = 0.00`
-   - `assigned_percentage = 0.00`
-   - All sibling percentages must be rebalanced first
-
-3. **Root Category Percentage**:
+2. **Root Category Percentage Rule**:
    ```sql
    SELECT SUM(assigned_percentage) 
    FROM categories 
    WHERE parent_id IS NULL AND user_id = ? AND is_active = true
    -- Must equal 100.00
    ```
+
+3. **Subcategory Percentage Rule**:
+   ```sql
+   SELECT SUM(assigned_percentage) 
+   FROM categories 
+   WHERE parent_id = ? AND is_active = true
+   -- Can be 0.00 to 100.00 (remainder stays in parent)
+   ```
+
+4. **Archive Prerequisites**:
+   - `current_balance = 0.00`
+   - `assigned_percentage = 0.00`
+   - All sibling percentages must be rebalanced first
 
 ## Common Queries
 

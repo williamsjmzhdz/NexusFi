@@ -124,7 +124,7 @@ Located in: `src/main/java/com/nexusfi/model/`
 ## 🎯 Key Features Implemented
 
 ### ✅ Entity Features
-- [x] Hierarchical categories (unlimited depth)
+- [x] Hierarchical categories (max 2 levels enforced at app level)
 - [x] Percentage-based allocation
 - [x] Soft delete support
 - [x] Audit timestamps
@@ -132,6 +132,7 @@ Located in: `src/main/java/com/nexusfi/model/`
 - [x] Movement ledger
 - [x] Zero-sum operations
 - [x] Referential integrity
+- [x] Recursive income distribution
 
 ### ✅ JPA Features
 - [x] Entity relationships (@OneToMany, @ManyToOne)

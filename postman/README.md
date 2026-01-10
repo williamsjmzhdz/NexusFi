@@ -2,6 +2,10 @@
 
 Professional API testing collection for NexusFi Personal Finance Management System.
 
+**Total Requests:** 35  
+**API Version:** v1  
+**Last Updated:** January 10, 2026
+
 ## 📦 Import Collection
 
 1. Open Postman
@@ -29,6 +33,7 @@ These are set automatically by test scripts:
 | `category_id` | Create Category | First category ID |
 | `category_id_2` | Create Ahorros | Second category ID |
 | `category_id_3` | Create Inversiones | Third category ID |
+| `subcategory_id` | Create Subcategory | First subcategory ID |
 | `income_id` | Record Income | Last created income ID |
 | `expense_id` | Record Expense | Last created expense ID |
 | `transfer_id` | Execute Transfer | Last created transfer ID |
@@ -51,7 +56,14 @@ For a complete workflow test, run requests in this order:
 ├── Create Category        ✅ 50% - Gastos Fijos
 ├── Create Category - Ahorros     ✅ 30%
 ├── Create Category - Inversiones ✅ 20%
-└── Get All Categories     ✅ Verify 3 categories
+├── Create Subcategory     ✅ Renta (under Gastos Fijos)
+├── Create Subcategory - Servicios ✅ Second subcategory
+├── Get Category Tree      ✅ Full hierarchy
+├── Get Root Categories    ✅ Only level 1
+├── Get Subcategories      ✅ Children of a parent
+├── Get Remaining Percentage ✅ Available for new siblings
+├── Create Level 3 - Should Fail ✅ Expects 400 error
+└── Get All Categories     ✅ Verify all categories
 ```
 
 ### 3. Record Income (triggers auto-distribution)
@@ -132,17 +144,23 @@ newman run NexusFi_API_v1.postman_collection.json -r html
 ## 📁 Collection Structure
 
 ```
-NexusFi API v1
+NexusFi API v1 (35 requests)
 ├── 🔓 Auth (3 requests)
 │   ├── Register User
 │   ├── Login User
 │   └── Login - Invalid Credentials
-├── 📁 Categories (8 requests)
-│   ├── Create Category (x3)
+├── 📁 Categories (12 requests)
+│   ├── Create Category (x3 for 100%)
+│   ├── Create Subcategory (x2)
 │   ├── Get All Categories
 │   ├── Get Category by ID
-│   ├── Update Category
+│   ├── Get Category Tree
+│   ├── Get Root Categories
+│   ├── Get Subcategories of Parent
 │   ├── Get Remaining Percentage
+│   ├── Update Category
+│   ├── Create Level 3 - Should Fail
+│   ├── Delete Category
 │   └── Get Categories - No Token
 ├── 💰 Incomes (3 requests)
 │   ├── Record Income
@@ -169,13 +187,19 @@ NexusFi API v1
 ## 💡 Tips
 
 1. **Fresh Start**: If tests fail, register a new user with a different email
-2. **Categories**: Must create 3 categories summing to 100% before income
-3. **Income First**: Record income before expenses (needs category balance)
-4. **Token Expiry**: Tokens expire after 24 hours - run Login again
-5. **Database Reset**: If needed, truncate tables and start fresh
+2. **Categories**: Must create 3 root categories summing to 100% before income
+3. **Subcategories**: Can sum to ≤ 100% (remainder stays in parent)
+4. **Max Depth**: Only 2 levels allowed (root → subcategory, no sub-subcategories)
+5. **Income First**: Record income before expenses (needs category balance)
+6. **Token Expiry**: Tokens expire after 24 hours - run Login again
+7. **Database Reset**: If needed, truncate tables and start fresh:
+   ```sql
+   TRUNCATE TABLE movements, transfers, expense_records, income_records, categories, users RESTART IDENTITY CASCADE;
+   ```
 
 ---
 
-**Version**: 1.0.0  
+**Version**: 1.1.0  
 **API Version**: v1  
-**Last Updated**: 2026-01-09
+**Total Requests**: 35  
+**Last Updated**: 2026-01-10

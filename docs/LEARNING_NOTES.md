@@ -1,8 +1,8 @@
 # NexusFi - Learning Notes & Reference Guide
 
 > **Personal study guide for Francisco Williams Jiménez Hernández**  
-> Everything learned including Phase 5 (Spring Security + JWT)  
-> Last updated: November 3, 2025
+> Everything learned including Phase 5 (Spring Security + JWT) and Hierarchical Categories  
+> Last updated: January 10, 2026
 
 ---
 
@@ -16,14 +16,16 @@
 6. [Controller Layer (REST API)](#-controller-layer-rest-api)
 7. [Exception Handling](#-exception-handling)
 8. [DTOs (Data Transfer Objects)](#-dtos-data-transfer-objects)
-9. [Maven Commands](#-maven-commands)
-10. [Git Workflow](#-git-workflow)
-11. [Configuration Files](#️-configuration-files)
-12. [Quick Command Reference](#-quick-command-reference)
-13. [Best Practices Learned](#-best-practices-learned)
-14. [Key Takeaways](#-key-takeaways)
-15. [What's Next (Phase 5)](#-whats-next-phase-5)
-16. [Quick Search](#-quick-search)
+9. [Spring Security & JWT](#-spring-security--jwt)
+10. [Hierarchical Categories](#-hierarchical-categories)
+11. [Maven Commands](#-maven-commands)
+12. [Git Workflow](#-git-workflow)
+13. [Configuration Files](#️-configuration-files)
+14. [Quick Command Reference](#-quick-command-reference)
+15. [Best Practices Learned](#-best-practices-learned)
+16. [Key Takeaways](#-key-takeaways)
+17. [What's Next](#-whats-next)
+18. [Quick Search](#-quick-search)
 
 ---
 
@@ -37,6 +39,8 @@
 ┌─────────────────────────┐
 │   Controller Layer      │ ← REST API endpoints (HTTP)
 ├─────────────────────────┤
+│   Security Layer        │ ← JWT Authentication
+├─────────────────────────┤
 │   Service Layer         │ ← Business logic
 ├─────────────────────────┤
 │   Repository Layer      │ ← Database access (JPA)
@@ -47,14 +51,16 @@
 └─────────────────────────┘
 ```
 
-**Current Status (v0.2.0):**
+**Current Status (v0.3.0 - ready to tag):**
 
 - ✅ 7 Entities
 - ✅ 6 Repositories
 - ✅ 6 Services
-- ✅ 5 Controllers (21 endpoints)
+- ✅ 6 Controllers (35 endpoints)
 - ✅ 11 DTOs
 - ✅ Exception handling
+- ✅ JWT Authentication
+- ✅ Hierarchical Categories (2-level max)
 
 ---
 
@@ -1182,43 +1188,25 @@ HTTP Response (JSON)
 
 ---
 
-## 📚 What's Next (Phase 5) - IN PROGRESS 🔄
+## 📚 What's Next
 
-**Spring Security with JWT (Partially Complete):**
+**Phase 5 COMPLETE ✅** (January 10, 2026)
 
-**✅ Completed:**
+**Next Steps:**
 
-- JWT dependencies added (Spring Security + JJWT library)
-- CustomUserDetails adapter class
-- JwtUtil for token generation and validation
-- Authentication DTOs (LoginRequest, RegisterRequest, AuthResponse)
-- JWT configuration in application.yml
-
-**🔜 Remaining:**
-
-- AuthController (login/register endpoints)
-- JwtAuthenticationFilter (intercept and validate requests)
-- SecurityConfig (Spring Security configuration)
-- BCrypt password encryption
-- Secure all endpoints except /api/auth/\*\*
-
-**Key Concepts Learned:**
-
-- JWT structure: Header.Payload.Signature
-- Token signing with HMAC-SHA algorithm
-- Base64 encoding for cryptographic keys
-- Spring Security UserDetails interface
-- Stateless authentication (no server-side sessions)
-- Token expiration and validation
-
-**After completing Phase 5:**
-
-- Create `v0.3.0` tag
-- Add detailed Spring Security section to this document
+1. **Tag v0.3.0** - Merge to develop and create release
+2. **Frontend Development** - Build UI for the application
+   - Login/Register page
+   - Dashboard with category balances
+   - Income/Expense forms
+   - Movements history view
+3. **Unit Tests** - Add JUnit/Mockito tests for services
+4. **Integration Tests** - Test API endpoints with MockMvc
+5. **Deployment** - Set up production environment
 
 ---
 
-## 🔐 Spring Security & JWT (Phase 5 Notes)
+## 🔐 Spring Security & JWT (Phase 5) ✅ COMPLETE
 
 ### JWT (JSON Web Token) Basics
 
@@ -1477,6 +1465,158 @@ Authorization: Bearer eyJhbGci...
 Expected: 200 OK (if token valid)
 Expected: 401 Unauthorized (if no token or invalid)
 ```
+
+---
+
+## 🌳 Hierarchical Categories (Phase 5.1) ✅ COMPLETE
+
+### Overview
+
+Categories can have parent-child relationships, allowing for hierarchical budget organization:
+
+```
+📁 Gastos Fijos (50%)      ← Root Category (Level 1)
+├── 🏠 Renta (60%)         ← Subcategory (Level 2)
+├── 💡 Servicios (30%)     ← Subcategory (Level 2)
+└── [10% remainder]        ← Stays in parent
+📁 Ahorros (30%)           ← Root Category (Level 1)
+📁 Inversiones (20%)       ← Root Category (Level 1)
+```
+
+### Key Rules
+
+**Hierarchy Depth:**
+- Maximum 2 levels allowed
+- Level 1: Root categories (parent_id = NULL)
+- Level 2: Subcategories (parent_id = root category ID)
+- Level 3+: NOT ALLOWED → `MaxDepthExceededException` → HTTP 400
+
+**Percentage Rules:**
+
+| Level | Rule | Example |
+|-------|------|---------|
+| Level 1 (Root) | MUST sum to exactly 100% | 50% + 30% + 20% = 100% ✅ |
+| Level 2 (Sub) | CAN sum to ≤ 100% | 60% + 30% = 90% ✅ (10% stays in parent) |
+
+### Income Distribution Algorithm
+
+When recording income, distribution is **recursive**:
+
+```java
+// Simplified algorithm (in IncomeService)
+1. Get all root categories
+2. For each root category:
+   a. Calculate share = income * (percentage / 100)
+   b. Get active subcategories
+   c. If has subcategories:
+      - Calculate subcategory distributions
+      - Remainder = share - sum(subcategory amounts)
+      - Create movement for parent (remainder)
+      - Create movements for each subcategory
+   d. If no subcategories:
+      - Create movement for full share
+3. Update all category balances
+```
+
+### Example: $10,000 Income
+
+```
+Root categories (100%):
+  Gastos Fijos (50%) → $5,000
+  Ahorros (30%) → $3,000
+  Inversiones (20%) → $2,000
+
+Gastos Fijos subcategories (90%):
+  Renta (60%) → $3,000 (60% of $5,000)
+  Servicios (30%) → $1,500 (30% of $5,000)
+  [Remainder 10%] → $500 (stays in Gastos Fijos)
+
+Final balances:
+  Gastos Fijos: $500 (remainder only)
+  Renta: $3,000
+  Servicios: $1,500
+  Ahorros: $3,000
+  Inversiones: $2,000
+  TOTAL: $10,000 ✅
+```
+
+### Technical Implementation
+
+**Entity Changes (Category.java):**
+```java
+// FetchType.EAGER prevents LazyInitializationException
+@ManyToOne(fetch = FetchType.EAGER)
+@JoinColumn(name = "parent_id")
+private Category parent;
+
+@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+private List<Category> children = new ArrayList<>();
+```
+
+**Depth Validation (CategoryService.java):**
+```java
+// Check if parent already has a parent (would make this level 3)
+if (parentId != null) {
+    Category parent = categoryRepository.findById(parentId)
+        .orElseThrow(() -> new ResourceNotFoundException("Parent not found"));
+    
+    if (parent.getParent() != null) {
+        throw new MaxDepthExceededException(
+            "Cannot create sub-subcategory. Maximum 2 levels allowed");
+    }
+}
+```
+
+**New Exception (MaxDepthExceededException.java):**
+```java
+public class MaxDepthExceededException extends NexusFiException {
+    public MaxDepthExceededException(String message) {
+        super(message);
+    }
+}
+```
+
+**GlobalExceptionHandler addition:**
+```java
+@ExceptionHandler({InvalidPercentageException.class, MaxDepthExceededException.class})
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public ErrorResponse handleBadRequest(NexusFiException ex) {
+    return new ErrorResponse(400, ex.getMessage());
+}
+```
+
+### New API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /categories/tree` | Full category hierarchy |
+| `GET /categories/root` | Only root categories (Level 1) |
+| `GET /categories/{id}/subcategories` | Children of a specific category |
+| `POST /categories` with `parentId` | Create subcategory |
+
+### LazyInitializationException
+
+**Problem:** When accessing `category.getChildren()` outside a Hibernate session, you get:
+```
+org.hibernate.LazyInitializationException: failed to lazily initialize a collection
+```
+
+**Solution:** Use `FetchType.EAGER` for relationships that are always needed:
+```java
+@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+private List<Category> children;
+```
+
+**Trade-off:** EAGER loading can be slower for large datasets, but for NexusFi's category count (~10-50), it's acceptable.
+
+### Testing Hierarchical Categories
+
+All 36 tests passing via Postman:
+1. ✅ Create 3 root categories (100%)
+2. ✅ Create subcategories under a root
+3. ✅ Attempt Level 3 → 400 Bad Request
+4. ✅ Record income → Recursive distribution
+5. ✅ Verify balances match expected amounts
 
 ---
 
