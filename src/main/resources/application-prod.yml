@@ -2,7 +2,7 @@
 # This file overrides application.yml when running with --spring.profiles.active=prod
 #
 # REQUIRED ENVIRONMENT VARIABLES (set in Railway dashboard):
-#   PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD - PostgreSQL connection (auto-provided by Railway)
+#   DATABASE_URL or PGHOST/PGPORT/PGDATABASE/PGUSER/PGPASSWORD
 #   JWT_SECRET      - Secure random string for JWT signing (min 256 bits)
 #   ALLOWED_ORIGINS - Comma-separated list of allowed frontend URLs
 
@@ -12,10 +12,10 @@ jwt:
   expiration: 86400000 # 24 hours
 
 spring:
-  # Database Configuration - Use Railway's individual PG variables
+  # Database Configuration - Use Railway's PostgreSQL connection
   datasource:
-    url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
-    username: ${PGUSER}
+    url: jdbc:postgresql://${PGHOST:postgres.railway.internal}:${PGPORT:5432}/${PGDATABASE:railway}
+    username: ${PGUSER:postgres}
     password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
 
@@ -24,7 +24,7 @@ spring:
       pool-name: NexusFi-Prod-Pool
       maximum-pool-size: 5  # Railway free tier has limited connections
       minimum-idle: 2
-      connection-timeout: 20000
+      connection-timeout: 30000
       idle-timeout: 300000
       max-lifetime: 900000
 
