@@ -12,9 +12,11 @@ jwt:
   expiration: 86400000 # 24 hours
 
 spring:
-  # Database Configuration - Uses Railway's DATABASE_URL directly
+  # Database Configuration - Uses separate variables for Railway PostgreSQL public endpoint
   datasource:
-    url: jdbc:${DATABASE_URL}
+    url: jdbc:postgresql://centerbeam.proxy.rlwy.net:55064/railway?sslmode=require
+    username: postgres
+    password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
 
     # HikariCP - Optimized for Railway's connection limits
