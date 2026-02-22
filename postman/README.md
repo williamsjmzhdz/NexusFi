@@ -4,7 +4,7 @@ Professional API testing collection for NexusFi Personal Finance Management Syst
 
 **Total Requests:** 35  
 **API Version:** v1  
-**Last Updated:** January 10, 2026
+**Last Updated:** February 22, 2026
 
 ## 📦 Import Collection
 
@@ -21,6 +21,8 @@ The collection includes built-in variables:
 |----------|--------------|-------------|
 | `base_url` | `http://localhost:8080` | API server URL |
 | `api_path` | `/api/v1` | API version path |
+
+> **Production Testing:** To test against the live API, change `base_url` to `https://nexusfi-production.up.railway.app`
 
 ### Auto-populated Variables
 
@@ -199,7 +201,8 @@ NexusFi API v1 (35 requests)
 
 ---
 
-**Version**: 1.1.0  
+**Version**: 1.2.0  
 **API Version**: v1  
 **Total Requests**: 35  
-**Last Updated**: 2026-01-10
+**Last Updated**: 2026-02-22
+**Production URL**: https://nexusfi-production.up.railway.app/api/v1

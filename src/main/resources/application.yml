@@ -143,7 +143,7 @@ logging:
 nexusfi:
   # Business Rules
   business:
-    max-category-depth: 5 # Maximum hierarchy depth
+    max-category-depth: 2 # Maximum hierarchy depth (root → subcategory)
     max-categories-per-user: 100
     allow-negative-balance: false
     enforce-percentage-integrity: true

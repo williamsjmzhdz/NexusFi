@@ -1,8 +1,8 @@
 # NexusFi - Learning Notes & Reference Guide
 
 > **Personal study guide for Francisco Williams Jiménez Hernández**  
-> Everything learned including Phase 5 (Spring Security + JWT) and Hierarchical Categories  
-> Last updated: January 10, 2026
+> Everything learned including Phase 6 (Production Deployment on Railway)  
+> Last updated: February 22, 2026
 
 ---
 
@@ -18,14 +18,15 @@
 8. [DTOs (Data Transfer Objects)](#-dtos-data-transfer-objects)
 9. [Spring Security & JWT](#-spring-security--jwt)
 10. [Hierarchical Categories](#-hierarchical-categories)
-11. [Maven Commands](#-maven-commands)
-12. [Git Workflow](#-git-workflow)
-13. [Configuration Files](#️-configuration-files)
-14. [Quick Command Reference](#-quick-command-reference)
-15. [Best Practices Learned](#-best-practices-learned)
-16. [Key Takeaways](#-key-takeaways)
-17. [What's Next](#-whats-next)
-18. [Quick Search](#-quick-search)
+11. [Docker & Production Deployment](#-docker--production-deployment)
+12. [Maven Commands](#-maven-commands)
+13. [Git Workflow](#-git-workflow)
+14. [Configuration Files](#️-configuration-files)
+15. [Quick Command Reference](#-quick-command-reference)
+16. [Best Practices Learned](#-best-practices-learned)
+17. [Key Takeaways](#-key-takeaways)
+18. [What's Next](#-whats-next)
+19. [Quick Search](#-quick-search)
 
 ---
 
@@ -51,13 +52,18 @@
 └─────────────────────────┘
 ```
 
-**Current Status (v0.3.0 - ready to tag):**
+**Current Status (v0.3.1 - Production on Railway):**
 
 - ✅ 7 Entities
 - ✅ 6 Repositories
 - ✅ 6 Services
 - ✅ 6 Controllers (35 endpoints)
 - ✅ 11 DTOs
+- ✅ Exception handling
+- ✅ JWT Authentication
+- ✅ Hierarchical Categories (2-level max)
+- ✅ Docker containerization
+- ✅ Railway production deployment
 - ✅ Exception handling
 - ✅ JWT Authentication
 - ✅ Hierarchical Categories (2-level max)
@@ -1190,19 +1196,142 @@ HTTP Response (JSON)
 
 ## 📚 What's Next
 
-**Phase 5 COMPLETE ✅** (January 10, 2026)
+**Phase 6 COMPLETE ✅** (February 22, 2026)
 
 **Next Steps:**
 
-1. **Tag v0.3.0** - Merge to develop and create release
-2. **Frontend Development** - Build UI for the application
+1. **Frontend Development** - Build UI with React + TypeScript
    - Login/Register page
    - Dashboard with category balances
    - Income/Expense forms
    - Movements history view
-3. **Unit Tests** - Add JUnit/Mockito tests for services
-4. **Integration Tests** - Test API endpoints with MockMvc
-5. **Deployment** - Set up production environment
+2. **Unit Tests** - Add JUnit/Mockito tests for services
+3. **Integration Tests** - Test API endpoints with MockMvc
+
+---
+
+## 🐳 Docker & Production Deployment (Phase 6) ✅ COMPLETE
+
+### Docker Basics
+
+**What is Docker?**
+
+- Packages application + dependencies into a container
+- "Works on my machine" solved - same environment everywhere
+- Lighter than virtual machines (shares OS kernel)
+
+**Multi-stage Build:**
+
+```dockerfile
+# Stage 1: Build (heavy - includes compiler)
+FROM eclipse-temurin:17-jdk AS builder
+WORKDIR /app
+COPY . .
+RUN ./mvnw clean package -DskipTests
+
+# Stage 2: Runtime (lightweight - only JRE)
+FROM eclipse-temurin:17-jre-jammy
+COPY --from=builder /app/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+**Why multi-stage?**
+- Build stage has JDK (~400MB) + Maven + source code
+- Runtime stage only has JRE (~200MB) + compiled JAR
+- Final image is much smaller
+
+**Key Dockerfile instructions:**
+
+| Instruction | Purpose | Example |
+|------------|---------|--------|
+| `FROM` | Base image | `FROM eclipse-temurin:17-jre-jammy` |
+| `WORKDIR` | Set working directory | `WORKDIR /app` |
+| `COPY` | Copy files into image | `COPY --from=builder /app/target/*.jar app.jar` |
+| `RUN` | Execute command during build | `RUN ./mvnw clean package` |
+| `EXPOSE` | Document port | `EXPOSE 8080` |
+| `ENTRYPOINT` | Command to run on start | `ENTRYPOINT ["java", "-jar", "app.jar"]` |
+| `HEALTHCHECK` | Health monitoring | `HEALTHCHECK CMD curl -f http://localhost:8080/...` |
+
+### Spring Profiles for Production
+
+**Profile system:**
+- `application.yml` → Default config (shared settings)
+- `application-dev.yml` → Development (auto-created in main yml)
+- `application-prod.yml` → Production (separate file for Railway)
+
+**Activating profile:**
+```bash
+# Via command line
+java -jar app.jar --spring.profiles.active=prod
+
+# Via environment variable
+SPRING_PROFILES_ACTIVE=prod
+
+# In Dockerfile
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
+```
+
+**Production config differences:**
+- Database: Railway PostgreSQL with SSL
+- Connection pool: Smaller (max=3 for cloud free tier)
+- Logging: Reduced (INFO only)
+- Secrets: From environment variables, not hardcoded
+
+### CORS (Cross-Origin Resource Sharing)
+
+**What is CORS?**
+- Browser security feature that blocks requests from different origins
+- If frontend is on `localhost:3000` and API on `localhost:8080`, browser blocks it
+- Server must explicitly allow cross-origin requests
+
+**Spring CORS config:**
+```java
+@Configuration
+public class CorsConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+            .allowedOrigins(allowedOrigins)
+            .allowedMethods("GET", "POST", "PUT", "DELETE")
+            .allowedHeaders("*")
+            .allowCredentials(true);
+    }
+}
+```
+
+### Railway Deployment
+
+**What is Railway?**
+- Cloud platform for deploying apps (like Heroku)
+- Detects Dockerfile and builds automatically
+- Provides managed PostgreSQL
+- Free tier available
+
+**Deployment flow:**
+1. Push code to GitHub
+2. Railway detects changes
+3. Builds Docker image
+4. Deploys container
+5. Routes traffic to public URL
+
+**Environment variables on Railway:**
+- `JWT_SECRET` → Secret key for JWT tokens
+- `ALLOWED_ORIGINS` → Frontend URL for CORS
+- `PORT` → Provided automatically by Railway
+
+**Database connection:**
+- Railway provides PostgreSQL with public endpoint
+- Use `sslmode=require` for encrypted connections
+- Connection string: `jdbc:postgresql://host:port/railway?sslmode=require`
+
+### Key Learnings from Production Deployment
+
+1. **Always test database connectivity first** - Use `psql` or `Test-NetConnection` before debugging app code
+2. **Cloud databases can fail** - If a service is unresponsive, sometimes recreating it is the fastest fix
+3. **SSL is mandatory** for cloud database connections
+4. **Connection pools must be tuned** for cloud environments (smaller pools)
+5. **Environment variables** keep secrets out of source code
+6. **Health endpoints** are essential for monitoring deployment status
 
 ---
 

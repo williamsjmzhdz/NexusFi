@@ -14,16 +14,19 @@ NexusFi es una aplicación de finanzas personales diseñada para un único usuar
 - 🔄 **Transferencias entre categorías** - Mueve dinero entre cubetas
 - 📈 **Movimientos y auditoría** - Historial completo de todas las transacciones
 - 🔐 **Autenticación JWT** - Seguro con tokens de 24 horas
+- 🚀 **Desplegado en producción** - API live en Railway
 
 ---
 
 ## 🏗️ Tecnologías
 
-- **Backend**: Java 21, Spring Boot 3.2.0
-- **Base de Datos**: PostgreSQL 14+
+- **Backend**: Java 17, Spring Boot 3.2.0
+- **Base de Datos**: PostgreSQL 17 (Railway) / PostgreSQL 16+ (local)
 - **ORM**: JPA/Hibernate
 - **Seguridad**: Spring Security con JWT (jjwt 0.12.5) + BCrypt
 - **Build**: Maven
+- **Contenedorización**: Docker (multi-stage)
+- **Plataforma**: Railway
 - **API Version**: v1 (`/api/v1/`)
 
 ---
@@ -46,6 +49,9 @@ NexusFi/
 │   │   ├── java/          # Código Java
 │   │   └── resources/     # Configuración y recursos
 │   └── test/              # Tests
+├── Dockerfile             # Multi-stage Docker build
+├── .dockerignore          # Exclusiones para Docker
+├── mvnw / mvnw.cmd        # Maven wrapper
 ├── pom.xml                # Dependencias Maven
 ├── requirements.md        # Requisitos funcionales detallados
 └── PROGRESS.md            # Progreso del desarrollo
@@ -57,9 +63,9 @@ NexusFi/
 
 ### Prerrequisitos
 
-- Java 21 o superior
-- PostgreSQL 14 o superior
-- Maven 3.8+
+- Java 17 o superior
+- PostgreSQL 16 o superior
+- Maven 3.8+ (o usar el Maven wrapper incluido)
 
 ### Instalación
 
@@ -90,13 +96,14 @@ NexusFi/
 4. **Compilar y ejecutar**
 
    ```bash
-   mvn clean package -DskipTests
+   ./mvnw clean package -DskipTests
    java -jar target/nexusfi-1.0.0-SNAPSHOT.jar --spring.profiles.active=dev
    ```
 
 5. **Acceder a la API**
 
-   Base URL: `http://localhost:8080/api/v1`
+   Base URL local: `http://localhost:8080/api/v1`
+   Base URL producción: `https://nexusfi-production.up.railway.app/api/v1`
 
    Primero registra un usuario:
    ```bash
@@ -120,7 +127,7 @@ NexusFi/
 
 ### Estado del Proyecto
 
-🚧 **En Desarrollo Activo** 🚧
+✅ **Backend Completo y Desplegado en Producción** ✅
 
 - [x] Diseño del modelo de datos
 - [x] Schema de base de datos
@@ -132,12 +139,15 @@ NexusFi/
 - [x] Categorías jerárquicas (máximo 2 niveles)
 - [x] Distribución recursiva de ingresos
 - [x] Colección Postman (35 requests)
+- [x] Docker containerization
+- [x] Despliegue en Railway (producción)
 - [ ] Frontend
 - [ ] Tests unitarios e integración
 
 ### API Endpoints
 
-Base URL: `http://localhost:8080/api/v1`
+Base URL local: `http://localhost:8080/api/v1`
+Base URL producción: `https://nexusfi-production.up.railway.app/api/v1`
 
 | Resource | Endpoints | Descripción |
 |----------|-----------|-------------|
@@ -155,8 +165,9 @@ Base URL: `http://localhost:8080/api/v1`
 3. ~~Desarrollar controladores REST API~~ ✅
 4. ~~Implementar Spring Security + JWT~~ ✅
 5. ~~Implementar categorías jerárquicas~~ ✅
-6. Crear frontend (Thymeleaf/React)
-7. Implementar tests unitarios e integración
+6. ~~Desplegar en producción (Railway)~~ ✅
+7. Crear frontend (React + TypeScript)
+8. Implementar tests unitarios e integración
 
 ---
 

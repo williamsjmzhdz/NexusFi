@@ -139,22 +139,23 @@ The MVP is the **minimum feature set** that makes NexusFi **useful and deployabl
 ### 3. Database
 
 - [x] PostgreSQL schema deployed ✅ (Already done)
-- [ ] Production database setup (cloud provider)
-- [ ] Environment-specific configurations
+- [x] Production database setup (Railway PostgreSQL 17.7) ✅
+- [x] Environment-specific configurations ✅
 
-**Estimated Time:** 30 minutes (when deploying)
+**Completed:** February 22, 2026
 
 ### 4. Deployment
 
-- [ ] Choose deployment platform (Railway, Heroku, or AWS)
-- [ ] Create production configuration profile
-- [ ] Add Dockerfile (optional, depends on platform)
-- [ ] Set up environment variables (DB credentials, JWT secret)
-- [ ] Deploy backend
-- [ ] Deploy frontend (can be same server or separate)
-- [ ] Verify deployment works
+- [x] Choose deployment platform (Railway) ✅
+- [x] Create production configuration profile (`application-prod.yml`) ✅
+- [x] Add Dockerfile (multi-stage build) ✅
+- [x] Set up environment variables (DB credentials, JWT secret) ✅
+- [x] Deploy backend ✅
+- [ ] Deploy frontend (pending frontend development)
+- [x] Verify deployment works (76/78 Postman tests passed) ✅
 
-**Estimated Time:** 1-2 hours (first time), 10 minutes (subsequent deployments)
+**Completed:** February 22, 2026
+**Production URL:** https://nexusfi-production.up.railway.app/api/v1
 
 ---
 
@@ -180,7 +181,7 @@ These features are **NOT required** for the first deployment:
 
 ## 📊 MVP Progress Tracker
 
-### Current Status: **Phase 1 - Backend Foundation COMPLETE ✅**
+### Current Status: **Backend + Deployment COMPLETE ✅**
 
 | Phase       | Component                | Status         | Completion |
 | ----------- | ------------------------ | -------------- | ---------- |
@@ -200,12 +201,12 @@ These features are **NOT required** for the first deployment:
 |             | Category Management      | ⬜ Not Started | 0%         |
 |             | Income/Expense Forms     | ⬜ Not Started | 0%         |
 |             | Movements View           | ⬜ Not Started | 0%         |
-| **Phase 3** | **Deployment**           | ⬜ Not Started | **0%**     |
-|             | Production Config        | ⬜ Not Started | 0%         |
-|             | Platform Setup           | ⬜ Not Started | 0%         |
-|             | Deploy & Test            | ⬜ Not Started | 0%         |
+| **Phase 3** | **Deployment**           | ✅ Complete    | **100%**   |
+|             | Production Config        | ✅ Done        | 100%       |
+|             | Platform Setup (Railway) | ✅ Done        | 100%       |
+|             | Deploy & Test            | ✅ Done        | 100%       |
 
-**Overall MVP Completion: ~33%** (Backend complete, Frontend and Deployment pending)
+**Overall MVP Completion: ~67%** (Backend and Deployment complete, Frontend pending)
 
 ---
 
@@ -289,6 +290,6 @@ After successful MVP deployment, prioritize based on user feedback:
 
 ---
 
-**Next Step:** Start with Frontend (Phase 2)  
-**Current Version:** v0.3.0 (ready to tag)  
-**Document Updates:** January 10, 2026
+**Next Step:** Start with Frontend (Phase 2)
+**Current Version:** v0.3.1 (Production Deployment on Railway)
+**Document Updates:** February 22, 2026
