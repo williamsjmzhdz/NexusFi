@@ -12,11 +12,11 @@ jwt:
   expiration: 86400000 # 24 hours
 
 spring:
-  # Database Configuration - Railway PostgreSQL PUBLIC endpoint (private network not available)
+  # Database Configuration - Railway PostgreSQL PUBLIC endpoint
   datasource:
-    url: jdbc:postgresql://centerbeam.proxy.rlwy.net:55064/railway?sslmode=require&prepareThreshold=0
+    url: jdbc:postgresql://switchback.proxy.rlwy.net:18466/railway?sslmode=require&prepareThreshold=0
     username: postgres
-    password: iXpRsvidkpCqjpiNLaaSAdzsmyltJCUK
+    password: txVNcMZugmDzwfbjDsBHncplINmPqkry
     driver-class-name: org.postgresql.Driver
 
     # HikariCP - Optimized for Railway
