@@ -2,7 +2,7 @@
 # This file overrides application.yml when running with --spring.profiles.active=prod
 #
 # REQUIRED ENVIRONMENT VARIABLES (set in Railway dashboard):
-#   PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD - PostgreSQL (auto-generated, update HOST/PORT to public)
+#   PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD - PostgreSQL (auto-injected by Railway)
 #   JWT_SECRET          - Secure random string for JWT signing (min 256 bits)
 #   ALLOWED_ORIGINS     - Comma-separated list of allowed frontend URLs
 
@@ -12,21 +12,27 @@ jwt:
   expiration: 86400000 # 24 hours
 
 spring:
-  # Database Configuration - Uses separate variables for Railway PostgreSQL public endpoint
+  # Database Configuration - Railway internal connection with pgbouncer
   datasource:
-    url: jdbc:postgresql://centerbeam.proxy.rlwy.net:55064/railway?sslmode=require
-    username: postgres
+    url: jdbc:postgresql://${PGHOST:postgres.railway.internal}:${PGPORT:5432}/${PGDATABASE:railway}?sslmode=disable&pgbouncer=true
+    username: ${PGUSER:postgres}
     password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
 
     # HikariCP - Optimized for Railway's connection limits
     hikari:
       pool-name: NexusFi-Prod-Pool
-      maximum-pool-size: 5  # Railway free tier has limited connections
+      maximum-pool-size: 5
       minimum-idle: 2
       connection-timeout: 30000
       idle-timeout: 300000
-      max-lifetime: 900000
+      max-lifetime: 600000
+      leak-detection-threshold: 60000
+      data-source-properties:
+        socketTimeout: 30
+        tcpKeepAlive: true
+        loginTimeout: 10
+        connectTimeout: 30
 
   # JPA Configuration - Production settings
   jpa:

@@ -4,7 +4,7 @@
 # ============================================
 # Stage 1: Build the application
 # ============================================
-FROM eclipse-temurin:17-jdk-alpine AS builder
+FROM eclipse-temurin:17-jdk AS builder
 
 WORKDIR /app
 
@@ -28,13 +28,13 @@ RUN ./mvnw clean package -DskipTests -B
 # ============================================
 # Stage 2: Create minimal runtime image
 # ============================================
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
 # Create non-root user for security
-RUN addgroup -g 1001 nexusfi && \
-    adduser -u 1001 -G nexusfi -D nexusfi
+RUN groupadd -g 1001 nexusfi && \
+    useradd -u 1001 -g nexusfi -m nexusfi
 
 # Copy JAR from builder stage
 COPY --from=builder /app/target/*.jar app.jar
@@ -49,7 +49,7 @@ EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-8080}/api/v1/auth/health || exit 1
+  CMD curl -f http://localhost:${PORT:-8080}/api/v1/auth/health || exit 1
 
 # Run with production profile
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
