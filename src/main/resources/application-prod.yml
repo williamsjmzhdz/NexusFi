@@ -14,7 +14,7 @@ jwt:
 spring:
   # Database Configuration - Railway PostgreSQL public endpoint with pgbouncer
   datasource:
-    url: jdbc:postgresql://centerbeam.proxy.rlwy.net:55064/railway?sslmode=disable&pgbouncer=true
+    url: jdbc:postgresql://centerbeam.proxy.rlwy.net:55064/railway?sslmode=require&pgbouncer=true
     username: postgres
     password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
