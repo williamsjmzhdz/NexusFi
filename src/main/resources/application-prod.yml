@@ -14,7 +14,7 @@ jwt:
 spring:
   # Database Configuration - Uses Railway's PG* variables (update PGHOST/PGPORT to public endpoint)
   datasource:
-    url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=require&sslfactory=org.postgresql.ssl.NonValidatingFactory
+    url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=disable
     username: ${PGUSER}
     password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
