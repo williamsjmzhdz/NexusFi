@@ -2,9 +2,9 @@
 # This file overrides application.yml when running with --spring.profiles.active=prod
 #
 # REQUIRED ENVIRONMENT VARIABLES (set in Railway dashboard):
-#   DATABASE_URL or PGHOST/PGPORT/PGDATABASE/PGUSER/PGPASSWORD
-#   JWT_SECRET      - Secure random string for JWT signing (min 256 bits)
-#   ALLOWED_ORIGINS - Comma-separated list of allowed frontend URLs
+#   DATABASE_PUBLIC_URL - PostgreSQL public connection URL from Railway
+#   JWT_SECRET          - Secure random string for JWT signing (min 256 bits)
+#   ALLOWED_ORIGINS     - Comma-separated list of allowed frontend URLs
 
 # JWT Configuration - MUST use environment variable in production
 jwt:
@@ -12,11 +12,9 @@ jwt:
   expiration: 86400000 # 24 hours
 
 spring:
-  # Database Configuration - Use Railway's PostgreSQL connection
+  # Database Configuration - Use Railway's PostgreSQL PUBLIC URL
   datasource:
-    url: jdbc:postgresql://${PGHOST:postgres.railway.internal}:${PGPORT:5432}/${PGDATABASE:railway}
-    username: ${PGUSER:postgres}
-    password: ${PGPASSWORD}
+    url: jdbc:${DATABASE_PUBLIC_URL}
     driver-class-name: org.postgresql.Driver
 
     # HikariCP - Optimized for Railway's connection limits
