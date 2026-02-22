@@ -4,7 +4,7 @@ import com.nexusfi.model.Transfer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ public interface TransferRepository extends JpaRepository<Transfer, Long> {
      * @param userId the user's ID
      * @return list of transfers, ordered by date descending (newest first)
      */
-    List<Transfer> findByUserIdOrderByRecordedAtDesc(Long userId);
+    List<Transfer> findByUserIdOrderByTransferDateDesc(Long userId);
     
     /**
      * Find transfers for a user within a date range.
@@ -30,10 +30,10 @@ public interface TransferRepository extends JpaRepository<Transfer, Long> {
      * @param endDate end of the date range (inclusive)
      * @return list of transfers in the date range
      */
-    List<Transfer> findByUserIdAndRecordedAtBetween(
+    List<Transfer> findByUserIdAndTransferDateBetween(
         Long userId, 
-        LocalDateTime startDate, 
-        LocalDateTime endDate
+        LocalDate startDate, 
+        LocalDate endDate
     );
     
     /**
@@ -44,7 +44,7 @@ public interface TransferRepository extends JpaRepository<Transfer, Long> {
      * @param destinationCategoryId the category's ID (as destination)
      * @return list of transfers involving the category
      */
-    List<Transfer> findBySourceCategoryIdOrDestinationCategoryIdOrderByRecordedAtDesc(
+    List<Transfer> findBySourceCategoryIdOrDestinationCategoryIdOrderByTransferDateDesc(
         Long sourceCategoryId, 
         Long destinationCategoryId
     );

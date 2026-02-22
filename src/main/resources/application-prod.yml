@@ -1,0 +1,81 @@
+# Production Profile - Railway Deployment
+# This file overrides application.yml when running with --spring.profiles.active=prod
+#
+# REQUIRED ENVIRONMENT VARIABLES (set in Railway dashboard):
+#   PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD - PostgreSQL (auto-injected by Railway)
+#   JWT_SECRET          - Secure random string for JWT signing (min 256 bits)
+#   ALLOWED_ORIGINS     - Comma-separated list of allowed frontend URLs
+
+# JWT Configuration - MUST use environment variable in production
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000 # 24 hours
+
+spring:
+  # Database Configuration - Railway PostgreSQL PUBLIC endpoint
+  datasource:
+    url: jdbc:postgresql://switchback.proxy.rlwy.net:18466/railway?sslmode=require&prepareThreshold=0
+    username: postgres
+    password: txVNcMZugmDzwfbjDsBHncplINmPqkry
+    driver-class-name: org.postgresql.Driver
+
+    # HikariCP - Optimized for Railway
+    hikari:
+      pool-name: NexusFi-Prod-Pool
+      maximum-pool-size: 3
+      minimum-idle: 1
+      connection-timeout: 60000
+      idle-timeout: 300000
+      max-lifetime: 600000
+      leak-detection-threshold: 60000
+      connection-init-sql: SELECT 1
+      validation-timeout: 5000
+
+  # JPA Configuration - Production settings
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update  # Using 'update' for initial deployment, change to 'validate' after schema is stable
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: false  # Don't log SQL in production
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+
+  # Disable Flyway
+  flyway:
+    enabled: false
+
+  # Disable Spring Session (we use JWT, not server sessions)
+  session:
+    store-type: none
+
+  # Disable default security user (we use JWT)
+  security:
+    user:
+      name: disabled
+      password: disabled
+
+# Server Configuration
+server:
+  port: ${PORT:8080}  # Railway sets PORT automatically
+
+# Production Logging - Minimal, structured
+logging:
+  level:
+    root: WARN
+    com.nexusfi: INFO
+    org.springframework.web: WARN
+    org.hibernate: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%level] %logger{36} - %msg%n"
+
+# CORS Configuration
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000}

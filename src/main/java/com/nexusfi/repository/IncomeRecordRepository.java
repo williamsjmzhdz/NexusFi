@@ -4,7 +4,7 @@ import com.nexusfi.model.IncomeRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ public interface IncomeRecordRepository extends JpaRepository<IncomeRecord, Long
      * @param userId the user's ID
      * @return list of income records, ordered by date descending (newest first)
      */
-    List<IncomeRecord> findByUserIdOrderByRecordedAtDesc(Long userId);
+    List<IncomeRecord> findByUserIdOrderByIncomeDateDesc(Long userId);
     
     /**
      * Find income records for a user within a date range.
@@ -31,9 +31,9 @@ public interface IncomeRecordRepository extends JpaRepository<IncomeRecord, Long
      * @param endDate end of the date range (inclusive)
      * @return list of income records in the date range
      */
-    List<IncomeRecord> findByUserIdAndRecordedAtBetween(
+    List<IncomeRecord> findByUserIdAndIncomeDateBetween(
         Long userId, 
-        LocalDateTime startDate, 
-        LocalDateTime endDate
+        LocalDate startDate, 
+        LocalDate endDate
     );
 }

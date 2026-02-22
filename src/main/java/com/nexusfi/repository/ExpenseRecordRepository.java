@@ -4,7 +4,7 @@ import com.nexusfi.model.ExpenseRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ public interface ExpenseRecordRepository extends JpaRepository<ExpenseRecord, Lo
      * @param userId the user's ID
      * @return list of expense records, ordered by date descending (newest first)
      */
-    List<ExpenseRecord> findByUserIdOrderByRecordedAtDesc(Long userId);
+    List<ExpenseRecord> findByUserIdOrderByExpenseDateDesc(Long userId);
     
     /**
      * Find expense records for a user within a date range.
@@ -31,10 +31,10 @@ public interface ExpenseRecordRepository extends JpaRepository<ExpenseRecord, Lo
      * @param endDate end of the date range (inclusive)
      * @return list of expense records in the date range
      */
-    List<ExpenseRecord> findByUserIdAndRecordedAtBetween(
+    List<ExpenseRecord> findByUserIdAndExpenseDateBetween(
         Long userId, 
-        LocalDateTime startDate, 
-        LocalDateTime endDate
+        LocalDate startDate, 
+        LocalDate endDate
     );
     
     /**
@@ -44,5 +44,5 @@ public interface ExpenseRecordRepository extends JpaRepository<ExpenseRecord, Lo
      * @param categoryId the category's ID
      * @return list of expense records for the category
      */
-    List<ExpenseRecord> findByCategoryIdOrderByRecordedAtDesc(Long categoryId);
+    List<ExpenseRecord> findByCategoryIdOrderByExpenseDateDesc(Long categoryId);
 }

@@ -72,24 +72,43 @@ The MVP is the **minimum feature set** that makes NexusFi **useful and deployabl
 
 **Completed:** October 20, 2025 (4 hours)
 
-#### 1.4 Security Configuration
+#### 1.4 Security Configuration ✅ COMPLETED (Implementation)
 
-- [ ] JWT-based authentication (stateless)
-- [ ] Password encryption with BCrypt
-- [ ] Public endpoints: `/api/auth/**`
-- [ ] Protected endpoints: `/api/**` (require authentication)
-- [ ] CORS configuration for frontend
+- [x] Install Maven and configure development environment
+- [x] Add Spring Security and JWT dependencies
+- [x] Create CustomUserDetails (UserDetails adapter)
+- [x] Create JwtUtil (token generation and validation)
+- [x] Fix JWT configuration in application.yml (moved to root level)
+- [x] Create authentication DTOs (LoginRequest, RegisterRequest, AuthResponse)
+- [x] Create AuthController (register and login endpoints)
+- [x] Create CustomUserDetailsService (loads users from database)
+- [x] Create JwtAuthenticationFilter (intercepts requests, validates tokens)
+- [x] Create SecurityConfig (PasswordEncoder, AuthenticationManager, SecurityFilterChain)
+- [x] Update UserService with BCrypt password encryption
+- [x] Configure public endpoints: `/api/v1/auth/**`
+- [x] Configure protected endpoints: all others require authentication
+- [x] Build verification: `mvn clean package -DskipTests` ✅ SUCCESS
 
-**Estimated Time:** 1-2 hours
+**Status:** Implementation complete - Testing pending (requires PostgreSQL)
 
-#### 1.5 Testing (Basic)
+**Started:** October 21, 2025  
+**Completed:** November 3, 2025  
+**Time Spent:** ~4 hours
 
-- [ ] Manual testing with Postman/Thunder Client
-- [ ] Verify all endpoints work
-- [ ] Test business rules (percentages, balance validation)
-- [ ] Test authentication flow
+#### 1.5 Testing ✅ COMPLETED
 
-**Estimated Time:** 1 hour
+- [x] Manual smoke testing with Postman
+- [x] Test authentication flow (register, login, get token)
+- [x] Test protected endpoints with valid JWT token
+- [x] Test protected endpoints without token (expect 403)
+- [x] Verify business rules (percentages, balance validation)
+- [x] Test hierarchical categories (2-level max)
+- [x] Test recursive income distribution
+- [x] 36 CRUD tests passing
+
+**Status:** Completed (January 10, 2026)
+
+**Postman Collection:** 35 requests with automated tests
 
 ### 2. Frontend (Basic UI)
 
@@ -120,22 +139,23 @@ The MVP is the **minimum feature set** that makes NexusFi **useful and deployabl
 ### 3. Database
 
 - [x] PostgreSQL schema deployed ✅ (Already done)
-- [ ] Production database setup (cloud provider)
-- [ ] Environment-specific configurations
+- [x] Production database setup (Railway PostgreSQL 17.7) ✅
+- [x] Environment-specific configurations ✅
 
-**Estimated Time:** 30 minutes (when deploying)
+**Completed:** February 22, 2026
 
 ### 4. Deployment
 
-- [ ] Choose deployment platform (Railway, Heroku, or AWS)
-- [ ] Create production configuration profile
-- [ ] Add Dockerfile (optional, depends on platform)
-- [ ] Set up environment variables (DB credentials, JWT secret)
-- [ ] Deploy backend
-- [ ] Deploy frontend (can be same server or separate)
-- [ ] Verify deployment works
+- [x] Choose deployment platform (Railway) ✅
+- [x] Create production configuration profile (`application-prod.yml`) ✅
+- [x] Add Dockerfile (multi-stage build) ✅
+- [x] Set up environment variables (DB credentials, JWT secret) ✅
+- [x] Deploy backend ✅
+- [ ] Deploy frontend (pending frontend development)
+- [x] Verify deployment works (76/78 Postman tests passed) ✅
 
-**Estimated Time:** 1-2 hours (first time), 10 minutes (subsequent deployments)
+**Completed:** February 22, 2026
+**Production URL:** https://nexusfi-production.up.railway.app/api/v1
 
 ---
 
@@ -161,30 +181,32 @@ These features are **NOT required** for the first deployment:
 
 ## 📊 MVP Progress Tracker
 
-### Current Status: **Phase 1 - Backend Foundation**
+### Current Status: **Backend + Deployment COMPLETE ✅**
 
 | Phase       | Component                | Status         | Completion |
 | ----------- | ------------------------ | -------------- | ---------- |
-| **Phase 1** | **Backend Foundation**   | 🟡 In Progress | **20%**    |
+| **Phase 1** | **Backend Foundation**   | ✅ Complete    | **100%**   |
 |             | Data Model (Entities)    | ✅ Done        | 100%       |
 |             | Database Schema          | ✅ Done        | 100%       |
 |             | Spring Boot Setup        | ✅ Done        | 100%       |
-|             | Repository Layer         | ⬜ Not Started | 0%         |
-|             | Service Layer            | ⬜ Not Started | 0%         |
-|             | REST Controllers         | ⬜ Not Started | 0%         |
-|             | Security Config          | ⬜ Not Started | 0%         |
+|             | Repository Layer         | ✅ Done        | 100%       |
+|             | Service Layer            | ✅ Done        | 100%       |
+|             | REST Controllers         | ✅ Done        | 100%       |
+|             | Security Config (JWT)    | ✅ Done        | 100%       |
+|             | Hierarchical Categories  | ✅ Done        | 100%       |
+|             | Testing (Postman)        | ✅ Done        | 100%       |
 | **Phase 2** | **Frontend**             | ⬜ Not Started | **0%**     |
 |             | Auth UI (Login/Register) | ⬜ Not Started | 0%         |
 |             | Dashboard                | ⬜ Not Started | 0%         |
 |             | Category Management      | ⬜ Not Started | 0%         |
 |             | Income/Expense Forms     | ⬜ Not Started | 0%         |
 |             | Movements View           | ⬜ Not Started | 0%         |
-| **Phase 3** | **Deployment**           | ⬜ Not Started | **0%**     |
-|             | Production Config        | ⬜ Not Started | 0%         |
-|             | Platform Setup           | ⬜ Not Started | 0%         |
-|             | Deploy & Test            | ⬜ Not Started | 0%         |
+| **Phase 3** | **Deployment**           | ✅ Complete    | **100%**   |
+|             | Production Config        | ✅ Done        | 100%       |
+|             | Platform Setup (Railway) | ✅ Done        | 100%       |
+|             | Deploy & Test            | ✅ Done        | 100%       |
 
-**Overall MVP Completion: ~7%** (Foundation laid, features to be built)
+**Overall MVP Completion: ~67%** (Backend and Deployment complete, Frontend pending)
 
 ---
 
@@ -268,5 +290,6 @@ After successful MVP deployment, prioritize based on user feedback:
 
 ---
 
-**Next Step:** Start with Repository Layer (Session 1)  
-**Document Updates:** Update this file as we complete each checklist item
+**Next Step:** Start with Frontend (Phase 2)
+**Current Version:** v0.3.1 (Production Deployment on Railway)
+**Document Updates:** February 22, 2026

@@ -9,21 +9,25 @@ NexusFi es una aplicación de finanzas personales diseñada para un único usuar
 ## 🎯 Características Principales
 
 - 📊 **Presupuesto basado en porcentajes** - Distribución automática de ingresos
-- 🌳 **Categorías jerárquicas** - Organiza tu dinero en categorías y subcategorías
+- 🌳 **Categorías jerárquicas** - Organiza tu dinero en categorías y subcategorías (máximo 2 niveles)
 - 💸 **Gestión de gastos** - Registra y rastrea todos tus gastos
 - 🔄 **Transferencias entre categorías** - Mueve dinero entre cubetas
-- 📈 **Reportes y dashboard** - Visualiza tu situación financiera
-- 🔐 **Seguro y privado** - Aplicación de usuario único
+- 📈 **Movimientos y auditoría** - Historial completo de todas las transacciones
+- 🔐 **Autenticación JWT** - Seguro con tokens de 24 horas
+- 🚀 **Desplegado en producción** - API live en Railway
 
 ---
 
 ## 🏗️ Tecnologías
 
 - **Backend**: Java 17, Spring Boot 3.2.0
-- **Base de Datos**: PostgreSQL 14+
+- **Base de Datos**: PostgreSQL 17 (Railway) / PostgreSQL 16+ (local)
 - **ORM**: JPA/Hibernate
-- **Seguridad**: Spring Security con BCrypt
+- **Seguridad**: Spring Security con JWT (jjwt 0.12.5) + BCrypt
 - **Build**: Maven
+- **Contenedorización**: Docker (multi-stage)
+- **Plataforma**: Railway
+- **API Version**: v1 (`/api/v1/`)
 
 ---
 
@@ -34,16 +38,23 @@ NexusFi/
 ├── docs/                  # Documentación completa del proyecto
 │   ├── DATA_MODEL.md      # Modelo de datos detallado
 │   ├── QUICK_REFERENCE.md # Guía rápida de referencia
-│   └── ...
+│   ├── MVP.md             # Definición del MVP
+│   └── LEARNING_NOTES.md  # Notas de aprendizaje
 ├── database/              # Scripts SQL
 │   └── schema.sql         # Schema completo de la base de datos
+├── postman/               # Colección Postman para testing
+│   └── NexusFi_API_v1.postman_collection.json
 ├── src/                   # Código fuente
 │   ├── main/
 │   │   ├── java/          # Código Java
 │   │   └── resources/     # Configuración y recursos
 │   └── test/              # Tests
+├── Dockerfile             # Multi-stage Docker build
+├── .dockerignore          # Exclusiones para Docker
+├── mvnw / mvnw.cmd        # Maven wrapper
 ├── pom.xml                # Dependencias Maven
-└── requirements.md        # Requisitos funcionales detallados
+├── requirements.md        # Requisitos funcionales detallados
+└── PROGRESS.md            # Progreso del desarrollo
 ```
 
 ---
@@ -53,46 +64,53 @@ NexusFi/
 ### Prerrequisitos
 
 - Java 17 o superior
-- PostgreSQL 14 o superior
-- Maven 3.8+
+- PostgreSQL 16 o superior
+- Maven 3.8+ (o usar el Maven wrapper incluido)
 
 ### Instalación
 
 1. **Clonar el repositorio**
+
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/williamsjmzhdz/NexusFi.git
    cd NexusFi
    ```
 
 2. **Crear la base de datos**
+
    ```bash
    createdb nexusfi
    psql -U postgres -d nexusfi -f database/schema.sql
    ```
 
-3. **Configurar la aplicación**
+3. **Configurar variables de entorno**
+
+   ```bash
+   # Windows PowerShell
+   $env:DB_PASSWORD = "tu_password"
    
-   Edita `src/main/resources/application.yml` con tus credenciales:
-   ```yaml
-   spring:
-     datasource:
-       username: tu_usuario
-       password: tu_contraseña
+   # Linux/Mac
+   export DB_PASSWORD=tu_password
    ```
 
 4. **Compilar y ejecutar**
+
    ```bash
-   mvn clean install
-   mvn spring-boot:run
+   ./mvnw clean package -DskipTests
+   java -jar target/nexusfi-1.0.0-SNAPSHOT.jar --spring.profiles.active=dev
    ```
 
-5. **Acceder a la aplicación**
-   
-   Abre tu navegador en: `http://localhost:8080`
-   
-   Usuario de prueba:
-   - Email: `user@nexusfi.com`
-   - Password: `password123`
+5. **Acceder a la API**
+
+   Base URL local: `http://localhost:8080/api/v1`
+   Base URL producción: `https://nexusfi-production.up.railway.app/api/v1`
+
+   Primero registra un usuario:
+   ```bash
+   curl -X POST http://localhost:8080/api/v1/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"email":"user@example.com","password":"password123","firstName":"John","lastName":"Doe"}'
+   ```
 
 ---
 
@@ -109,33 +127,58 @@ NexusFi/
 
 ### Estado del Proyecto
 
-🚧 **En Desarrollo Activo** 🚧
+✅ **Backend Completo y Desplegado en Producción** ✅
 
 - [x] Diseño del modelo de datos
 - [x] Schema de base de datos
 - [x] Entidades JPA
-- [ ] Repositorios
-- [ ] Servicios de negocio
-- [ ] API REST
+- [x] Repositorios Spring Data JPA
+- [x] Servicios de negocio
+- [x] API REST (35 endpoints)
+- [x] Spring Security + JWT Authentication
+- [x] Categorías jerárquicas (máximo 2 niveles)
+- [x] Distribución recursiva de ingresos
+- [x] Colección Postman (35 requests)
+- [x] Docker containerization
+- [x] Despliegue en Railway (producción)
 - [ ] Frontend
-- [ ] Tests
+- [ ] Tests unitarios e integración
+
+### API Endpoints
+
+Base URL local: `http://localhost:8080/api/v1`
+Base URL producción: `https://nexusfi-production.up.railway.app/api/v1`
+
+| Resource | Endpoints | Descripción |
+|----------|-----------|-------------|
+| Auth | 2 | `register`, `login` |
+| Categories | 9 | CRUD + tree + root + subcategories |
+| Incomes | 3 | Record and query |
+| Expenses | 4 | Record and query |
+| Transfers | 4 | Execute zero-sum transfers |
+| Movements | 4 | Read-only transaction history |
 
 ### Próximos Pasos
 
-1. Crear repositorios Spring Data JPA
-2. Implementar servicios de negocio
-3. Desarrollar controladores REST API
-4. Crear frontend (Thymeleaf/React)
-5. Implementar tests unitarios e integración
+1. ~~Crear repositorios Spring Data JPA~~ ✅
+2. ~~Implementar servicios de negocio~~ ✅
+3. ~~Desarrollar controladores REST API~~ ✅
+4. ~~Implementar Spring Security + JWT~~ ✅
+5. ~~Implementar categorías jerárquicas~~ ✅
+6. ~~Desplegar en producción (Railway)~~ ✅
+7. Crear frontend (React + TypeScript)
+8. Implementar tests unitarios e integración
 
 ---
 
 ## 🎓 Principios Fundamentales
 
 ### 1. Integridad Contable
+
 El sistema garantiza que no se cree ni se destruya dinero. El balance total del sistema solo cambia con ingresos y gastos. Los traspasos y reasignaciones siempre deben sumar cero.
 
 ### 2. Integridad de Asignación
+
 La suma de los porcentajes de todas las categorías "hermanas" (aquellas bajo el mismo padre) siempre debe ser 100%. Esta regla es inviolable y está reforzada por la lógica de la aplicación.
 
 ---
@@ -146,13 +189,16 @@ La suma de los porcentajes de todas las categorías "hermanas" (aquellas bajo el
 
 ```
 Ingreso: $10,000
-Categorías:
+Categorías Raíz (Nivel 1 - deben sumar 100%):
   - Gastos Fijos (60%) → $6,000
-    - Renta (50%) → $3,000
-    - Servicios (50%) → $3,000
   - Ahorros (40%) → $4,000
 
-El sistema distribuye automáticamente el ingreso según los porcentajes.
+Subcategorías de Gastos Fijos (Nivel 2 - pueden sumar ≤100%):
+  - Renta (50%) → $3,000
+  - Servicios (30%) → $1,800
+  - [Resto 20%] → $1,200 queda en Gastos Fijos
+
+Nota: Máximo 2 niveles. No se permiten sub-subcategorías.
 ```
 
 ### Realizar un Gasto
@@ -188,7 +234,7 @@ Este proyecto es de uso personal y educativo.
 
 ## 👤 Autor
 
-**Francisco**
+**Francisco Williams Jiménez Hernández**
 
 Desarrollado como proyecto de aprendizaje para dominar Spring Boot, JPA, y arquitectura de aplicaciones financieras.
 

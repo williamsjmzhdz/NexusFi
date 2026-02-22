@@ -3,6 +3,8 @@ package com.nexusfi.service;
 import com.nexusfi.exception.DuplicateResourceException;
 import com.nexusfi.model.User;
 import com.nexusfi.repository.UserRepository;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,12 +19,14 @@ import java.util.Optional;
 public class UserService {
     
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     
     /**
      * Constructor injection - Spring automatically provides the repository.
      */
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
     
     /**
@@ -37,8 +41,10 @@ public class UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new DuplicateResourceException("User", user.getEmail());
         }
+
+        // Hash password with BCrypt before saving
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         
-        // TODO: Add password encryption here when we implement security
         return userRepository.save(user);
     }
     

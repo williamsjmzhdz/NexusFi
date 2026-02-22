@@ -33,18 +33,19 @@
 
 ## 💰 Money Flow Examples
 
-### Example 1: Income Distribution
+### Example 1: Income Distribution (with subcategories)
 ```
 Income: $10,000
-├─ Fixed Expenses (60%) → $6,000
+├─ Fixed Expenses (60%) → $6,000 (initial)
 │  ├─ Rent (50%) → $3,000
-│  └─ Utilities (50%) → $3,000
+│  ├─ Utilities (30%) → $1,800
+│  └─ [Remainder 20%] → $1,200 stays in Fixed Expenses
 └─ Savings (40%) → $4,000
 
 Movements Created:
-1. ASSIGNMENT: +$6,000 → Fixed Expenses
+1. ASSIGNMENT: +$1,200 → Fixed Expenses (remainder)
 2. ASSIGNMENT: +$3,000 → Rent
-3. ASSIGNMENT: +$3,000 → Utilities
+3. ASSIGNMENT: +$1,800 → Utilities
 4. ASSIGNMENT: +$4,000 → Savings
 
 System Total: +$10,000 ✓
@@ -73,22 +74,30 @@ System Total: -$100 ✓
 
 ## 📐 Percentage Rules
 
-### Root Categories
+### Hierarchy Depth
+```
+Maximum: 2 levels
+Level 1 (Root)  → parent_id = NULL
+Level 2 (Sub)   → parent_id = root category ID
+Level 3+        → NOT ALLOWED (400 Bad Request)
+```
+
+### Root Categories (Level 1)
 ```
 Fixed Expenses:  50.00%
 Savings:        30.00%
 Investments:    20.00%
 ─────────────────────
-TOTAL:         100.00% ✓
+TOTAL:         100.00% ✓ (MUST equal 100%)
 ```
 
-### Subcategories (under Fixed Expenses)
+### Subcategories (under Fixed Expenses) (Level 2)
 ```
 Rent:           60.00%
 Utilities:      25.00%
-Insurance:      15.00%
 ─────────────────────
-TOTAL:         100.00% ✓
+TOTAL:          85.00% ✓ (Can be ≤ 100%)
+REMAINDER:      15.00% → stays in Fixed Expenses
 ```
 
 ### Archiving Process
