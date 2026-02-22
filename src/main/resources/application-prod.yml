@@ -12,29 +12,24 @@ jwt:
   expiration: 86400000 # 24 hours
 
 spring:
-  # Database Configuration - Railway PostgreSQL internal connection (IPv6)
+  # Database Configuration - Railway PostgreSQL PUBLIC endpoint (private network not available)
   datasource:
-    url: jdbc:postgresql://${PGHOST:postgres.railway.internal}:${PGPORT:5432}/${PGDATABASE:railway}?sslmode=disable&pgbouncer=true
-    username: ${PGUSER:postgres}
-    password: ${PGPASSWORD}
+    url: jdbc:postgresql://centerbeam.proxy.rlwy.net:55064/railway?sslmode=require&prepareThreshold=0
+    username: postgres
+    password: iXpRsvidkpCqjpiNLaaSAdzsmyltJCUK
     driver-class-name: org.postgresql.Driver
 
-    # HikariCP - Optimized for Railway's connection limits
+    # HikariCP - Optimized for Railway
     hikari:
       pool-name: NexusFi-Prod-Pool
-      maximum-pool-size: 5
-      minimum-idle: 2
-      connection-timeout: 30000
+      maximum-pool-size: 3
+      minimum-idle: 1
+      connection-timeout: 60000
       idle-timeout: 300000
       max-lifetime: 600000
       leak-detection-threshold: 60000
       connection-init-sql: SELECT 1
       validation-timeout: 5000
-      data-source-properties:
-        socketTimeout: 30
-        tcpKeepAlive: true
-        loginTimeout: 10
-        connectTimeout: 30
 
   # JPA Configuration - Production settings
   jpa:

@@ -52,5 +52,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:${PORT:-8080}/api/v1/auth/health || exit 1
 
 # Run with production profile
-# Railway private networking uses IPv6 - Java must prefer IPv6 addresses
-ENTRYPOINT ["java", "-Djava.net.preferIPv6Addresses=true", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
