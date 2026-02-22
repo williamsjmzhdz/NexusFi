@@ -12,11 +12,9 @@ jwt:
   expiration: 86400000 # 24 hours
 
 spring:
-  # Database Configuration - Uses Railway's PG* variables (update PGHOST/PGPORT to public endpoint)
+  # Database Configuration - Uses Railway's DATABASE_URL directly
   datasource:
-    url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=disable
-    username: ${PGUSER}
-    password: ${PGPASSWORD}
+    url: jdbc:${DATABASE_URL}
     driver-class-name: org.postgresql.Driver
 
     # HikariCP - Optimized for Railway's connection limits
