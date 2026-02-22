@@ -231,56 +231,5 @@ logging:
     root: WARN
     com.nexusfi: DEBUG
 
----
-# Production Profile
-spring:
-  config:
-    activate:
-      on-profile: prod
-
-  jpa:
-    hibernate:
-      ddl-auto: validate # Never auto-update in production
-    show-sql: false
-
-  datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
-    hikari:
-      maximum-pool-size: 20
-      minimum-idle: 10
-
-server:
-  port: ${PORT:8080}
-  servlet:
-    session:
-      cookie:
-        secure: true # HTTPS only
-
-  # Compression
-  compression:
-    enabled: true
-    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
-    min-response-size: 1024
-
-logging:
-  level:
-    root: WARN
-    com.nexusfi: INFO
-    org.springframework: WARN
-    org.hibernate: WARN
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,metrics,prometheus
-
-  endpoint:
-    health:
-      show-details: never
-
-nexusfi:
-  business:
-    enforce-percentage-integrity: true # Always strict in production
+# Production Profile is configured entirely in application-prod.yml
+# Do NOT add an embedded prod profile here to avoid conflicts

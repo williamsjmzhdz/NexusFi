@@ -54,6 +54,16 @@ spring:
   flyway:
     enabled: false
 
+  # Disable Spring Session (we use JWT, not server sessions)
+  session:
+    store-type: none
+
+  # Disable default security user (we use JWT)
+  security:
+    user:
+      name: disabled
+      password: disabled
+
 # Server Configuration
 server:
   port: ${PORT:8080}  # Railway sets PORT automatically
