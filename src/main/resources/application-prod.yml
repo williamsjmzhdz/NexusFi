@@ -12,10 +12,10 @@ jwt:
   expiration: 86400000 # 24 hours
 
 spring:
-  # Database Configuration - Railway internal connection with pgbouncer
+  # Database Configuration - Railway PostgreSQL public endpoint with pgbouncer
   datasource:
-    url: jdbc:postgresql://${PGHOST:postgres.railway.internal}:${PGPORT:5432}/${PGDATABASE:railway}?sslmode=disable&pgbouncer=true
-    username: ${PGUSER:postgres}
+    url: jdbc:postgresql://centerbeam.proxy.rlwy.net:55064/railway?sslmode=disable&pgbouncer=true
+    username: postgres
     password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
 
