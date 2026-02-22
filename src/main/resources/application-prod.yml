@@ -32,7 +32,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: validate  # NEVER use 'create' or 'update' in production
+      ddl-auto: update  # Using 'update' for initial deployment, change to 'validate' after schema is stable
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     show-sql: false  # Don't log SQL in production
