@@ -85,4 +85,15 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Health check endpoint for container orchestration.
+     * Returns simple OK response to verify service is running.
+     *
+     * @return "OK" with 200 status
+     */
+    @GetMapping("/health")
+    public ResponseEntity<String> health() {
+        return ResponseEntity.ok("OK");
+    }
+
 }
