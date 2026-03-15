@@ -1,3 +1,7 @@
+# ============================================
+# NexusFi - Single .gitignore for entire repo
+# ============================================
+
 # IDE/editor metadata
 .idea/
 .vscode/
@@ -18,3 +22,66 @@ $RECYCLE.BIN/
 .env
 .env.*
 *.local
+secrets/
+credentials/
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.jks
+
+# Java/Maven build outputs
+target/
+out/
+build/
+dist/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Spring config overlays
+application-local.yml
+application-*.local.yml
+spring-boot-devtools.properties
+
+# Databases and dumps
+*.db
+*.sqlite
+*.sqlite3
+*.sql.backup
+database_backup_*
+
+# Temporary/cache files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.cache
+*.pid
+*.pid.lock
+
+# Coverage and generated docs
+coverage/
+.nyc_output/
+*.lcov
+*.coverage
+.coverage.*
+docs/_build/
+site/
