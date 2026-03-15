@@ -24,6 +24,34 @@ The collection includes built-in variables:
 
 > **Production Testing:** To test against the live API, change `base_url` to `https://nexusfi-production.up.railway.app`
 
+## 🧹 Reset Local Backend Before Running the Collection From Zero
+
+If you want a clean local run without user/category conflicts, run the helper scripts from the backend repo root:
+
+```powershell
+.\scripts\stop-dev.ps1
+.\scripts\reset-dev-data.ps1
+.\scripts\start-dev.ps1
+```
+
+Useful alternatives:
+
+```powershell
+.\scripts\status-dev.ps1
+.\scripts\reset-dev-data.ps1 -Force -DbPassword postgres
+```
+
+This clears local data from:
+
+- `users`
+- `categories`
+- `income_records`
+- `expense_records`
+- `transfers`
+- `movements`
+
+and resets identities so the collection can create data again from scratch.
+
 ### Auto-populated Variables
 
 These are set automatically by test scripts:

@@ -34,7 +34,7 @@ NexusFi es una aplicación de finanzas personales diseñada para un único usuar
 ## 📁 Estructura del Proyecto
 
 ```
-NexusFi/
+NexusFi/backend/
 ├── docs/                  # Documentación completa del proyecto
 │   ├── DATA_MODEL.md      # Modelo de datos detallado
 │   ├── QUICK_REFERENCE.md # Guía rápida de referencia
@@ -49,6 +49,11 @@ NexusFi/
 │   │   ├── java/          # Código Java
 │   │   └── resources/     # Configuración y recursos
 │   └── test/              # Tests
+├── scripts/               # Scripts de desarrollo local
+│   ├── start-dev.ps1/.cmd
+│   ├── stop-dev.ps1/.cmd
+│   ├── status-dev.ps1/.cmd
+│   └── reset-dev-data.ps1/.cmd
 ├── Dockerfile             # Multi-stage Docker build
 ├── .dockerignore          # Exclusiones para Docker
 ├── mvnw / mvnw.cmd        # Maven wrapper
@@ -73,7 +78,7 @@ NexusFi/
 
    ```bash
    git clone https://github.com/williamsjmzhdz/NexusFi.git
-   cd NexusFi
+   cd NexusFi/backend
    ```
 
 2. **Crear la base de datos**
@@ -93,11 +98,80 @@ NexusFi/
    export DB_PASSWORD=tu_password
    ```
 
-4. **Compilar y ejecutar**
+4. **Iniciar localmente con un solo comando**
 
-   ```bash
-   ./mvnw clean package -DskipTests
-   java -jar target/nexusfi-1.0.0-SNAPSHOT.jar --spring.profiles.active=dev
+   En Windows PowerShell:
+
+   ```powershell
+   .\scripts\start-dev.ps1
+   ```
+
+   Si prefieres `.cmd`:
+
+   ```powershell
+   .\scripts\start-dev.cmd
+   ```
+
+   El script:
+   - usa el perfil `dev`
+   - se conecta a PostgreSQL local (`nexusfi`)
+   - reutiliza `DB_PASSWORD` si ya existe
+   - si no existe, te pide la contraseña una sola vez
+   - si NexusFi ya está corriendo en `8080`, detecta la instancia y termina sin error
+
+   Si quieres reiniciar la instancia local actual:
+
+   ```powershell
+   .\scripts\start-dev.ps1 -Restart
+   ```
+
+   Para detener la instancia local:
+
+   ```powershell
+   .\scripts\stop-dev.ps1
+   ```
+
+   Si prefieres `.cmd`:
+
+   ```powershell
+   .\scripts\stop-dev.cmd
+   ```
+
+   Para revisar el estado de la API local:
+
+   ```powershell
+   .\scripts\status-dev.ps1
+   ```
+
+   O con `.cmd`:
+
+   ```powershell
+   .\scripts\status-dev.cmd
+   ```
+
+   Para limpiar todos los datos locales y volver a correr la colección Postman desde cero:
+
+   ```powershell
+   .\scripts\reset-dev-data.ps1
+   ```
+
+   O con `.cmd`:
+
+   ```powershell
+   .\scripts\reset-dev-data.cmd
+   ```
+
+   Si quieres evitar la confirmación interactiva:
+
+   ```powershell
+   .\scripts\reset-dev-data.ps1 -Force -DbPassword tu_password
+   ```
+
+   Comando manual equivalente:
+
+   ```powershell
+   $env:DB_PASSWORD = "tu_password"
+   .\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
    ```
 
 5. **Acceder a la API**
@@ -111,6 +185,24 @@ NexusFi/
      -H "Content-Type: application/json" \
      -d '{"email":"user@example.com","password":"password123","firstName":"John","lastName":"Doe"}'
    ```
+
+6. **Verificar que arrancó correctamente**
+
+   ```powershell
+   Invoke-WebRequest http://localhost:8080/api/v1/auth/health -UseBasicParsing
+   ```
+
+   Debe responder `200 OK` con body `OK`.
+
+7. **Flujo recomendado para probar Postman desde cero**
+
+   ```powershell
+   .\scripts\stop-dev.ps1
+   .\scripts\reset-dev-data.ps1
+   .\scripts\start-dev.ps1
+   ```
+
+   Después de eso, usa la colección Postman empezando por `Register User`.
 
 ---
 
@@ -148,6 +240,44 @@ NexusFi/
 
 Base URL local: `http://localhost:8080/api/v1`
 Base URL producción: `https://nexusfi-production.up.railway.app/api/v1`
+
+### Frontend: ¿usar API local o producción?
+
+**Recomendación:** desarrolla el frontend contra la **API local (`dev`)** y usa la **API de producción** solo para smoke tests finales o demos.
+
+#### Usa `dev` para desarrollo diario cuando:
+
+- quieras datos de prueba sin afectar producción
+- necesites reiniciar la base, registrar usuarios de prueba o experimentar libremente
+- estés iterando rápido en UI, validaciones y flujos
+- quieras depurar backend y frontend al mismo tiempo
+
+#### Usa `prod` solo cuando:
+
+- quieras confirmar que CORS, despliegue y variables reales están bien
+- necesites revisar comportamiento final en Railway
+- hagas una validación corta antes de publicar el frontend
+
+#### Frontend en el mismo repo o en otro?
+
+Para este proyecto, la opción más simple es **crear el frontend en otro repositorio** (por ejemplo `NexusFi-UI`) porque este repo ya está claramente organizado como backend Spring Boot.
+
+Ventajas de separar:
+
+- ciclos de despliegue independientes
+- historial Git más limpio por stack
+- configuración de build/deploy más simple para cada app
+- menor riesgo de mezclar dependencias Java y Node en el mismo proyecto
+
+Si estás trabajando solo y quieres máxima simplicidad local, también puedes usar un monorepo más adelante, pero **hoy la recomendación práctica es: backend en este repo, frontend en otro**.
+
+#### Configuración sugerida para frontend local
+
+- Backend local: `http://localhost:8080/api/v1`
+- Frontend local: `http://localhost:3000`
+- Producción backend: `https://nexusfi-production.up.railway.app/api/v1`
+
+`CORS` ya permite `http://localhost:3000` por defecto, así que ese es el origen ideal para empezar tu UI.
 
 | Resource | Endpoints | Descripción |
 |----------|-----------|-------------|

@@ -28,6 +28,17 @@ spring:
   flyway:
     enabled: false
 
+  # Disable Spring Session (JWT-based app - no server sessions needed)
+  # Base application.yml sets store-type: jdbc but spring-session-jdbc is NOT a dependency
+  session:
+    store-type: none
+
+  # Disable default Spring Security user (JWT handles auth)
+  security:
+    user:
+      name: disabled
+      password: disabled
+
 # Enable debug logging for development
 logging:
   level:
