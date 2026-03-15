@@ -13,8 +13,8 @@ COPY pom.xml .
 COPY .mvn .mvn
 COPY mvnw .
 
-# Make mvnw executable
-RUN chmod +x mvnw
+# Normalize line endings and make mvnw executable for Linux containers
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
 
 # Download dependencies (cached unless pom.xml changes)
 RUN ./mvnw dependency:go-offline -B
