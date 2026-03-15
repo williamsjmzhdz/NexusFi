@@ -358,7 +358,6 @@ Production URL: https://nexusfi-production.up.railway.app/api/v1
 - Scripts organized in `backend/scripts/` with updated docs
 - Clean ignore strategy in `backend/.gitignore` and root `.gitignore`
 - `main` and `develop` homologated to the same commit
-- Release notes document: `backend/docs/RELEASE_v0.3.2.md`
 
 ### v0.3.1 - Production Deployment on Railway (February 22, 2026)
 
