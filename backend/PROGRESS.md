@@ -1,6 +1,6 @@
 # NexusFi - Development Progress & Learning Journey
 
-**Last Updated:** February 22, 2026  
+**Last Updated:** March 15, 2026  
 **Developer:** Francisco Williams Jiménez Hernández (williamsjmzhdz)  
 **Learning Approach:** Hands-on, step-by-step, with mentor guidance
 
@@ -56,7 +56,7 @@ NexusFi backend is **live in production** on Railway! Full REST API with JWT aut
 - ✅ 35 endpoints tested in production (76/78 Postman tests passed)
 - ✅ Automatic GitHub-triggered deployments
 
-**Latest Release:** v0.3.1 - Production Deployment on Railway (February 22, 2026)
+**Latest Release:** v0.3.2 - Backend Repository Reorganization (March 15, 2026)
 **Production URL:** https://nexusfi-production.up.railway.app/api/v1
 
 ---
@@ -345,6 +345,20 @@ Production URL: https://nexusfi-production.up.railway.app/api/v1
 ---
 
 ## 🎉 Releases
+
+### v0.3.2 - Backend Repository Reorganization (March 15, 2026)
+
+**Status:** ✅ Released
+
+**GitHub Release:** https://github.com/williamsjmzhdz/NexusFi/releases/tag/v0.3.2
+
+**What's Included:**
+
+- Backend assets consolidated under `backend/`
+- Scripts organized in `backend/scripts/` with updated docs
+- Clean ignore strategy in `backend/.gitignore` and root `.gitignore`
+- `main` and `develop` homologated to the same commit
+- Release notes document: `backend/docs/RELEASE_v0.3.2.md`
 
 ### v0.3.1 - Production Deployment on Railway (February 22, 2026)
 
