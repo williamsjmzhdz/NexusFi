@@ -8,14 +8,16 @@ public class AuthResponse {
     
     private String token;
     private String email;
+    private String firstName;
     
     // Constructors
     public AuthResponse() {
     }
     
-    public AuthResponse(String token, String email) {
+    public AuthResponse(String token, String email, String firstName) {
         this.token = token;
         this.email = email;
+        this.firstName = firstName;
     }
     
     // Getters and Setters
@@ -33,5 +35,13 @@ public class AuthResponse {
     
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 }
