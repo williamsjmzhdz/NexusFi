@@ -34,17 +34,21 @@ This project is a **hands-on learning experience**. Copilot acts as a Tech Lead/
 - Branch strategy: `feature/*` → `develop` → `main` (no direct commits to develop or main)
 - Vite 5 + React 19 + TypeScript 5.7 scaffolded in `frontend/`
 - Tailwind CSS v3 + PostCSS configured
-- React Router v7 + Axios v1.9 installed
-- Dev server confirmed at `http://localhost:5174`
-- Vite boilerplate cleaned (`App.css`, default assets deleted; minimal `App.tsx`)
+- React Router v7 + Axios v1.9 + Lucide React installed
+- Dev server confirmed at `http://localhost:5173`
+- Vite boilerplate cleaned; folder structure created (`pages/`, `components/`, `services/`, `hooks/`, `types/`)
+- Design system documented in `frontend/docs/DESIGN_SYSTEM.md` (Inter font, indigo/emerald/rose palette)
+- Inter font applied globally via Google Fonts in `index.css`
+- Login page UI: modern glassmorphism card, gradient wordmark, animated button
+- Auth types (`types/auth.ts`), Axios instance (`services/api.ts`), auth service (`services/authService.ts`)
+- Login connected to Railway API — JWT stored in `localStorage`, redirects to `/dashboard`
+- CORS fixed: `ALLOWED_ORIGINS=http://localhost:5173` set in Railway dashboard
+- Register page skipped — single-user app, account created via Postman
 
 ### Next steps:
-- [ ] Block 2: Create folder structure (`pages/`, `components/`, `services/`, `hooks/`, `types/`)
-- [ ] Block 3: Login page UI (Tailwind, no API yet)
-- [ ] Block 4: Register page UI
-- [ ] Block 5: Connect auth pages to Railway API via Axios
-- [ ] Block 6: Dashboard skeleton
-- [ ] Block 7: Income/Expense forms
+- [ ] Block 6: Dashboard layout (sidebar + topbar shell)
+- [ ] Block 7: Dashboard data (balances, recent movements)
+- [ ] Block 8: Income/Expense forms
 - [ ] Merge `feature/frontend-setup` → `develop` → tag `v0.4.0`
 
 ---
@@ -117,6 +121,43 @@ See **Current Status** section above.
 **Key decision — Vite 5:** v6/v7/v8 ship Rolldown, a Rust native binary (`.node` file) blocked by Windows Application Control policy on this machine. Pinned to Vite 5 which uses pure-JS Rollup.
 
 **Key decision — Tailwind v3:** `@tailwindcss/vite` plugin (v4's install method) requires Vite 6+. Using v3 with `postcss.config.js` and `tailwind.config.js` instead.
+
+---
+
+## Release Roadmap
+
+| Version | Name | Scope | Status |
+|---|---|---|---|
+| v0.1.0 | Foundation | Spring Boot + DB + Repositories + Services | ✅ Released |
+| v0.2.0 | REST API | 21 endpoints, DTOs, validation | ✅ Released |
+| v0.3.0 | Security | JWT auth, Spring Security, hierarchical categories | ✅ Released |
+| v0.3.1 | Production | Railway deployment, Docker, PostgreSQL SSL | ✅ Released |
+| v0.3.2 | Monorepo | Repository restructure | ✅ Released |
+| **v0.4.0** | **First Usable** | Dashboard + auth guard + balances + income/expense forms + categories | 🚧 In progress |
+| v0.5.0 | Transfers | Transfer between accounts, full movement history | ⬜ Planned |
+| v0.6.0 | Polish | Edit/delete movements, charts, mobile nav, empty states | ⬜ Planned |
+| v1.0.0 | Production Frontend | Frontend deployed (Vercel/Railway), full E2E on production URL | ⬜ Planned |
+
+**Versioning rules:**
+- `v0.x.0` — new feature set shipped and working
+- `v0.x.y` — bug fixes or minor corrections to an existing release
+- `v1.0.0` — the app is fully deployed, usable at a real URL, and stable
+
+---
+
+## v0.4.0 Milestone — "First Usable Release"
+
+**Definition:** You can log in and actually use the app to manage your finances.
+
+| # | Feature | Status |
+|---|---|---|
+| 1 | Dashboard layout (sidebar + topbar) | ⬜ |
+| 2 | Auth guard (redirect to login if no token) | ⬜ |
+| 3 | Balance summary cards | ⬜ |
+| 4 | Recent movements list | ⬜ |
+| 5 | Add income form | ⬜ |
+| 6 | Add expense form | ⬜ |
+| 7 | Categories list | ⬜ |
 
 ---
 
