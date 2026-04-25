@@ -1,6 +1,6 @@
 # NexusFi - Development Progress & Learning Journey
 
-**Last Updated:** March 15, 2026  
+**Last Updated:** April 25, 2026  
 **Developer:** Francisco Williams Jiménez Hernández (williamsjmzhdz)  
 **Learning Approach:** Hands-on, step-by-step, with mentor guidance
 
@@ -37,24 +37,26 @@ When continuing in a new chat session, please:
 
 ---
 
-## 📍 Current Status: Phase 6 Complete ✅🚀
+## 📍 Current Status: Phase 7 In Progress 🚧
 
-**Current Phase:** Phase 6 - Production Deployment on Railway (COMPLETE)
+**Current Phase:** Phase 7 - Frontend Development (React)
 
-NexusFi backend is **live in production** on Railway! Full REST API with JWT authentication accessible at https://nexusfi-production.up.railway.app/api/v1
+**Current Branch:** `feature/frontend-setup`
 
-**Current Branch:** `develop`
+**What's Done:**
 
-**What's Live:**
+- ✅ Monorepo restructure: `backend/`, `frontend/`, `docs/` at repo root
+- ✅ Branch strategy established: `feature/*` → `develop` → `main` (no direct commits)
+- ✅ Vite 5 + React 19 + TypeScript 5.7 scaffolded in `frontend/`
+- ✅ Tailwind CSS v3 + PostCSS configured (v4 incompatible with Vite 5)
+- ✅ React Router v7 + Axios v1.9 installed
+- ✅ Dev server working at `http://localhost:5174`
+- ✅ Boilerplate cleaned: `App.css` deleted, assets cleared, minimal `App.tsx`
 
-- ✅ Spring Boot 3.2.0 backend deployed on Railway
-- ✅ PostgreSQL 17.7 managed database with SSL
-- ✅ Multi-stage Dockerfile (eclipse-temurin:17-jdk / 17-jre-jammy)
-- ✅ CORS configuration for frontend integration
-- ✅ Health check endpoint (`/api/v1/auth/health`)
-- ✅ Environment-based secret management
-- ✅ 35 endpoints tested in production (76/78 Postman tests passed)
-- ✅ Automatic GitHub-triggered deployments
+**Dev Environment:**
+- Canonical dev path: `C:\dev\nexusfi` (no spaces — npm requires this)
+- Google Drive path (`G:\Other computers\PC\Work\projects\nexusfi`) is backup only, do NOT develop there
+- Run dev server: `cd C:\dev\nexusfi\frontend && npm run dev`
 
 **Latest Release:** v0.3.2 - Backend Repository Reorganization (March 15, 2026)
 **Production URL:** https://nexusfi-production.up.railway.app/api/v1
@@ -317,29 +319,100 @@ NexusFi backend is **live in production** on Railway! Full REST API with JWT aut
 
 ---
 
-## 🚀 Next Session: Frontend Development
+## ✅ Phase 7: Frontend Development (Started April 7, 2026)
 
-### Frontend (React - Learning from scratch)
+### 7.1 Monorepo Restructure (April 7, 2026) ✅
 
-- [ ] Create React + TypeScript project
-- [ ] Learn React basics (components, state, hooks)
-- [ ] Build Login/Register page
-- [ ] Build Dashboard with categories
-- [ ] Build Income/Expense forms
-- [ ] Connect to Railway API
+Reorganized the repository from a pure backend repo into a monorepo:
 
-**Tech Stack:**
-- React 18 + TypeScript
-- Tailwind CSS
-- React Router
-- Axios
+```
+nexusfi/
+  backend/          ← Spring Boot app (was repo root)
+  frontend/         ← React app (new)
+  docs/             ← Documentation
+  .gitignore        ← Root ignore
+```
+
+**Git history preserved:** All backend commits retained, restructure done in a clean commit on `develop`.
+
+### 7.2 Branch Strategy ✅
+
+| Branch | Purpose | Rule |
+|--------|---------|------|
+| `main` | Production releases | Only merge from develop, tag every release |
+| `develop` | Integration branch | Merge finished features here |
+| `feature/*` | Active work | Branch from develop, merge back with `--no-ff` |
+
+Active branch: `feature/frontend-setup`
+
+### 7.3 Frontend Scaffold (April 7, 2026) ✅
+
+**Tech Stack chosen:**
+- **Vite 5.4.x** — Must stay on v5! v6/v7/v8 use Rolldown (Rust native binary blocked by Windows Application Control policy on this machine)
+- **React 19** + **TypeScript 5.7**
+- **Tailwind CSS v3** + PostCSS — v4 requires Vite 6+, so we use v3 with `postcss.config.js`
+- **React Router v7**
+- **Axios v1.9**
+
+**Key files created:**
+
+| File | Purpose |
+|------|---------|
+| `frontend/vite.config.ts` | Vite config, only `@vitejs/plugin-react` (NO `@tailwindcss/vite`) |
+| `frontend/tailwind.config.js` | Content paths: `./index.html`, `./src/**/*.{js,ts,jsx,tsx}` |
+| `frontend/postcss.config.js` | tailwindcss + autoprefixer plugins |
+| `frontend/src/index.css` | `@tailwind base/components/utilities` directives |
+
+### 7.4 Dev Environment Fix (April 25, 2026) ✅
+
+**Problem:** `npm run dev` failed with `'vite' is not recognized` from the Google Drive path.  
+**Root cause:** npm cannot create `.bin` symlinks/shims when the path contains spaces on Windows.  
+**Solution:** Clone repo to `C:\dev\nexusfi` (no spaces) and develop exclusively there.
+
+```
+Dev location:    C:\dev\nexusfi          ← canonical, npm works here
+Backup location: G:\Other computers\...  ← Google Drive sync, READ-ONLY
+```
+
+### 7.5 Boilerplate Cleanup (April 25, 2026) ✅ (not yet committed)
+
+Deleted Vite boilerplate:
+- `frontend/src/App.css`
+- `frontend/src/assets/react.svg`
+- `frontend/src/assets/vite.svg`
+- `frontend/src/assets/hero.png`
+
+Replaced `App.tsx` with minimal Tailwind placeholder:
+
+```tsx
+function App() {
+  return (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <h1 className="text-3xl font-bold text-blue-600">NexusFi is alive 🚀</h1>
+    </div>
+  )
+}
+export default App
+```
+
+### Next Steps (Phase 7 continued):
+
+- [ ] Commit boilerplate cleanup (`feature/frontend-setup`)
+- [ ] Block 2: Build folder structure (`pages/`, `components/`, `services/`, `hooks/`, `types/`)
+- [ ] Block 3: Login page UI (Tailwind styled, no API yet)
+- [ ] Block 4: Register page UI
+- [ ] Block 5: Connect auth pages to Railway API via Axios
+- [ ] Block 6: Dashboard skeleton
+- [ ] Block 7: Income/Expense forms
+- [ ] Merge `feature/frontend-setup` → `develop` → tag v0.4.0
 
 ### To Resume:
 
 ```
-Continuemos con NexusFi. El backend está desplegado en Railway.
-Ahora empecemos el frontend con React.
-Production URL: https://nexusfi-production.up.railway.app/api/v1
+Continuemos con NexusFi. Estamos en feature/frontend-setup.
+El dev server corre en C:\dev\nexusfi\frontend con `npm run dev` (puerto 5174).
+Backend en Railway: https://nexusfi-production.up.railway.app/api/v1
+Siguiente tarea: Block 2 - folder structure en frontend/src/
 ```
 
 ---
