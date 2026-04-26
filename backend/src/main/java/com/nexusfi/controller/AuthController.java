@@ -4,6 +4,7 @@ import com.nexusfi.dto.AuthResponse;
 import com.nexusfi.dto.LoginRequest;
 import com.nexusfi.dto.RegisterRequest;
 import com.nexusfi.model.User;
+import com.nexusfi.security.CustomUserDetails;
 import com.nexusfi.security.JwtUtil;
 import com.nexusfi.service.UserService;
 import jakarta.validation.Valid;
@@ -79,9 +80,9 @@ public class AuthController {
             new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
-        User user = (User) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String token = jwtUtil.generateToken(request.getEmail());
-        AuthResponse response = new AuthResponse(token, request.getEmail(), user.getFirstName());
+        AuthResponse response = new AuthResponse(token, request.getEmail(), userDetails.getUser().getFirstName());
 
         return ResponseEntity.ok(response);
     }
