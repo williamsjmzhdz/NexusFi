@@ -25,11 +25,11 @@ This project is a **hands-on learning experience**. Copilot acts as a Tech Lead/
 ## Current Status
 
 **Phase:** 7 — Frontend Development (in progress)
-**Branch:** `feature/frontend-setup`
+**Branch:** `feature/dashboard`
 **Production API:** https://nexusfi-production.up.railway.app/api/v1
-**Latest Release:** v0.3.2
+**Latest Release:** v0.4.0
 
-### Completed this phase:
+### Completed this phase (v0.4.0):
 - Monorepo restructured: `backend/`, `frontend/`, `docs/` at repo root
 - Branch strategy: `feature/*` → `develop` → `main` (no direct commits to develop or main)
 - Vite 5 + React 19 + TypeScript 5.7 scaffolded in `frontend/`
@@ -44,12 +44,31 @@ This project is a **hands-on learning experience**. Copilot acts as a Tech Lead/
 - Login connected to Railway API — JWT stored in `localStorage`, redirects to `/dashboard`
 - CORS fixed: `ALLOWED_ORIGINS=http://localhost:5173` set in Railway dashboard
 - Register page skipped — single-user app, account created via Postman
+- Dashboard layout: white sidebar (w-60), NavLink active highlight, topbar with firstName greeting
+- Auth guard (`PrivateRoute`) — redirects to /login if no JWT in localStorage
+- `firstName` added to `AuthResponse` DTO; backend `AuthController` fixed to cast principal to `CustomUserDetails`
+- Dashboard page: 3 summary cards (Net Balance, Total Income, Total Expenses) + Recent Movements table (last 10, sorted newest first)
+- Income page (`/income`): record income form + history table; income auto-distributes to categories
+- Categories page (`/categories`): root allocation progress bar, add category form (name/percentage/parent), tree table with balance per category, delete leaf categories
+- Expenses page (`/expenses`): record expense form (amount/merchant/category/date/description) + history table; category dropdown shows only leaf categories with `Parent › Child` label
+- `finance.ts` types: `Category`, `Movement`, `IncomeRecord`, `ExpenseRecord`, `MovementType`
+- `financeService.ts`: `getCategories`, `createCategory`, `deleteCategory`, `getIncomes`, `recordIncome`, `getExpenses`, `recordExpense`, `getMovements`
 
-### Next steps:
-- [ ] Block 6: Dashboard layout (sidebar + topbar shell)
-- [ ] Block 7: Dashboard data (balances, recent movements)
-- [ ] Block 8: Income/Expense forms
-- [ ] Merge `feature/frontend-setup` → `develop` → tag `v0.4.0`
+### Known issues / backlog for v0.5.0:
+- **Data isolation bug:** Incomes and expenses from other users appear in the dashboard — `MovementController` and `ExpenseController` use hardcoded `userId=1` instead of the authenticated user. Need to add `@AuthenticationPrincipal CustomUserDetails` to those endpoints.
+- **Error message formatting:** Backend errors like `"Insufficient balance in category 'Afore'. Available: 0.00, Required: 59000"` should be surfaced with better UI formatting (not raw alert/inline text).
+- **Subcategory percentage constraint:** Need to verify that subcategory percentages are also validated to sum to 100% within their parent, same as root categories.
+- **Parent category balance:** Category tree table does not show the summed balance for parent categories (only leaf balances shown). Should aggregate children balances and display on parent row.
+- **Dashboard redesign:** User wants richer dashboard with: Recent Movements, Total Net Balance (with Afore), Total Net Balance (without Afore), Total Income current month, Total Expenses current month, Total Net current month, charts/graphs.
+- **Categories page UX:** Needs visual redesign — current table is functional but not intuitive or visually clear.
+
+### Next steps (v0.5.0):
+- [ ] Fix data isolation: wire `@AuthenticationPrincipal` into MovementController and ExpenseController
+- [ ] Fix parent category balance display
+- [ ] Validate subcategory percentage constraint in UI
+- [ ] Dashboard redesign with monthly stats and charts (consider recharts or chart.js)
+- [ ] Categories page visual redesign
+- [ ] Improve error message UI
 
 ---
 
@@ -133,8 +152,8 @@ See **Current Status** section above.
 | v0.3.0 | Security | JWT auth, Spring Security, hierarchical categories | ✅ Released |
 | v0.3.1 | Production | Railway deployment, Docker, PostgreSQL SSL | ✅ Released |
 | v0.3.2 | Monorepo | Repository restructure | ✅ Released |
-| **v0.4.0** | **First Usable** | Dashboard + auth guard + balances + income/expense forms + categories | 🚧 In progress |
-| v0.5.0 | Transfers | Transfer between accounts, full movement history | ⬜ Planned |
+| **v0.4.0** | **First Usable** | Dashboard + auth guard + balances + income/expense forms + categories | ✅ Released |
+| v0.5.0 | Polish & Fixes | Data isolation fix, dashboard redesign with charts, categories UX, error formatting | 🚧 Next |
 | v0.6.0 | Polish | Edit/delete movements, charts, mobile nav, empty states | ⬜ Planned |
 | v1.0.0 | Production Frontend | Frontend deployed (Vercel/Railway), full E2E on production URL | ⬜ Planned |
 
@@ -145,19 +164,32 @@ See **Current Status** section above.
 
 ---
 
-## v0.4.0 Milestone — "First Usable Release"
+## v0.4.0 Milestone — "First Usable Release" ✅
 
 **Definition:** You can log in and actually use the app to manage your finances.
 
 | # | Feature | Status |
 |---|---|---|
-| 1 | Dashboard layout (sidebar + topbar) | ⬜ |
-| 2 | Auth guard (redirect to login if no token) | ⬜ |
-| 3 | Balance summary cards | ⬜ |
-| 4 | Recent movements list | ⬜ |
-| 5 | Add income form | ⬜ |
-| 6 | Add expense form | ⬜ |
-| 7 | Categories list | ⬜ |
+| 1 | Dashboard layout (sidebar + topbar) | ✅ |
+| 2 | Auth guard (redirect to login if no token) | ✅ |
+| 3 | Balance summary cards | ✅ |
+| 4 | Recent movements list | ✅ |
+| 5 | Add income form | ✅ |
+| 6 | Add expense form | ✅ |
+| 7 | Categories page | ✅ |
+
+## v0.5.0 Milestone — "Polish & Fixes"
+
+**Definition:** Data is correct, UX is clear, dashboard shows meaningful monthly stats with charts.
+
+| # | Feature | Status |
+|---|---|---|
+| 1 | Fix data isolation (MovementController + ExpenseController use hardcoded userId=1) | ⬜ |
+| 2 | Fix parent category balance (aggregate children balances) | ⬜ |
+| 3 | Validate subcategory % constraint in UI | ⬜ |
+| 4 | Dashboard redesign: monthly stats + charts | ⬜ |
+| 5 | Categories page visual redesign | ⬜ |
+| 6 | Improve error message formatting/UI | ⬜ |
 
 ---
 
@@ -165,6 +197,7 @@ See **Current Status** section above.
 
 | Tag | Description | Date |
 |-----|-------------|------|
+| v0.4.0 | First Usable Release — full frontend (login, dashboard, income, expenses, categories) | Apr 25, 2026 |
 | v0.3.2 | Backend repository reorganization (monorepo) | Mar 15, 2026 |
 | v0.3.1 | Production deployment on Railway | Feb 22, 2026 |
 | v0.3.0 | Spring Security + JWT + Hierarchical Categories | Jan 10, 2026 |
