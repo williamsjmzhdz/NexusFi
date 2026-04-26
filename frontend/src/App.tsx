@@ -1,6 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
+import IncomePage from './pages/IncomePage';
+import CategoriesPage from './pages/CategoriesPage';
+import ExpensesPage from './pages/ExpensesPage';
 import DashboardLayout from './components/DashboardLayout';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -19,7 +22,10 @@ function App() {
           }
         >
           <Route path="/dashboard" element={<DashboardPage />} />
-          {/* Future routes: /income, /expenses, /categories */}
+          <Route path="/income" element={<IncomePage />} />
+          <Route path="/expenses" element={<ExpensesPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
+          {/* Future routes */}
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />
