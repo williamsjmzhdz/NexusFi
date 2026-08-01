@@ -1,6 +1,6 @@
 # NexusFi — Development Progress
 
-**Last Updated:** April 25, 2026
+**Last Updated:** August 1, 2026
 **Developer:** Francisco Williams Jiménez Hernández (williamsjmzhdz)
 
 ---
@@ -74,6 +74,26 @@ This project is a **hands-on learning experience**. Copilot acts as a Tech Lead/
 
 ## Dev Environment
 
+**As of Aug 1, 2026, primary dev machine moved to Linux (Fedora).** The Windows setup below is kept for reference in case that machine is used again, but is no longer the canonical environment.
+
+### Linux (Fedora, current)
+
+| Item | Value |
+|------|-------|
+| Dev path | `/home/williams/Documents/repositories/NexusFi` |
+| Java (system default) | JDK 25 (Fedora 44 default; `dnf` no longer ships `java-17-openjdk`) |
+| Java (backend build) | **JDK 17 required** — Spring Boot 3.2.0 / `maven-compiler-plugin` targets `--release 17`, which JDK 25's `javac` refuses to emit. Installed Temurin 17 standalone at `~/.jdks/temurin-17` (not the system default). Always run backend Maven commands with `JAVA_HOME=~/.jdks/temurin-17` — the `scripts/*.sh` dev scripts already do this. |
+| Node | v24.18.0 / npm 11.16.0, installed via `sudo dnf install -y nodejs24 nodejs24-npm` |
+| PostgreSQL | 18.3, installed via `sudo dnf install -y postgresql-server postgresql-contrib`; cluster initialized with `postgresql-setup --initdb`, `systemctl enable --now postgresql`. Host (TCP) auth in `pg_hba.conf` had to be changed from Fedora's default `ident` to `scram-sha-256` for `localhost`/`::1`, since the app connects via `jdbc:postgresql://localhost:5432/...` (TCP), not the local socket. |
+| Local DB password | Generated dev password stored in `backend/.env.local` (gitignored, not committed) — source it or export `DB_PASSWORD` before running the backend. |
+| Vite | Upgraded to v8.x — the Windows Rolldown/App-Control blocker below no longer applies now that Linux is primary. |
+| Tailwind | Upgraded to v4.x, using the `@tailwindcss/vite` plugin (no `tailwind.config.js`/`postcss.config.js` anymore — see Phase 7 notes). |
+| Dev server | `cd frontend && npm run dev` → `localhost:5173` |
+| Backend dev scripts | `backend/scripts/{start,stop,status,reset-dev-data}-dev.sh` — Linux ports of the existing `.ps1`/`.cmd` scripts, same behavior/flags (`--restart`, `--force`, `--password=`). |
+| Git push auth | `gh auth login` (browser flow) + `gh auth setup-git` — no PAT/SSH key needed. |
+
+### Windows (historical / secondary)
+
 | Item | Value |
 |------|-------|
 | Dev path | `C:\dev\nexusfi` — canonical, npm works here (no spaces) |
@@ -82,8 +102,8 @@ This project is a **hands-on learning experience**. Copilot acts as a Tech Lead/
 | Java | 17 |
 | Spring Boot | 3.2.0 |
 | Node | v24.14.0 / npm 11.9.0 |
-| Vite | 5.4.x (must stay v5 — v6+ uses Rolldown native binary blocked by Windows App Control) |
-| Tailwind | v3 + PostCSS (v4 requires Vite 6+) |
+| Vite | Was pinned to 5.4.x — v6+ uses Rolldown native binary blocked by Windows App Control policy on this machine. If resuming work here, re-check whether that policy still blocks it before assuming the Linux versions apply as-is. |
+| Tailwind | Was v3 + PostCSS (v4 requires Vite 6+) |
 
 ---
 
@@ -137,9 +157,23 @@ This project is a **hands-on learning experience**. Copilot acts as a Tech Lead/
 
 See **Current Status** section above.
 
-**Key decision — Vite 5:** v6/v7/v8 ship Rolldown, a Rust native binary (`.node` file) blocked by Windows Application Control policy on this machine. Pinned to Vite 5 which uses pure-JS Rollup.
+**Key decision — Vite 5 (superseded Aug 1, 2026):** v6/v7/v8 ship Rolldown, a Rust native binary (`.node` file) blocked by Windows Application Control policy on the original Windows dev machine. Pinned to Vite 5 which uses pure-JS Rollup. Once the primary dev machine moved to Linux, this blocker no longer applied, so the project was upgraded to Vite 8.x.
 
-**Key decision — Tailwind v3:** `@tailwindcss/vite` plugin (v4's install method) requires Vite 6+. Using v3 with `postcss.config.js` and `tailwind.config.js` instead.
+**Key decision — Tailwind v3 (superseded Aug 1, 2026):** `@tailwindcss/vite` plugin (v4's install method) requires Vite 6+. Used v3 with `postcss.config.js` and `tailwind.config.js` while pinned to Vite 5. Migrated to Tailwind v4 alongside the Vite upgrade: `postcss.config.js`/`autoprefixer`/`tailwind.config.js` removed, `@tailwindcss/vite` plugin added to `vite.config.ts`, and `src/index.css` now uses `@import "tailwindcss";` instead of the three `@tailwind` directives. No custom theme was defined in the old config, so no visual changes.
+
+### Environment setup session (Aug 1, 2026)
+
+Retook the project on a new Linux machine after ~3 months idle. What changed:
+- Installed and verified toolchain: JDK 17 (Temurin, standalone), Node 24, PostgreSQL 18 — see Dev Environment table above.
+- Verified backend compiles (`mvnw compile`), runs locally against a fresh local DB loaded from `database/schema.sql`, and answers auth requests correctly.
+- Verified frontend installs, builds, lints, and dev-serves — found and fixed two **pre-existing, previously-untested** bugs in the scaffold, unrelated to the Vite/Tailwind upgrade:
+  - `tsconfig.*.json` used `erasableSyntaxOnly`, a TS 5.8+ option, while `typescript` was pinned to `~5.7.2` → `npm run build` failed. Fixed by bumping `typescript` to `^5.9.3` (stayed on the 5.x line; TypeScript 7 native-compiler rewrite was available but not adopted here to avoid an unrelated large migration).
+  - `eslint.config.js` referenced `reactHooks.configs.flat.recommended`, which doesn't exist in the installed `eslint-plugin-react-hooks@5.2.0` → `npm run lint` crashed. Fixed to `reactHooks.configs['recommended-latest']`.
+  - Both bugs meant `npm run build` and `npm run lint` had likely never been run successfully before — only `npm run dev` had been exercised.
+- Upgraded Vite 5→8 and Tailwind 3→4 (see key decisions above) now that Linux is the primary environment; ran `npm audit fix` twice, cutting frontend vulnerabilities from 10 to 1 (the remaining `react-router` advisory is a React Server Components CSRF bypass — not applicable, this app is a plain SPA — and has no patched release yet).
+- Added `backend/scripts/{start,stop,status,reset-dev-data}-dev.sh` as Linux equivalents of the existing `.ps1`/`.cmd` scripts.
+- Git branch cleanup: created local `develop` tracking `origin/develop` (was missing locally); deleted `origin/feature/frontend-setup` (fully merged into `develop`, stale since April). Current branches: `main`, `develop` only.
+- This machine had no git identity, no push credentials, and no `gh` CLI — set up `git config user.name/email` (matches existing commit history), installed `gh`, and authenticated via `gh auth login` + `gh auth setup-git`.
 
 ---
 
@@ -210,19 +244,22 @@ All releases: https://github.com/williamsjmzhdz/NexusFi/releases
 
 ## Resume Prompt
 
-Copy this into a new Copilot chat to restore context:
+Copy this into a new chat to restore context:
 
 ```
 Continuemos con NexusFi. Lee docs/PROGRESS.md para el contexto completo.
 Actúa como Tech Lead / mentor: explica antes de codificar, guía paso a paso.
 
 Estado actual:
-- Branch: feature/frontend-setup
-- Dev: cd C:\dev\nexusfi\frontend && npm run dev  →  localhost:5174
+- Branch: develop (crear feature/* desde aquí para nuevo trabajo)
+- Dev entorno: Linux — cd frontend && npm run dev → localhost:5173
+- Backend local: cd backend && ./scripts/start-dev.sh (necesita JDK 17 y Postgres local, ver Dev Environment)
 - Backend en Railway: https://nexusfi-production.up.railway.app/api/v1
+- Frontend apunta directo a Railway (src/services/api.ts) — funciona sin backend local
 
-Siguiente tarea: Block 2 — crear estructura de carpetas en frontend/src/
-(pages/, components/, services/, hooks/, types/)
+Siguiente tarea: v0.5.0 — empezar por el bug de aislamiento de datos
+(MovementController/ExpenseController usan userId=1 hardcodeado en vez de
+@AuthenticationPrincipal)
 ```
 
 ---
@@ -241,12 +278,26 @@ git push && git push --tags
 
 ### Frontend dev server
 ```bash
+# Linux
+cd frontend && npm run dev              # http://localhost:5173
+
+# Windows
 cd C:\dev\nexusfi\frontend
-npm run dev                    # http://localhost:5174
+npm run dev                             # http://localhost:5174
 ```
 
 ### Backend (local)
 ```bash
+# Linux — needs JDK 17 explicitly (system default may be newer)
+cd backend
+JAVA_HOME=~/.jdks/temurin-17 DB_PASSWORD=... ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+# or use the helper scripts:
+./scripts/start-dev.sh   # add --restart to replace a running instance
+./scripts/status-dev.sh
+./scripts/stop-dev.sh    # add --force to stop a non-NexusFi process on 8080
+./scripts/reset-dev-data.sh   # wipes local data, asks for confirmation
+
+# Windows
 cd C:\dev\nexusfi\backend
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
